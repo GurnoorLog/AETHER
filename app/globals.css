@@ -167,3 +167,22 @@
   to { stroke-dashoffset: -20; }
 }
 
+.typing-cursor {
+  animation: cursorGlow 1.8s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(253, 224, 71, 0.4);
+}
+
+@keyframes cursorGlow {
+  0%, 100% { opacity: 0.3; box-shadow: 0 0 4px rgba(253, 224, 71, 0.2); }
+  25% { opacity: 1; box-shadow: 0 0 12px rgba(253, 224, 71, 0.6); }
+  50% { opacity: 0.4; box-shadow: 0 0 6px rgba(253, 224, 71, 0.3); }
+  75% { opacity: 0.9; box-shadow: 0 0 10px rgba(253, 224, 71, 0.5); }
+}
+
+.typing-char {
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
