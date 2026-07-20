@@ -41,7 +41,10 @@ export default function AiMessage({
             text={text}
             speed={typingSpeed}
             startDelay={startDelay}
-            onComplete={() => setTypingDone(true)}
+            onComplete={() => {
+              setTypingDone(true);
+              onTypingComplete?.();
+            }}
           />
         </p>
       </div>
