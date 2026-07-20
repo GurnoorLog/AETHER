@@ -217,35 +217,43 @@ export default function OnboardingPage() {
     <>
       {phase === "welcome" && (
         <div className="min-h-screen bg-deep-onyx flex flex-col items-center justify-center px-8 relative overflow-hidden">
-          {/* Premium gradient background layers */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.08)_0%,_transparent_60%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-cyber-yellow/[0.02] via-transparent to-deep-onyx pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,_rgba(253,224,71,0.04)_0%,_transparent_50%)] pointer-events-none" />
 
+          {/* Subtle ambient grid */}
+          <div
+            className="absolute inset-0 opacity-[0.015] pointer-events-none"
+            style={{
+              backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
+              backgroundSize: '60px 60px',
+            }}
+          />
+
           {/* Floating particles */}
           <div className="absolute inset-0 pointer-events-none">
-            {[...Array(16)].map((_, i) => (
+            {[...Array(20)].map((_, i) => (
               <div
                 key={i}
                 className="absolute rounded-full"
                 style={{
-                  left: `${5 + i * 6}%`,
-                  top: `${15 + (i % 5) * 18}%`,
-                  width: `${2 + (i % 3) * 2}px`,
-                  height: `${2 + (i % 3) * 2}px`,
-                  background: i % 2 === 0 ? 'rgba(253,224,71,0.3)' : 'rgba(255,255,255,0.1)',
-                  animation: `particleFloat ${8 + (i % 4) * 2}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.6}s`,
-                  opacity: 0.2 + (i % 3) * 0.2,
+                  left: `${5 + (i % 8) * 12}%`,
+                  top: `${10 + Math.floor(i / 8) * 25}%`,
+                  width: `${1.5 + (i % 4) * 2}px`,
+                  height: `${1.5 + (i % 4) * 2}px`,
+                  background: i % 3 === 0 ? 'rgba(253,224,71,0.4)' : i % 3 === 1 ? 'rgba(255,255,255,0.12)' : 'rgba(6,182,212,0.15)',
+                  animation: `particleFloat ${9 + (i % 5) * 2}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.4}s`,
+                  opacity: 0.15 + (i % 4) * 0.15,
                 }}
               />
             ))}
           </div>
 
           {/* Glow behind avatar */}
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-cyber-yellow/5 blur-[100px] pointer-events-none" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-cyber-yellow/5 blur-[120px] pointer-events-none" />
 
-          <div className="w-28 h-28 rounded-[36px] bg-cyber-yellow/10 flex items-center justify-center mb-14 ring-1 ring-cyber-yellow/20 shadow-[0_0_80px_rgba(253,224,71,0.08)] relative z-10">
+          <div className="w-28 h-28 rounded-[36px] bg-cyber-yellow/10 flex items-center justify-center mb-14 ring-1 ring-cyber-yellow/20 shadow-[0_0_80px_rgba(253,224,71,0.08)] relative z-10 avatar-breathing">
             <svg className="w-14 h-14 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
             </svg>
@@ -255,7 +263,7 @@ export default function OnboardingPage() {
             <div className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed min-h-[3em]">
               <AiMessage
                 text="Hello! I'm Aether, your personal AI tutor. I'll learn how you study, remember your progress, and help you master every subject. Before we begin, I'd like to get to know you."
-                typingSpeed={25}
+                typingSpeed={22}
                 showAvatar={false}
                 onTypingComplete={handleWelcomeComplete}
               />
@@ -268,10 +276,17 @@ export default function OnboardingPage() {
         <div className="min-h-screen bg-deep-onyx flex flex-col relative">
           <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.03)_0%,_transparent_60%)] pointer-events-none" />
           <div className="fixed inset-0 bg-gradient-to-b from-cyber-yellow/[0.015] via-transparent to-transparent pointer-events-none" />
+          <div
+            className="fixed inset-0 opacity-[0.012] pointer-events-none"
+            style={{
+              backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
+              backgroundSize: '60px 60px',
+            }}
+          />
           {/* Header */}
           <div className="sticky top-0 z-20 px-8 py-6 flex items-center justify-between bg-deep-onyx/80 backdrop-blur-xl border-b border-white/5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex items-center justify-center shadow-lg shadow-cyber-yellow/10">
                 <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                 </svg>
@@ -279,17 +294,17 @@ export default function OnboardingPage() {
               <div>
                 <span className="text-sm font-black tracking-tighter text-white">AETHER</span>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-success-green animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-success-green animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
                   <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Online</span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {stepMessages.slice(0, 7).map((_, i) => (
+              {stepMessages.slice(1, 7).map((_, i) => (
                 <div
                   key={i}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
-                    i < stepIndex ? "bg-cyber-yellow" : i === stepIndex ? "bg-cyber-yellow/60 w-3" : "bg-white/10"
+                  className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                    i < stepIndex - 1 ? "bg-cyber-yellow shadow-[0_0_6px_rgba(253,224,71,0.4)]" : i === stepIndex - 1 ? "bg-cyber-yellow/60 shadow-[0_0_4px_rgba(253,224,71,0.2)] w-4" : "bg-white/10"
                   }`}
                 />
               ))}
