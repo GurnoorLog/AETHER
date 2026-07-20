@@ -65,7 +65,26 @@ export default function LearningJourney() {
                 </p>
               </div>
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute left-[85%] top-12 w-1/2 step-line-draw z-0" />
+                <div className="hidden lg:block absolute left-[85%] top-12 w-1/2 z-0">
+                  <svg className="w-full h-8" viewBox="0 0 120 32" fill="none">
+                    <path
+                      d="M4 16C30 4 60 28 90 16S110 4 116 8"
+                      stroke="white"
+                      strokeOpacity="0.15"
+                      strokeWidth="1.5"
+                      strokeDasharray="6 4"
+                      className="animate-[dashMove_1s_linear_infinite]"
+                    />
+                    <path
+                      d="M114 4L118 8L114 12"
+                      stroke="#FDE047"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="animate-pulse"
+                    />
+                  </svg>
+                </div>
               )}
             </div>
           ))}

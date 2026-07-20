@@ -10,8 +10,26 @@ export default function HeroSection() {
   const router = useRouter();
 
   return (
-    <section className="liquid-hero pt-12 px-12 md:px-24 pb-64 shadow-[0_50px_120px_rgba(0,0,0,0.4)]">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center">
+    <section className="liquid-hero pt-12 px-12 md:px-24 pb-64 shadow-[0_50px_120px_rgba(0,0,0,0.4)] relative overflow-hidden">
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="particle-float absolute w-2 h-2 rounded-full bg-black/20"
+            style={{
+              left: `${20 + i * 15}%`,
+              top: `${30 + (i % 3) * 20}%`,
+              animationDelay: `${i * 0.8}s`,
+              animationDuration: `${5 + i * 0.7}s`,
+              width: `${4 + (i % 2) * 4}px`,
+              height: `${4 + (i % 2) * 4}px`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center relative z-10">
         <div>
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-black/5 border border-black/10 rounded-full mb-10">
             <svg className="text-black w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -53,7 +71,7 @@ export default function HeroSection() {
         </div>
 
         <div className="relative hidden lg:block">
-          <div className="glass-card p-2 rounded-[56px] overflow-hidden rotate-1 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.7)] bg-white/5 border-white/20">
+          <div className="glass-card p-2 rounded-[56px] overflow-hidden rotate-1 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.7)] bg-white/5 border-white/20 scale-105">
             <div className="bg-[#0A0A0A] rounded-[48px] overflow-hidden p-8 aspect-[4/3] flex flex-col gap-6">
               <div className="flex items-center justify-between pb-6 border-b border-white/5">
                 <div className="flex items-center gap-4">
@@ -123,6 +141,8 @@ export default function HeroSection() {
                     <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: '0.2s' }} />
                     <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: '0.4s' }} />
                   </div>
+                  <span className="text-xs font-bold text-white/40 italic">Aether is thinking</span>
+                  <span className="text-white/60 font-black cursor-blink">|</span>
                 </div>
               </div>
 
@@ -152,7 +172,7 @@ export default function HeroSection() {
           </div>
 
           <div className="absolute -left-16 top-1/2 animate-float">
-            <div className="glass-card p-6 rounded-[32px] w-56 shadow-[0_50px_100px_rgba(0,0,0,0.5)] border-white/20">
+            <div className="glass-card p-6 rounded-[32px] w-56 shadow-[0_50px_100px_rgba(0,0,0,0.5)] border-white/20 shimmer">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-10 h-10 bg-blue-500/20 rounded-2xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

@@ -14,22 +14,28 @@ export default function FeatureCards() {
             title="Personalized RAG"
             description="Aether maps every sentence into a connected knowledge graph that lives exclusively in your browser."
           >
-            <div className="aspect-video relative flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-cyber-yellow/5 animate-pulse" />
+            <div className="aspect-video relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-cyber-yellow/[0.03] to-transparent">
               <svg className="w-full h-full relative z-10" viewBox="0 0 200 120">
-                <circle cx="100" cy="60" r="8" fill="#FDE047" className="animate-pulse" />
-                <circle cx="60" cy="30" r="4" fill="white" fillOpacity="0.4" />
-                <circle cx="140" cy="30" r="4" fill="white" fillOpacity="0.4" />
-                <circle cx="60" cy="90" r="4" fill="white" fillOpacity="0.4" />
-                <circle cx="140" cy="90" r="4" fill="white" fillOpacity="0.4" />
-                <line x1="100" y1="60" x2="60" y2="30" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
-                <line x1="100" y1="60" x2="140" y2="30" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
-                <line x1="100" y1="60" x2="60" y2="90" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
-                <line x1="100" y1="60" x2="140" y2="90" stroke="white" strokeOpacity="0.2" strokeWidth="1" />
+                <circle cx="100" cy="60" r="10" fill="#FDE047" className="animate-pulse" opacity="0.9" />
+                <circle cx="45" cy="25" r="5" fill="white" fillOpacity="0.5" />
+                <circle cx="155" cy="25" r="5" fill="white" fillOpacity="0.5" />
+                <circle cx="45" cy="95" r="5" fill="white" fillOpacity="0.5" />
+                <circle cx="155" cy="95" r="5" fill="white" fillOpacity="0.5" />
+                <circle cx="70" cy="60" r="3" fill="#60A5FA" fillOpacity="0.6" />
+                <circle cx="130" cy="60" r="3" fill="#60A5FA" fillOpacity="0.6" />
+                <g stroke="white" strokeOpacity="0.15" strokeWidth="1.5">
+                  <line x1="100" y1="60" x2="45" y2="25" />
+                  <line x1="100" y1="60" x2="155" y2="25" />
+                  <line x1="100" y1="60" x2="45" y2="95" />
+                  <line x1="100" y1="60" x2="155" y2="95" />
+                  <line x1="45" y1="25" x2="155" y2="95" strokeDasharray="3 3" />
+                  <line x1="155" y1="25" x2="45" y2="95" strokeDasharray="3 3" />
+                  <line x1="70" y1="60" x2="130" y2="60" />
+                </g>
               </svg>
-              <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyber-yellow" />
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Nodes Connected</span>
+              <div className="absolute bottom-3 left-4 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-cyber-yellow animate-pulse" />
+                <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">24 Nodes Connected</span>
               </div>
             </div>
           </FeatureCard>
@@ -43,16 +49,29 @@ export default function FeatureCards() {
             title="Voice First"
             description="No more cold chats. Learn through low-latency, professor-grade natural dialogue."
           >
-            <div className="aspect-video flex flex-col items-center justify-center gap-6">
-              <div className="flex items-end gap-1.5 h-12">
+            <div className="aspect-video flex flex-col items-center justify-center gap-6 bg-gradient-to-t from-cyber-yellow/[0.03] to-transparent">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-green-400/60 uppercase tracking-widest">Voice Active</span>
+              </div>
+              <div className="flex items-end gap-1.5 h-14">
                 <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.5s' }} />
                 <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.8s' }} />
                 <div className="waveform-bar bg-cyan-400 w-1.5 rounded-full" style={{ animationDuration: '0.6s' }} />
                 <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '1.1s' }} />
                 <div className="waveform-bar bg-white w-1.5 rounded-full" style={{ animationDuration: '0.7s' }} />
                 <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.9s' }} />
+                <div className="waveform-bar bg-cyan-400 w-1.5 rounded-full" style={{ animationDuration: '1.3s' }} />
+                <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.4s' }} />
               </div>
-              <p className="text-[11px] font-bold text-cyber-yellow/60 uppercase tracking-widest italic">&ldquo;I understand the concept...&rdquo;</p>
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-[11px] font-bold text-cyber-yellow/60 tracking-widest italic">&ldquo;Let me explain that differently...&rdquo;</p>
+                <div className="flex gap-2 text-[9px] font-bold text-white/30 uppercase tracking-widest">
+                  <span>Real-time</span>
+                  <span>·</span>
+                  <span>Latency 240ms</span>
+                </div>
+              </div>
             </div>
           </FeatureCard>
 
@@ -65,24 +84,45 @@ export default function FeatureCards() {
             title="Adaptive Mastery"
             description="Custom quizzes built around your session history to lock in concepts for the long term."
           >
-            <div className="aspect-video flex flex-col justify-end gap-6">
-              <div className="flex justify-between items-end gap-3 h-24">
-                <div className="flex-1 bg-white/5 rounded-xl relative overflow-hidden" style={{ height: '40%' }}>
-                  <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow/20 h-full animate-pulse" />
+            <div className="aspect-video flex flex-col justify-end gap-6 bg-gradient-to-t from-cyan-accent/[0.03] to-transparent">
+              <div className="flex justify-between items-end gap-2 h-28 px-2">
+                <div className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[8px] font-bold text-white/30 uppercase">Mon</span>
+                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '35%' }}>
+                    <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow/30 h-full" />
+                  </div>
                 </div>
-                <div className="flex-1 bg-white/5 rounded-xl relative overflow-hidden" style={{ height: '90%' }}>
-                  <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow h-full shadow-[0_0_20px_rgba(253,224,71,0.4)]" />
+                <div className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[8px] font-bold text-white/30 uppercase">Tue</span>
+                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '50%' }}>
+                    <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow/60 h-full" />
+                  </div>
                 </div>
-                <div className="flex-1 bg-white/5 rounded-xl relative overflow-hidden" style={{ height: '65%' }}>
-                  <div className="absolute bottom-0 left-0 right-0 bg-cyan-accent/50 h-full" />
+                <div className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[8px] font-bold text-white/30 uppercase">Wed</span>
+                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '85%' }}>
+                    <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow h-full shadow-[0_0_20px_rgba(253,224,71,0.4)]" />
+                  </div>
                 </div>
-                <div className="flex-1 bg-white/5 rounded-xl relative overflow-hidden" style={{ height: '30%' }}>
-                  <div className="absolute bottom-0 left-0 right-0 bg-white/10 h-full" />
+                <div className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[8px] font-bold text-white/30 uppercase">Thu</span>
+                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '65%' }}>
+                    <div className="absolute bottom-0 left-0 right-0 bg-cyan-accent/60 h-full" />
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[8px] font-bold text-white/30 uppercase">Fri</span>
+                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '40%' }}>
+                    <div className="absolute bottom-0 left-0 right-0 bg-white/10 h-full" />
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Learning velocity</span>
-                <span className="text-xs font-black text-cyber-yellow">+24%</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-white/30">+24%</span>
+                  <span className="text-[10px] font-bold text-cyber-yellow">this week</span>
+                </div>
               </div>
             </div>
           </FeatureCard>
