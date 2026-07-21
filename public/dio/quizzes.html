@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether AI | Quizzes Hub</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/petite-vue@0.4.1/dist/petite-vue.iife.js" defer init></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/dio/css/style.css">
+</head>
+<body>
+
+<div class="min-h-screen bg-[#0A0A0A] text-white flex overflow-hidden">
+
+  <!-- Left Sidebar (15%) -->
+  <div class="w-[15%] h-screen" v-scope="{
+    activeNav: 'quizzes',
+    userName: 'Alex V.',
+    newSessionHref: '/dio/session.html',
+    homeHref: 'index.html',
+    tutorHref: '/dio/tutor.html',
+    knowledgeHref: '/dio/knowledge.html',
+    docsHref: '#docs',
+    quizzesHref: '/dio/quizzes.html',
+    progressHref: '/dio/progress.html',
+    roadmapHref: '/dio/roadmap.html',
+    musicHref: '/dio/music.html'
+  }">
+    <aside class="w-full h-full flex flex-col border-r border-white/5 bg-[#0A0A0A] p-6 z-40">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="w-10 h-10 bg-[#FDE047] rounded-xl flex items-center justify-center">
+          <iconify-icon icon="lucide:zap" class="text-black text-2xl"></iconify-icon>
+        </div>
+        <span class="text-2xl font-bold tracking-tighter uppercase">Aether</span>
+      </div>
+
+      <div class="mb-8 relative">
+        <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"></iconify-icon>
+        <input type="text" placeholder="Search..."
+          @input="$emit('search', { query: $event.target.value })"
+          class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#FDE047]/50 transition-colors">
+      </div>
+
+      <a :href="newSessionHref"
+        class="bg-[#FDE047] text-black font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 mb-10 hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)]">
+        <iconify-icon icon="lucide:plus"></iconify-icon>New Session
+      </a>
+
+      <nav class="flex-1 space-y-2 overflow-y-auto">
+        <a :href="homeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'home', 'opacity-60 hover:opacity-100': activeNav !== 'home' }">
+          <iconify-icon icon="lucide:home" class="text-xl"></iconify-icon>Home
+        </a>
+        <a :href="tutorHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'tutor', 'opacity-60 hover:opacity-100': activeNav !== 'tutor' }">
+          <iconify-icon icon="lucide:bot" class="text-xl"></iconify-icon>AI Tutor
+        </a>
+        <a :href="knowledgeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'knowledge', 'opacity-60 hover:opacity-100': activeNav !== 'knowledge' }">
+          <iconify-icon icon="lucide:database" class="text-xl"></iconify-icon>Knowledge
+        </a>
+        <a :href="docsHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'docs', 'opacity-60 hover:opacity-100': activeNav !== 'docs' }">
+          <iconify-icon icon="lucide:file-text" class="text-xl"></iconify-icon>Documents
+        </a>
+        <a :href="quizzesHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'quizzes', 'opacity-60 hover:opacity-100': activeNav !== 'quizzes' }">
+          <iconify-icon icon="lucide:pencil-line" class="text-xl"></iconify-icon>Quizzes
+        </a>
+        <a :href="progressHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'progress', 'opacity-60 hover:opacity-100': activeNav !== 'progress' }">
+          <iconify-icon icon="lucide:bar-chart-3" class="text-xl"></iconify-icon>Progress
+        </a>
+        <a :href="roadmapHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'roadmap', 'opacity-60 hover:opacity-100': activeNav !== 'roadmap' }">
+          <iconify-icon icon="lucide:route" class="text-xl"></iconify-icon>Roadmap
+        </a>
+        <a :href="musicHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'music', 'opacity-60 hover:opacity-100': activeNav !== 'music' }">
+          <iconify-icon icon="lucide:music" class="text-xl"></iconify-icon>Focus Music
+        </a>
+      </nav>
+
+      <div class="pt-6 border-t border-white/5 mt-6 flex items-center justify-between opacity-60">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FDE047] to-[#F59E0B] border border-white/20"></div>
+          <span class="text-xs font-semibold">{{ userName }}</span>
+        </div>
+        <div class="flex gap-3">
+          <iconify-icon icon="lucide:bell" class="cursor-pointer hover:text-white" @click="$emit('notificationClick')"></iconify-icon>
+          <iconify-icon icon="lucide:settings" class="cursor-pointer hover:text-white" @click="$emit('settingsClick')"></iconify-icon>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Center Workspace (65%) -->
+  <main class="flex-1 flex flex-col relative z-0 overflow-y-auto">
+
+    <!-- Hero Section -->
+    <div class="h-[40vh] bg-[#FDE047] text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
+      <div class="absolute top-10 right-10 flex gap-4">
+        <div class="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">DAILY GOAL: 2/3</div>
+        <div class="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
+      </div>
+      <div class="max-w-3xl mb-12">
+        <p class="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Challenge</p>
+        <h1 class="text-7xl font-bold tracking-tighter leading-tight mb-4">Quiz Your Knowledge</h1>
+        <p class="text-xl font-medium opacity-80">Challenge yourself and strengthen your mastery across 14 categories.</p>
+      </div>
+      <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20"></div>
+    </div>
+
+    <!-- Content Layer -->
+    <div class="flex-1 -mt-16 px-12 pb-20 space-y-10 relative z-10">
+
+      <!-- AI Tutor Header -->
+      <div v-scope="{ isActive: true, isProcessing: true }">
+        <div class="flex items-center justify-between bg-white/10 backdrop-blur-[24px] border border-white/20 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] rounded-[32px] p-6 mb-8">
+          <div class="flex items-center gap-6">
+            <div class="relative">
+              <div class="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-[#FDE047]">
+                <iconify-icon icon="lucide:sparkles" class="text-3xl text-[#FDE047]"></iconify-icon>
+              </div>
+              <div v-if="isActive" class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold">Aether Core</h3>
+              <div class="flex items-center gap-3 text-xs text-white/50">
+                <span class="flex items-center gap-1 text-green-400">
+                  <div v-if="isActive" class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                  Listening
+                </span>
+                <span>•</span>
+                <span>Reviewing your notes</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div v-if="isProcessing" class="waveform">
+              <div class="wave-bar" style="animation-delay: -0.2s"></div>
+              <div class="wave-bar" style="animation-delay: -0.4s"></div>
+              <div class="wave-bar" style="animation-delay: -0.1s"></div>
+              <div class="wave-bar" style="animation-delay: -0.5s"></div>
+              <div class="wave-bar" style="animation-delay: -0.3s"></div>
+            </div>
+            <button @click="$emit('call')" class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors">
+              <iconify-icon icon="lucide:phone" class="text-xl"></iconify-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Summary -->
+      <div class="grid grid-cols-4 gap-4">
+        <div class="glass p-6 rounded-[32px] flex flex-col justify-center">
+          <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Total Quizzes</p>
+          <p class="text-3xl font-bold">142</p>
+        </div>
+        <div class="glass p-6 rounded-[32px] flex flex-col justify-center">
+          <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Weekly Comp</p>
+          <p class="text-3xl font-bold">12 <span class="text-[#FDE047] text-xs font-medium">+2</span></p>
+        </div>
+        <div class="glass p-6 rounded-[32px] flex flex-col justify-center">
+          <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Avg. Score</p>
+          <p class="text-3xl font-bold">88%</p>
+        </div>
+        <div class="glass p-6 rounded-[32px] flex flex-col justify-center border-l-4 border-[#FDE047]">
+          <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Current Streak</p>
+          <p class="text-3xl font-bold">7 Days</p>
+        </div>
+      </div>
+
+      <!-- Filtering -->
+      <div class="flex items-center justify-between">
+        <div class="flex gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
+          <button class="px-6 py-2 rounded-full bg-[#FDE047] text-black text-xs font-bold">All Quizzes</button>
+          <button class="px-6 py-2 rounded-full hover:bg-white/5 text-xs font-bold opacity-60 hover:opacity-100 transition-all">Mathematics</button>
+          <button class="px-6 py-2 rounded-full hover:bg-white/5 text-xs font-bold opacity-60 hover:opacity-100 transition-all">Physics</button>
+          <button class="px-6 py-2 rounded-full hover:bg-white/5 text-xs font-bold opacity-60 hover:opacity-100 transition-all">Recently Created</button>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-bold opacity-40">
+          <span>Sort by:</span>
+          <select class="bg-transparent border-none focus:ring-0 text-white cursor-pointer">
+            <option>Difficulty</option>
+            <option>Mastery Gain</option>
+            <option>Time</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quiz Recommendation Grid -->
+      <div class="grid grid-cols-2 gap-8">
+
+        <!-- Card 1: Easy -->
+        <div class="glass p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="space-y-2">
+              <span class="px-3 py-1 bg-green-500/10 text-green-400 text-[10px] font-black uppercase rounded-full">Easy</span>
+              <h3 class="text-2xl font-bold tracking-tight">Derivatives Fundamentals</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-[#FDE047] text-xl font-black">+120 XP</p>
+              <p class="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 mb-8">
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:clock" class="text-lg"></iconify-icon>
+              <span class="text-sm">15 mins</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:list" class="text-lg"></iconify-icon>
+              <span class="text-sm">12 Questions</span>
+            </div>
+            <div class="flex items-center gap-2 text-[#FDE047]">
+              <iconify-icon icon="lucide:award" class="text-lg"></iconify-icon>
+              <span class="text-sm font-bold">Best: 92%</span>
+            </div>
+          </div>
+          <button class="w-full bg-[#FDE047] text-black font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)] group-hover:shadow-[0_0_30px_rgba(253,224,71,0.4)]">
+            Start Quiz
+          </button>
+        </div>
+
+        <!-- Card 2: Medium (Active) -->
+        <div class="glass p-8 rounded-[40px] quiz-card transition-all duration-300 group border-l-4 border-[#FDE047]">
+          <div class="flex justify-between items-start mb-6">
+            <div class="space-y-2">
+              <span class="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
+              <h3 class="text-2xl font-bold tracking-tight">Integration Techniques</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-[#FDE047] text-xl font-black">+250 XP</p>
+              <p class="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 mb-8">
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:clock" class="text-lg"></iconify-icon>
+              <span class="text-sm">30 mins</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:list" class="text-lg"></iconify-icon>
+              <span class="text-sm">25 Questions</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-40">
+              <iconify-icon icon="lucide:award" class="text-lg"></iconify-icon>
+              <span class="text-sm">No Attempt Yet</span>
+            </div>
+          </div>
+          <button class="w-full bg-[#FDE047] text-black font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)] group-hover:shadow-[0_0_30px_rgba(253,224,71,0.4)]">
+            Start Quiz
+          </button>
+        </div>
+
+        <!-- Card 3: Hard -->
+        <div class="glass p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="space-y-2">
+              <span class="px-3 py-1 bg-red-500/10 text-red-400 text-[10px] font-black uppercase rounded-full">Hard</span>
+              <h3 class="text-2xl font-bold tracking-tight">Vector Calculus Master</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-[#FDE047] text-xl font-black">+500 XP</p>
+              <p class="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 mb-8">
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:clock" class="text-lg"></iconify-icon>
+              <span class="text-sm">45 mins</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:list" class="text-lg"></iconify-icon>
+              <span class="text-sm">40 Questions</span>
+            </div>
+            <div class="flex items-center gap-2 text-red-400">
+              <iconify-icon icon="lucide:award" class="text-lg"></iconify-icon>
+              <span class="text-sm font-bold">Prev Score: 42%</span>
+            </div>
+          </div>
+          <button class="w-full bg-[#FDE047] text-black font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)] group-hover:shadow-[0_0_30px_rgba(253,224,71,0.4)]">
+            Retry Quiz
+          </button>
+        </div>
+
+        <!-- Card 4: Medium -->
+        <div class="glass p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+          <div class="flex justify-between items-start mb-6">
+            <div class="space-y-2">
+              <span class="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
+              <h3 class="text-2xl font-bold tracking-tight">Linear Algebra Basis</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-[#FDE047] text-xl font-black">+180 XP</p>
+              <p class="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 mb-8">
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:clock" class="text-lg"></iconify-icon>
+              <span class="text-sm">20 mins</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-60">
+              <iconify-icon icon="lucide:list" class="text-lg"></iconify-icon>
+              <span class="text-sm">15 Questions</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-40">
+              <iconify-icon icon="lucide:award" class="text-lg"></iconify-icon>
+              <span class="text-sm">Not Started</span>
+            </div>
+          </div>
+          <button class="w-full bg-[#FDE047] text-black font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)] group-hover:shadow-[0_0_30px_rgba(253,224,71,0.4)]">
+            Start Quiz
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Logo Ticker -->
+      <div class="mt-20 py-12 border-t border-white/5 bg-black rounded-t-[100px] flex items-center justify-between opacity-30 grayscale">
+        <span class="text-[10px] font-bold tracking-widest px-12">CHALLENGE SPONSORS</span>
+        <div class="flex gap-16 px-12">
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:openai" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">OpenAI</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:notion" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">Notion</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:figma" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">Figma</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:github" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">Github</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Right Sidebar (20%) -->
+  <div class="w-[20%] h-screen" v-scope="{
+    masteryPercentage: 72,
+    studyHours: 4.2,
+    newXP: 850,
+    firstFileProgress: 50,
+    isMusicPlaying: true
+  }">
+    <aside class="w-full h-full flex flex-col p-6 space-y-6 border-l border-white/5 bg-[#0A0A0A] overflow-y-auto">
+
+      <!-- Daily Mastery -->
+      <div class="glass rounded-[32px] p-6 text-center">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">Daily Mastery</h4>
+        <div class="relative w-32 h-32 mx-auto flex items-center justify-center mb-4">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8" class="text-white/5"></circle>
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8"
+              stroke-dasharray="364" :stroke-dashoffset="364 - (364 * masteryPercentage / 100)"
+              class="text-[#FDE047] transition-all duration-500"></circle>
+          </svg>
+          <div class="absolute flex flex-col items-center">
+            <span class="text-2xl font-black">{{ masteryPercentage }}%</span>
+            <span class="text-[8px] uppercase tracking-widest text-white/40">Complete</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-left">
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">Study Time</p>
+            <p class="text-sm font-bold">{{ studyHours }} hrs</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">New XP</p>
+            <p class="text-sm font-bold text-[#FDE047]">+{{ newXP }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Log -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Memory Log</h4>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🧠</span>
+          <div>
+            <p class="text-xs font-medium">Struggled with Integrals last week.</p>
+            <p class="text-[10px] text-[#FDE047] mt-1">Review scheduled tomorrow</p>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🎨</span>
+          <div>
+            <p class="text-xs font-medium">Learns faster using diagrams.</p>
+            <p class="text-[10px] text-white/40 mt-1">Applied to current session</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indexing Files -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Indexing Files</h4>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-blue-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Lecture_Notes_V2.pdf</p>
+              <div class="w-24 h-1 bg-white/10 rounded-full mt-1">
+                <div class="h-full bg-[#FDE047] rounded-full transition-all duration-300" :style="{ width: firstFileProgress + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <span class="text-[8px] font-bold uppercase text-[#FDE047]" v-if="firstFileProgress < 100">Indexing</span>
+        </div>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-green-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Physics_Ch_04.pdf</p>
+              <p class="text-[8px] text-white/30">Ready to analyze</p>
+            </div>
+          </div>
+          <iconify-icon icon="lucide:check-circle" class="text-green-500"></iconify-icon>
+        </div>
+      </div>
+
+      <!-- Focus Ambience -->
+      <div class="glass rounded-[32px] p-6 mt-auto border border-[#FDE047]/20 shadow-[0_0_30px_rgba(253,224,71,0.05)]">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#FDE047]">Focus Ambience</h4>
+          <iconify-icon icon="lucide:volume-2"></iconify-icon>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+            <iconify-icon icon="lucide:cloud-rain" class="text-2xl text-[#FDE047]"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-xs font-bold">Cyber Rain</p>
+            <p class="text-[10px] text-white/40">Deep Focus Mode</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <iconify-icon icon="lucide:skip-back" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('prevTrack')"></iconify-icon>
+          <iconify-icon :icon="isMusicPlaying ? 'lucide:pause' : 'lucide:play'" class="text-2xl cursor-pointer hover:text-[#FDE047]" @click="$emit('togglePlay')"></iconify-icon>
+          <iconify-icon icon="lucide:skip-forward" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('nextTrack')"></iconify-icon>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Floating Notification -->
+  <div class="fixed bottom-10 left-10 space-y-3 z-50">
+    <div class="bg-black/80 backdrop-blur-xl border border-[#FDE047]/30 px-6 py-4 rounded-full flex items-center gap-4 animate-bounce shadow-[0_20px_50px_rgba(253,224,71,0.1)]">
+      <div class="w-3 h-3 bg-[#FDE047] rounded-full shadow-[0_0_10px_#FDE047]"></div>
+      <span class="text-[10px] font-black uppercase tracking-[0.2em]">🎯 New Quiz Generated</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
