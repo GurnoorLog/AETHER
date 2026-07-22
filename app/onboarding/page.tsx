@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
-import { createClient } from "@/lib/supabase/client";
+import { completeOnboarding } from "@/lib/onboarding";
 import AiMessage from "@/components/onboarding/AiMessage";
 import PersonalizationLoading from "@/components/onboarding/PersonalizationLoading";
 
@@ -161,28 +161,29 @@ export default function OnboardingPage() {
     if (!user) return;
 
     try {
-      const supabase = createClient();
       const preferences = {
-        ...userInputs,
         subjects: userInputs.subjects,
-        educationLevel: userInputs.education,
-        learningStyles: userInputs.learningStyles,
+        education_level: userInputs.education,
+        learning_style: userInputs.learningStyles,
         goals: userInputs.goals,
-        voiceEnabled: voicePreference,
+        voice_enabled: voicePreference,
       };
 
-      await supabase
-        .from("user_profiles")
-        .update({
-          onboarding_completed: true,
-          preferences,
-          full_name: (userInputs.name as string) || user.user_metadata?.full_name || "Student",
-        })
-        .eq("user_id", user.id);
+      const result = await completeOnboarding({
+        userId: user.id,
+        fullName: (userInputs.name as string) || user.user_metadata?.full_name || "Student",
+        email: user.email || "",
+        subjects: (userInputs.subjects as string[]) || [],
+        preferences,
+      });
 
-      setPhase("done");
+      if (result.error) {
+        console.error("Onboarding failed:", result.error);
+      }
+
       router.push("/dashboard");
-    } catch {
+    } catch (err) {
+      console.error("Onboarding error:", err);
       router.push("/dashboard");
     }
   }, [user, userInputs, voicePreference, router]);

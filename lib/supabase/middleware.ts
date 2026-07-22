@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
@@ -25,6 +26,11 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
+  const admin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -37,7 +43,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    const { data: profile } = await supabase
+    const { data: profile } = await admin
       .from("user_profiles")
       .select("onboarding_completed")
       .eq("user_id", user.id)

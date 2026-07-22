@@ -27,6 +27,7 @@ export interface Document {
   file_size: number;
   storage_path: string;
   uploaded_at: string;
+  status?: string;
 }
 
 export interface Conversation {
@@ -77,6 +78,34 @@ export interface ProgressTracking {
   subject: string;
   mastery_level: number;
   last_studied: string;
+}
+
+export interface GeneratedTrack {
+  id: string;
+  user_id: string;
+  title: string;
+  prompt: string | null;
+  mood: string | null;
+  instrument: string | null;
+  lyrics: string | null;
+  audio_url: string;
+  duration: number;
+  created_at: string;
+}
+
+export interface Playlist {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
+}
+
+export interface PlaylistTrack {
+  id: string;
+  playlist_id: string;
+  track_id: string;
+  position: number;
+  added_at: string;
 }
 
 export interface AuthFormData {

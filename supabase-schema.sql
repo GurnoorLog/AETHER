@@ -125,6 +125,53 @@ CREATE POLICY "Users can manage their own roadmaps"
   ON study_roadmaps FOR ALL
   USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can manage their own progress"
-  ON progress_tracking FOR ALL
+CREATE TABLE generated_tracks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  prompt TEXT,
+  mood TEXT,
+  instrument TEXT,
+  lyrics TEXT,
+  audio_url TEXT NOT NULL,
+  duration INTEGER DEFAULT 30,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE playlists (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE playlist_tracks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  playlist_id UUID REFERENCES playlists(id) ON DELETE CASCADE NOT NULL,
+  track_id UUID REFERENCES generated_tracks(id) ON DELETE CASCADE NOT NULL,
+  position INTEGER DEFAULT 0,
+  added_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(playlist_id, track_id)
+);
+
+ALTER TABLE generated_tracks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE playlists ENABLE ROW LEVEL SECURITY;
+ALTER TABLE playlist_tracks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage their own generated tracks"
+  ON generated_tracks FOR ALL
   USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage their own playlists"
+  ON playlists FOR ALL
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage their own playlist tracks"
+  ON playlist_tracks FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM playlists
+      WHERE playlists.id = playlist_tracks.playlist_id
+      AND playlists.user_id = auth.uid()
+    )
+  );

@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+
+const admin = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -17,7 +24,8 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: profile } = await supabase
+        const db = admin();
+        const { data: profile } = await db
           .from("user_profiles")
           .select("user_id, onboarding_completed")
           .eq("user_id", user.id)
@@ -30,7 +38,7 @@ export async function GET(request: Request) {
             user.email?.split("@")[0] ??
             "User";
 
-          await supabase.from("user_profiles").insert({
+          await db.from("user_profiles").insert({
             user_id: user.id,
             email: user.email,
             full_name: fullName,
@@ -42,12 +50,12 @@ export async function GET(request: Request) {
             last_login: new Date().toISOString(),
           });
 
-          await supabase.from("knowledge_bases").insert({ user_id: user.id });
-          await supabase.from("conversations").insert({ user_id: user.id, title: "Welcome" });
-          await supabase.from("ai_memories").insert({ user_id: user.id, content: "User created account", context: "system" });
-          await supabase.from("study_roadmaps").insert({ user_id: user.id, title: "Getting Started", progress: 0 });
-          await supabase.from("learning_analytics").insert({ user_id: user.id, metric: "sessions_started", value: 0 });
-          await supabase.from("progress_tracking").insert({ user_id: user.id, subject: "General", mastery_level: 0 });
+          await db.from("knowledge_bases").insert({ user_id: user.id });
+          await db.from("conversations").insert({ user_id: user.id, title: "Welcome" });
+          await db.from("ai_memories").insert({ user_id: user.id, content: "User created account", context: "system" });
+          await db.from("study_roadmaps").insert({ user_id: user.id, title: "Getting Started", progress: 0 });
+          await db.from("learning_analytics").insert({ user_id: user.id, metric: "sessions_started", value: 0 });
+          await db.from("progress_tracking").insert({ user_id: user.id, subject: "General", mastery_level: 0 });
 
           return NextResponse.redirect(`${origin}/onboarding`);
         }
