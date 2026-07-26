@@ -44,19 +44,19 @@ export default function RoadmapPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
+    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
 
       <SidebarLeft currentPage="roadmap" />
 
       {/* Center Workspace */}
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 overflow-hidden">
+      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
         <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">Focus: SAT Prep</div>
           </div>
-          <div className="max-w-3xl mb-8">
+          <div className="max-w-3xl mb-12">
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Path</p>
             <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Your Learning Roadmap</h1>
             <div className="flex items-center gap-6 mt-6">
@@ -66,11 +66,11 @@ export default function RoadmapPage() {
               <span className="text-2xl font-black tracking-tighter">65%</span>
             </div>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20 animate-pulse" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 -mt-16 px-12 pb-24 overflow-y-auto space-y-12">
+        <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-12 relative z-10">
 
           {/* Exam Hub */}
           <section>

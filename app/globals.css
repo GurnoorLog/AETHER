@@ -107,6 +107,25 @@
   z-index: 10;
 }
 
+.liquid-wave {
+  background-color: #FDE047;
+  border-bottom-right-radius: 120px;
+  border-bottom-left-radius: 40px;
+}
+
+.header-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .cursor-blink {
   animation: cursorBlink 1s step-end infinite;
 }

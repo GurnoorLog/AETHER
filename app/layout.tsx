@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className}>
-      <body className="bg-deep-onyx text-white overflow-x-hidden min-h-screen antialiased">
+      <body className="bg-deep-onyx text-white overflow-x-hidden min-h-screen antialiased" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

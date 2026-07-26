@@ -27,7 +27,7 @@ export interface Document {
   file_size: number;
   storage_path: string;
   uploaded_at: string;
-  status?: string;
+  status?: "UPLOADING" | "EXTRACTING" | "CHUNKING" | "EMBEDDING" | "READY" | "FAILED";
 }
 
 export interface Conversation {
@@ -115,3 +115,33 @@ export interface AuthFormData {
 }
 
 export type AuthView = "login" | "signup" | "forgot_password";
+
+export interface DocumentChunk {
+  id: string;
+  document_id: string;
+  user_id: string;
+  chunk_index: number;
+  content: string;
+  embedding: number[];
+  metadata: {
+    heading?: string;
+    section?: string;
+    page?: number;
+    source?: string;
+    chunk?: number;
+    [key: string]: unknown;
+  };
+  page_number: number | null;
+  created_at: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversation_id: string;
+  user_id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  retrieved_chunk_ids: string[];
+  similarity_scores: number[];
+  created_at: string;
+}

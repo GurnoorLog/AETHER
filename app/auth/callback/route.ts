@@ -64,16 +64,16 @@ export async function GET(request: Request) {
           return NextResponse.redirect(`${origin}/onboarding`);
         }
 
-        return NextResponse.redirect(`${origin}/dashboard`);
+        return NextResponse.redirect(`${origin}/hub`);
       }
 
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
       if (isLocalEnv && forwardedHost) {
-        return NextResponse.redirect(`http://${forwardedHost}/dashboard`);
+        return NextResponse.redirect(`http://${forwardedHost}/hub`);
       }
 
-      return NextResponse.redirect(`${origin}/dashboard`);
+      return NextResponse.redirect(`${origin}/hub`);
     }
   }
 

@@ -53,7 +53,6 @@ function formatTime(seconds: number): string {
 }
 
 const COLAB_API = "https://relic-dweller-remix.ngrok-free.dev";
-const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 
 export default function MusicPage() {
   const { user, loading: authLoading } = useAuth();
@@ -135,28 +134,13 @@ export default function MusicPage() {
   }, [selectedPlaylistId, fetchPlaylistTracks]);
 
   const enhancePromptWithGemini = async (userText: string, moodVal: string, instrumentVal: string) => {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+    const res = await fetch("/api/music/enhance-prompt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `You are a music generation assistant. The user wants a focus/study track.
-Mood: ${moodVal}
-Instrument: ${instrumentVal}
-User's description: "${userText}"
-
-Generate lyrics (a short verse, 2-4 lines) and a rich prompt.
-Return JSON: { "lyrics": "...", "enhanced_prompt": "..." }.
-Keep lyrics under 80 characters. Enhanced prompt: 1-2 sentences describing the musical vibe.`
-          }]
-        }]
-      })
+      body: JSON.stringify({ userText, mood: moodVal, instrument: instrumentVal }),
     });
-    const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-    const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    return JSON.parse(cleaned);
+    if (!res.ok) throw new Error("Enhance failed");
+    return res.json();
   };
 
   const handleGenerate = async () => {
@@ -334,7 +318,7 @@ Keep lyrics under 80 characters. Enhanced prompt: 1-2 sentences describing the m
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 -mt-16 px-12 pb-24 overflow-y-auto space-y-12">
+        <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-12 relative z-10">
 
           {/* Currently Playing */}
           {activeTrack && (

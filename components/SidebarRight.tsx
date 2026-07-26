@@ -50,7 +50,7 @@ function Skeleton({ className }: { className?: string }) {
 }
 
   return (
-    <div className="w-[20%] shrink-0">
+    <div className="w-[20%] shrink-0 h-screen">
       <aside className="h-full flex flex-col p-6 space-y-6 border-l border-white/5 bg-deep-onyx overflow-y-auto">
         {loading ? (
           <>

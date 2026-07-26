@@ -29,12 +29,12 @@ export default function QuizzesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
+    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
 
       <SidebarLeft currentPage="quizzes" />
 
       {/* Center Workspace */}
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 overflow-y-auto">
+      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
         <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
@@ -51,7 +51,7 @@ export default function QuizzesPage() {
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 -mt-16 px-12 pb-20 space-y-10 relative z-10">
+        <div className="flex-1 px-12 pb-20 space-y-10 relative z-10 overflow-y-auto">
 
           {/* Aether Core Header */}
           <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">

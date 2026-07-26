@@ -67,7 +67,7 @@ export default function DashboardPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
+    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
         <div className="w-[15%] shrink-0 p-6 space-y-4">
           <Skeleton className="w-10 h-10 rounded-xl" />
           <Skeleton className="h-10 rounded-full" />
@@ -80,7 +80,7 @@ export default function DashboardPage() {
             <Skeleton className="h-16 w-3/4 mb-4" />
             <Skeleton className="h-8 w-1/2" />
           </div>
-          <div className="flex-1 -mt-16 px-12 space-y-8">
+          <div className="flex-1 px-12 space-y-8">
             <Skeleton className="h-24 rounded-[32px]" />
             <Skeleton className="h-48 rounded-[28px] max-w-4xl mx-auto" />
             <Skeleton className="h-16 rounded-full max-w-4xl mx-auto" />
@@ -101,10 +101,10 @@ export default function DashboardPage() {
       <SidebarLeft currentPage="home" />
 
       {/* Center Workspace */}
-      <main className="flex-1 flex flex-col relative z-0 min-w-0">
+      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="h-[45vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
+        <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{subjects.length} Subjects</div>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">
               Welcome back, {profile?.full_name?.split(" ")[0] || "Student"}.
             </p>
-            <h1 className="text-6xl md:text-7xl font-bold tracking-tighter leading-tight mb-4">
+            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">
               {recentConversation
                 ? `Continue "${recentConversation.title}"?`
                 : documents.length > 0
@@ -132,7 +132,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 -mt-16 px-12 pb-8 overflow-y-auto space-y-8">
+        <div className="flex-1 px-12 pb-8 overflow-y-auto space-y-8 relative z-10">
 
           {/* Aether Core Status */}
           <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">

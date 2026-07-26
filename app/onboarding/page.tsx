@@ -181,10 +181,10 @@ export default function OnboardingPage() {
         console.error("Onboarding failed:", result.error);
       }
 
-      router.push("/dashboard");
+      router.push("/hub");
     } catch (err) {
       console.error("Onboarding error:", err);
-      router.push("/dashboard");
+      router.push("/hub");
     }
   }, [user, userInputs, voicePreference, router]);
 

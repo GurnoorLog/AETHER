@@ -55,29 +55,29 @@ export default function StudyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
+    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
 
       <SidebarLeft currentPage="docs" />
 
       {/* Center Workspace */}
-      <main className="flex-1 flex flex-col relative z-0 min-w-0">
+      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="h-[40vh] min-h-[350px] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
+        <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">SYSTEM READY</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Session Setup</div>
           </div>
-          <div className="max-w-4xl mb-8">
+          <div className="max-w-3xl mb-12">
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Aether Intelligent Tutoring</p>
-            <h1 className="text-6xl font-bold tracking-tighter leading-tight mb-2">Start Your Learning Session</h1>
-            <p className="text-lg font-medium opacity-80">Let&apos;s customize your study experience for maximum retention.</p>
+            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Start Your Learning Session</h1>
+            <p className="text-xl font-medium opacity-80">Let&apos;s customize your study experience for maximum retention.</p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-black/5 rounded-full -mb-64 -mr-32" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 -mt-16 px-12 pb-24 space-y-12">
+        <div className="flex-1 px-12 pb-24 space-y-12 overflow-y-auto relative z-10">
 
           {/* Section 1: Topic Selection */}
           <section className="space-y-6">

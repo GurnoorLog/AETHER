@@ -50,7 +50,7 @@ export default function ProgressPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
+    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
       <style>{`
         .chart-bar {
           transition: height 1s cubic-bezier(0.22, 1, 0.36, 1);
@@ -75,24 +75,24 @@ export default function ProgressPage() {
       <SidebarLeft currentPage="progress" />
 
       {/* Center Workspace */}
-      <main className="flex-1 flex flex-col relative z-0 overflow-y-auto h-screen">
+      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="h-[35vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end flex-shrink-0">
+        <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">MARCH 10 - 17</div>
           </div>
-          <div className="max-w-3xl mb-8">
+          <div className="max-w-3xl mb-12">
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Performance Analytics</p>
-            <h1 className="text-6xl font-bold tracking-tighter leading-tight mb-2">Your Learning Journey</h1>
-            <p className="text-lg font-medium opacity-80">You&apos;re in the top 5% of learners this week. Your focus peaked on Wednesday.</p>
+            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Your Learning Journey</h1>
+            <p className="text-xl font-medium opacity-80">You&apos;re in the top 5% of learners this week. Your focus peaked on Wednesday.</p>
           </div>
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
         {/* Content Layer */}
-        <div className="px-12 -mt-16 pb-20 space-y-8">
+        <div className="flex-1 px-12 pb-20 space-y-8 overflow-y-auto">
 
           {/* Main Analytics Grid */}
           <div className="grid grid-cols-12 gap-6 items-stretch">
