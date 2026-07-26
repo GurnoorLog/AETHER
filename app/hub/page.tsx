@@ -393,7 +393,53 @@ export default function HubPage() {
               <p className="text-xs text-white/30 mt-2 uppercase tracking-widest">Launch your next tutor</p>
             </div>
 
-            {recentSessions.length === 0 ? (
+            {recentSessions.length === 0 && filter === "all" ? (
+              <>
+                <div className="glass-card rounded-[32px] p-6 group animate-float hover:scale-105 premium-transition relative" style={{ animationDelay: "-1.2s" }}>
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="text-3xl">🧠</span>
+                    <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-black uppercase tracking-widest text-white/50">Coming Soon</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">AI / Machine Learning</h3>
+                  <p className="text-sm text-white/40 mb-6 truncate">Neural networks, transformers, and deep learning fundamentals.</p>
+                  <div className="space-y-3 mb-8 text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    <div className="flex justify-between">
+                      <span>Progress</span>
+                      <span className="text-white/60">0%</span>
+                    </div>
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-500 w-0"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                    <span className="bg-white/10 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase">Coming Soon</span>
+                    <MoreVerticalIcon className="text-white/20" />
+                  </div>
+                </div>
+
+                <div className="glass-card rounded-[32px] p-6 group animate-float hover:scale-105 premium-transition relative" style={{ animationDelay: "-2.5s" }}>
+                  <div className="flex justify-between items-start mb-6">
+                    <span className="text-3xl">📝</span>
+                    <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-black uppercase tracking-widest text-white/50">Coming Soon</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">SAT Prep</h3>
+                  <p className="text-sm text-white/40 mb-6 truncate">Full-length practice tests, strategies, and score prediction.</p>
+                  <div className="space-y-3 mb-8 text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                    <div className="flex justify-between">
+                      <span>Progress</span>
+                      <span className="text-white/60">0%</span>
+                    </div>
+                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#FDE047] w-0"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                    <span className="bg-white/10 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase">Coming Soon</span>
+                    <MoreVerticalIcon className="text-white/20" />
+                  </div>
+                </div>
+              </>
+            ) : recentSessions.length === 0 ? (
               <div className="glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center col-span-3">
                 <p className="text-white/30 text-sm">
                   {filter === "all"
@@ -459,22 +505,22 @@ export default function HubPage() {
         <section className="px-10 pb-20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="glass-card rounded-[32px] p-8 text-center">
-              <BookOpenIcon className="text-3xl text-[#FDE047] mb-3 mx-auto" />
+              <BookOpenIcon className="w-8 h-8 text-[#FDE047] mb-3 mx-auto" />
               <p className="text-4xl font-black">{conversations.length}</p>
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Sessions Created</p>
             </div>
             <div className="glass-card rounded-[32px] p-8 text-center">
-              <ClockIcon className="text-3xl text-blue-400 mb-3 mx-auto" />
+              <ClockIcon className="w-8 h-8 text-blue-400 mb-3 mx-auto" />
               <p className="text-4xl font-black">{subjects.length}</p>
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Subjects</p>
             </div>
             <div className="glass-card rounded-[32px] p-8 text-center">
-              <SparklesIcon className="text-3xl text-purple-400 mb-3 mx-auto" />
+              <SparklesIcon className="w-8 h-8 text-purple-400 mb-3 mx-auto" />
               <p className="text-4xl font-black">{totalMastery}%</p>
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Avg. Mastery</p>
             </div>
             <div className="glass-card rounded-[32px] p-8 text-center">
-              <FlameIcon className="text-3xl text-orange-500 mb-3 mx-auto" />
+              <FlameIcon className="w-8 h-8 text-orange-500 mb-3 mx-auto" />
               <p className="text-4xl font-black">{conversations.filter((c) => {
                 const daysSince = (Date.now() - new Date(c.updated_at || c.created_at).getTime()) / 86400000;
                 return daysSince <= 7;
