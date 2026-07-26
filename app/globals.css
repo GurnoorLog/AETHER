@@ -126,6 +126,11 @@
   scrollbar-width: none;
 }
 
+.carousel-item {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
 .cursor-blink {
   animation: cursorBlink 1s step-end infinite;
 }
