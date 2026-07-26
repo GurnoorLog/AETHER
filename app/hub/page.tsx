@@ -402,8 +402,8 @@ export default function HubPage() {
                 </p>
               </div>
             ) : (
-              recentSessions.map((session) => (
-                <div key={session.id} onClick={() => session.slug && handleResume(session.slug)} className="glass-card rounded-[32px] p-6 group hover:scale-105 premium-transition relative cursor-pointer">
+              recentSessions.map((session, idx) => (
+                <div key={session.id} onClick={() => session.slug && handleResume(session.slug)} className="glass-card rounded-[32px] p-6 group animate-float hover:scale-105 premium-transition relative cursor-pointer" style={{ animationDelay: `${-idx * 1.2}s` }}>
                   <button
                     onClick={(e) => handleDeleteSession(session.id, e)}
                     className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer z-10"
@@ -489,9 +489,18 @@ export default function HubPage() {
           <div className="flex items-center justify-between opacity-30 grayscale">
             <span className="text-[10px] font-bold tracking-widest uppercase">Powering the future of learning</span>
             <div className="flex gap-12">
-              <span className="font-bold tracking-tighter">OpenAI</span>
-              <span className="font-bold tracking-tighter">Notion</span>
-              <span className="font-bold tracking-tighter">Figma</span>
+              <div className="flex items-center gap-2">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0014.959 2a5.985 5.985 0 00-4.215 1.816 6.046 6.046 0 00-7.49 2.914 5.985 5.985 0 00-.515 4.91 6.046 6.046 0 002.79 5.271 5.985 5.985 0 00.516 4.91 6.046 6.046 0 006.51 2.9A6.065 6.065 0 0010.459 23a5.985 5.985 0 004.215-1.816 6.046 6.046 0 007.49-2.914 5.985 5.985 0 00.515-4.91 6.046 6.046 0 00-2.79-5.271zM10.459 21.41c-3.72 0-6.74-2.05-6.74-4.58 0-1.58.86-3.11 2.34-4.11a6.046 6.046 0 011.04-1.19 4.55 4.55 0 002.47-.99c.14-.1.28-.2.42-.3a6.065 6.065 0 0110.17 1.68 5.985 5.985 0 012.54 4.23c0 2.53-3.02 4.57-6.74 4.57h-.76zm7.38-13.28c-.14.1-.28.2-.42.3a4.55 4.55 0 00-2.47.99 6.046 6.046 0 01-1.04 1.19c-1.48 1-2.34 2.53-2.34 4.11 0 2.53 3.02 4.58 6.74 4.58h.76c3.72 0 6.74-2.05 6.74-4.58 0-1.58-.86-3.11-2.34-4.11a6.046 6.046 0 01-1.04-1.19 4.55 4.55 0 00-2.57-1.3zM12 0C5.373 0 0 4.477 0 10c0 3.31 1.68 6.23 4.24 8.13-.06.51-.11 1.04-.11 1.57 0 .53.05 1.06.11 1.57C2.46 22.47 0 18.99 0 15c0-5.523 5.373-10 12-10s12 4.477 12 10c0 3.99-2.46 7.47-4.24 8.13.06.51.11 1.04.11 1.57 0 .53-.05 1.06-.11 1.57C22.32 26.23 24 23.31 24 20c0-5.523-5.373-10-12-10z"/></svg>
+                <span className="font-bold tracking-tighter">OpenAI</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L18.2 2.16c-.42-.326-.98-.7-2.055-.606l-12.8.934c-.466.047-.56.28-.327.466l1.38 1.187zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.166V6.354c0-.606-.233-.933-.748-.886l-15.177.887c-.56.046-.747.326-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952l1.449.327s0 .84-1.168.84l-3.222.187c-.093-.187 0-.653.327-.746l.84-.233V9.854c0-.746.326-1.026.934-1.073l3.675-.234c.654 0 .793.327.793.933v3.98l4.53-3.98c.42-.42.933-.467.933.233v.087z"/></svg>
+                <span className="font-bold tracking-tighter">Notion</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M15.852 8.981h-4.588V0h4.588c2.506 0 4.588 2.082 4.588 4.588 0 2.506-2.082 4.393-4.588 4.393zM12.735 7.51h3.117c1.695 0 3.117-1.331 3.117-3.117 0-1.695-1.331-3.117-3.117-3.117h-3.117V7.51zm0 8.981H8.148c-2.506 0-4.588-2.082-4.588-4.588 0-2.506 2.082-4.393 4.588-4.393h3.117v8.981H8.148c-1.695 0-3.117 1.331-3.117 3.117 0 1.695 1.331 3.117 3.117 3.117h3.117v-8.981zm-1.471-7.51v-3.117H8.148c-1.695 0-3.117 1.331-3.117 3.117 0 1.695 1.331 3.117 3.117 3.117h3.117zm4.588 11.427h-4.588V24h4.588c2.506 0 4.588-2.082 4.588-4.588 0-2.506-2.082-3.914-4.588-3.914zm-1.471 6.459h3.117c1.695 0 3.117-1.331 3.117-3.117 0-1.695-1.331-2.444-3.117-2.444h-3.117v5.561z"/></svg>
+                <span className="font-bold tracking-tighter">Figma</span>
+              </div>
             </div>
           </div>
         </div>
