@@ -13,7 +13,9 @@ interface Subject {
 
 interface Conversation {
   id: string;
+  slug?: string;
   title: string;
+  subject?: string;
   created_at: string;
   updated_at: string;
 }
@@ -165,21 +167,18 @@ export default function HubPage() {
     if (!user) return;
     const supabase = createClient();
 
-    const [subjectsRes, convRes] = await Promise.all([
+    const [subjectsRes, sessionsRes] = await Promise.all([
       supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id),
       supabase
-        .from("conversations")
-        .select("id, title, created_at, updated_at")
+        .from("sessions")
+        .select("id, title, slug, subject, created_at, updated_at")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false }),
     ]);
 
     if (subjectsRes.data) setSubjects(subjectsRes.data as Subject[]);
-    if (convRes.data) {
-      const filtered = (convRes.data as Conversation[]).filter(
-        (c) => c.title !== "Welcome"
-      );
-      setConversations(filtered);
+    if (sessionsRes.data) {
+      setConversations(sessionsRes.data as Conversation[]);
     }
     setLoading(false);
   }, [user]);
@@ -222,15 +221,15 @@ export default function HubPage() {
         )
       : 0;
 
-  const handleResume = (sessionId: string) => {
-    router.push(`/dashboard?session=${sessionId}`);
+  const handleResume = (sessionSlug: string) => {
+    router.push(`/${sessionSlug}/chat`);
   };
 
   const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user) return;
     const supabase = createClient();
-    await supabase.from("conversations").delete().eq("id", sessionId);
+    await supabase.from("sessions").delete().eq("id", sessionId);
     fetchHubData();
   };
 
@@ -337,7 +336,7 @@ export default function HubPage() {
               featuredSessions.map((session) => (
                 <div
                   key={session.id}
-                  onClick={() => handleResume(session.id)}
+                  onClick={() => session.slug && handleResume(session.slug)}
                   className="carousel-item w-[600px] h-[320px] glass-card rounded-[32px] overflow-hidden relative group hover:scale-[1.02] premium-transition cursor-pointer"
                 >
                   <div
@@ -403,7 +402,7 @@ export default function HubPage() {
               </div>
             ) : (
               recentSessions.map((session) => (
-                <div key={session.id} className="glass-card rounded-[32px] p-6 group hover:scale-105 premium-transition relative">
+                <div key={session.id} onClick={() => session.slug && handleResume(session.slug)} className="glass-card rounded-[32px] p-6 group hover:scale-105 premium-transition relative cursor-pointer">
                   <button
                     onClick={(e) => handleDeleteSession(session.id, e)}
                     className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer z-10"
@@ -442,7 +441,7 @@ export default function HubPage() {
                   </div>
                   <div className="flex items-center justify-between pt-4 border-t border-white/5">
                     <button
-                      onClick={() => handleResume(session.id)}
+                      onClick={() => session.slug && handleResume(session.slug)}
                       className="bg-[#FDE047] text-black px-6 py-2 rounded-full text-[10px] font-black uppercase shadow-lg hover:scale-105 active:scale-95 premium-transition"
                     >
                       Resume

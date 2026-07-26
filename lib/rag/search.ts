@@ -18,7 +18,8 @@ export interface SearchResult {
 export async function searchChunks(
   query: string,
   userId: string,
-  matchCount: number = 10
+  matchCount: number = 10,
+  sessionId?: string | null
 ): Promise<SearchResult[]> {
   const embedding = await generateQueryEmbedding(query);
   const supabase = createAdminClient();
@@ -27,6 +28,7 @@ export async function searchChunks(
     query_embedding: embedding,
     match_count: matchCount,
     target_user_id: userId,
+    target_session_id: sessionId || null,
   });
 
   if (error) {

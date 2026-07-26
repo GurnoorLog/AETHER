@@ -22,6 +22,7 @@ export interface KnowledgeBase {
 export interface Document {
   id: string;
   user_id: string;
+  session_id: string | null;
   filename: string;
   file_type: string;
   file_size: number;
@@ -33,9 +34,33 @@ export interface Document {
 export interface Conversation {
   id: string;
   user_id: string;
+  session_id: string | null;
   title: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface Session {
+  id: string;
+  user_id: string;
+  title: string;
+  slug: string;
+  subject: string | null;
+  objectives: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SessionRoadmapModule {
+  id: string;
+  session_id: string;
+  user_id: string;
+  module_index: number;
+  title: string;
+  description: string | null;
+  status: "completed" | "current" | "locked";
+  completed_at: string | null;
+  created_at: string;
 }
 
 export interface AiMemory {

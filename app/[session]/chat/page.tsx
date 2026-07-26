@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
+import { useSession } from "../layout";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
 
@@ -11,7 +12,6 @@ interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
-  sources?: { document: string; page: number; similarity: number }[];
   created_at: string;
 }
 
@@ -19,6 +19,12 @@ interface Conversation {
   id: string;
   title: string;
   created_at: string;
+}
+
+function generateTitle(text: string): string {
+  const cleaned = text.replace(/\n/g, " ").trim();
+  if (cleaned.length <= 50) return cleaned;
+  return cleaned.slice(0, 50).trim() + "...";
 }
 
 function parseStructuredBlocks(content: string) {
@@ -70,39 +76,62 @@ function parseStructuredBlocks(content: string) {
   return blocks.filter((b) => b.text.trim());
 }
 
-export default function ChatPage() {
+export default function SessionChatPage({ params }: { params: Promise<{ session: string }> }) {
+  const resolvedParams = use(params);
+  const slug = resolvedParams.session;
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { session } = useSession();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [thinkingStatus, setThinkingStatus] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mountedRef = useRef(false);
+
+  const STORAGE_KEY = `aether_active_conversation_${slug}`;
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
+  useEffect(() => {
+    if (mountedRef.current) return;
+    mountedRef.current = true;
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) setActiveConversation(saved);
+  }, [STORAGE_KEY]);
+
+  useEffect(() => {
+    if (activeConversation) {
+      localStorage.setItem(STORAGE_KEY, activeConversation);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [activeConversation, STORAGE_KEY]);
+
   const fetchConversations = useCallback(async () => {
-    if (!user) return;
+    if (!user || !session) return;
     const supabase = createClient();
     const { data } = await supabase
       .from("conversations")
       .select("id, title, created_at")
       .eq("user_id", user.id)
+      .eq("session_id", session.id)
       .order("created_at", { ascending: false });
     if (data) setConversations(data as Conversation[]);
     setLoading(false);
-  }, [user]);
+  }, [user, session]);
 
   const fetchMessages = useCallback(async (convId: string) => {
     const supabase = createClient();
     const { data } = await supabase
       .from("chat_messages")
-      .select("id, role, content, sources, created_at")
+      .select("id, role, content, created_at")
       .eq("conversation_id", convId)
       .order("created_at", { ascending: true });
     if (data) setMessages(data as ChatMessage[]);
@@ -113,19 +142,29 @@ export default function ChatPage() {
   }, [user, fetchConversations]);
 
   useEffect(() => {
-    if (activeConversation) fetchMessages(activeConversation);
+    if (activeConversation) {
+      fetchMessages(activeConversation);
+    } else {
+      setMessages([]);
+    }
   }, [activeConversation, fetchMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    if (!activeConversation || conversations.length === 0) return;
+    const exists = conversations.some((c) => c.id === activeConversation);
+    if (!exists) setActiveConversation(null);
+  }, [conversations, activeConversation]);
+
   const createConversation = useCallback(async () => {
-    if (!user) return;
+    if (!user || !session) return;
     const supabase = createClient();
     const { data, error } = await supabase
       .from("conversations")
-      .insert({ user_id: user.id, title: "New Chat" })
+      .insert({ user_id: user.id, session_id: session.id, title: "New Chat" })
       .select("id, title, created_at")
       .single();
     if (data && !error) {
@@ -133,11 +172,30 @@ export default function ChatPage() {
       setActiveConversation(data.id);
       setMessages([]);
     }
-  }, [user]);
+  }, [user, session]);
+
+  const deleteConversation = useCallback(async (convId: string) => {
+    if (!user) return;
+    const supabase = createClient();
+    await supabase.from("chat_messages").delete().eq("conversation_id", convId);
+    await supabase.from("conversations").delete().eq("id", convId);
+    setConversations((prev) => prev.filter((c) => c.id !== convId));
+    if (activeConversation === convId) {
+      setActiveConversation(null);
+      setMessages([]);
+    }
+  }, [user, activeConversation]);
+
+  const updateConversationTitle = useCallback(async (convId: string, title: string) => {
+    const supabase = createClient();
+    await supabase.from("conversations").update({ title }).eq("id", convId);
+    setConversations((prev) => prev.map((c) => c.id === convId ? { ...c, title } : c));
+  }, []);
 
   const sendMessage = useCallback(async () => {
-    if (!inputValue.trim() || sending || !activeConversation) return;
+    if (!inputValue.trim() || sending || !activeConversation || !session) return;
 
+    const isFirstMessage = messages.length === 0;
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -148,6 +206,12 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMsg]);
     setInputValue("");
     setSending(true);
+    setThinkingStatus([]);
+
+    if (isFirstMessage) {
+      const title = generateTitle(userMsg.content);
+      updateConversationTitle(activeConversation, title);
+    }
 
     try {
       const res = await fetch("/api/chat", {
@@ -156,22 +220,79 @@ export default function ChatPage() {
         body: JSON.stringify({
           message: userMsg.content,
           conversation_id: activeConversation,
+          session_id: session.id,
         }),
       });
 
-      const data = await res.json();
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: "Request failed" }));
+        throw new Error(errData.error || `HTTP ${res.status}`);
+      }
 
-      if (!res.ok) throw new Error(data.error || "Chat failed");
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+      let buffer = "";
+      let messageId: string | null = null;
 
-      const assistantMsg: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: data.content,
-        sources: data.chunks_used > 0 ? undefined : undefined,
-        created_at: new Date().toISOString(),
-      };
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
 
-      setMessages((prev) => [...prev, assistantMsg]);
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const jsonStr = line.slice(6).trim();
+            if (!jsonStr) continue;
+
+            try {
+              const event = JSON.parse(jsonStr);
+
+              if (event.type === "status") {
+                setThinkingStatus((prev) => [...prev, event.text]);
+              } else if (event.type === "chunk") {
+                fullText += event.text;
+                setThinkingStatus([]);
+                setMessages((prev) => {
+                  const msgs = [...prev];
+                  const lastMsg = msgs[msgs.length - 1];
+                  if (lastMsg && lastMsg.role === "assistant" && lastMsg.id === "__streaming__") {
+                    msgs[msgs.length - 1] = { ...lastMsg, content: fullText };
+                  } else {
+                    msgs.push({ id: "__streaming__", role: "assistant", content: fullText, created_at: new Date().toISOString() });
+                  }
+                  return msgs;
+                });
+              } else if (event.type === "done") {
+                messageId = event.message_id;
+              } else if (event.type === "error") {
+                throw new Error(event.error);
+              }
+            } catch (parseErr) {
+              if (parseErr instanceof Error && parseErr.message !== "Unexpected end of JSON input") {
+                throw parseErr;
+              }
+            }
+          }
+        }
+      }
+
+      if (fullText) {
+        setMessages((prev) => {
+          const msgs = [...prev];
+          const lastIdx = msgs.findIndex((m) => m.id === "__streaming__");
+          if (lastIdx >= 0) {
+            msgs[lastIdx] = { ...msgs[lastIdx], id: messageId || crypto.randomUUID() };
+          }
+          return msgs;
+        });
+      } else {
+        throw new Error("No response received");
+      }
     } catch (err) {
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),
@@ -182,9 +303,10 @@ export default function ChatPage() {
       setMessages((prev) => [...prev, errorMsg]);
     } finally {
       setSending(false);
+      setThinkingStatus([]);
       inputRef.current?.focus();
     }
-  }, [inputValue, sending, activeConversation]);
+  }, [inputValue, sending, activeConversation, messages.length, updateConversationTitle, session]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -193,7 +315,7 @@ export default function ChatPage() {
     }
   };
 
-  if (authLoading || !user) {
+  if (authLoading || !user || !session) {
     return (
       <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
         <div className="w-[15%] shrink-0 p-6 space-y-4">
@@ -219,6 +341,16 @@ export default function ChatPage() {
         <header className="p-6 pb-0">
           <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">
             <div className="flex items-center gap-6">
+              {activeConversation && (
+                <button
+                  onClick={() => { setActiveConversation(null); setMessages([]); }}
+                  className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all cursor-pointer"
+                >
+                  <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                </button>
+              )}
               <div className="relative">
                 <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-cyber-yellow">
                   <svg className="w-8 h-8 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -228,7 +360,11 @@ export default function ChatPage() {
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-deep-onyx" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Aether Core</h3>
+                <h3 className="text-xl font-bold">
+                  {activeConversation
+                    ? conversations.find((c) => c.id === activeConversation)?.title || "Chat"
+                    : `${session.title}`}
+                </h3>
                 <div className="flex items-center gap-3 text-xs text-white/50">
                   <span className="flex items-center gap-1 text-green-400">
                     <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
@@ -240,6 +376,14 @@ export default function ChatPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {activeConversation && (
+                <button
+                  onClick={() => deleteConversation(activeConversation)}
+                  className="text-red-400/60 hover:text-red-400 text-xs font-bold px-4 py-2.5 rounded-full hover:bg-red-400/10 transition-all cursor-pointer"
+                >
+                  Delete
+                </button>
+              )}
               <button
                 onClick={createConversation}
                 className="bg-cyber-yellow text-black text-xs font-bold px-5 py-2.5 rounded-full hover:scale-105 active:scale-95 transition-all cursor-pointer"
@@ -250,7 +394,6 @@ export default function ChatPage() {
           </div>
         </header>
 
-        {/* Conversation list or Chat */}
         {!activeConversation ? (
           <div className="flex-1 overflow-y-auto px-8 pb-24">
             <div className="max-w-3xl mx-auto py-8">
@@ -271,7 +414,7 @@ export default function ChatPage() {
                   </div>
                   <h2 className="text-2xl font-bold mb-3">Start a conversation</h2>
                   <p className="text-white/40 text-sm mb-8 max-w-md mx-auto">
-                    Ask Aether anything. It retrieves context from your uploaded documents to give grounded, sourced answers.
+                    Ask Aether anything about {session.subject || "this session"}. It retrieves context from your uploaded documents.
                   </p>
                   <button
                     onClick={createConversation}
@@ -284,14 +427,16 @@ export default function ChatPage() {
                 <div className="space-y-3">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2 mb-4">Recent Conversations</h4>
                   {conversations.map((conv) => (
-                    <button
+                    <div
                       key={conv.id}
-                      onClick={() => setActiveConversation(conv.id)}
-                      className="w-full text-left glass-card rounded-[28px] p-5 hover:border-cyber-yellow/20 transition-all cursor-pointer"
+                      className="w-full glass-card rounded-[28px] p-5 hover:border-cyber-yellow/20 transition-all group"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                        <button
+                          onClick={() => setActiveConversation(conv.id)}
+                          className="flex-1 flex items-center gap-4 text-left cursor-pointer"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
                             <svg className="w-5 h-5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                               <path d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                             </svg>
@@ -302,12 +447,22 @@ export default function ChatPage() {
                               {new Date(conv.created_at).toLocaleDateString()}
                             </p>
                           </div>
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteConversation(conv.id); }}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-400/10 transition-all cursor-pointer"
+                          >
+                            <svg className="w-4 h-4 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                          </button>
+                          <svg className="w-4 h-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                          </svg>
                         </div>
-                        <svg className="w-4 h-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                        </svg>
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </div>
               )}
@@ -315,7 +470,6 @@ export default function ChatPage() {
           </div>
         ) : (
           <>
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto px-8 pb-32">
               <div className="max-w-4xl mx-auto space-y-8 py-6">
                 {messages.length === 0 && (
@@ -411,18 +565,42 @@ export default function ChatPage() {
                 ))}
 
                 {sending && (
-                  <div className="flex items-center gap-3 opacity-60">
-                    <div className="w-10 h-10 rounded-full bg-cyber-yellow/20 flex items-center justify-center shrink-0">
-                      <svg className="text-cyber-yellow w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <div className="flex items-start gap-3 opacity-60">
+                    <div className="w-10 h-10 rounded-full bg-cyber-yellow/20 flex items-center justify-center shrink-0 mt-1">
+                      <svg className="text-cyber-yellow w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                       </svg>
                     </div>
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: "0s" }} />
-                      <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: "0.2s" }} />
-                      <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: "0.4s" }} />
+                    <div className="space-y-1.5 pt-1">
+                      {thinkingStatus.length === 0 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 bg-white/40 rounded-full typing-dot" style={{ animationDelay: "0s" }} />
+                            <div className="w-1.5 h-1.5 bg-white/40 rounded-full typing-dot" style={{ animationDelay: "0.2s" }} />
+                            <div className="w-1.5 h-1.5 bg-white/40 rounded-full typing-dot" style={{ animationDelay: "0.4s" }} />
+                          </div>
+                          <span className="text-xs text-white/40">Initializing...</span>
+                        </div>
+                      ) : (
+                        thinkingStatus.map((status, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            {i === thinkingStatus.length - 1 ? (
+                              <>
+                                <div className="w-1.5 h-1.5 bg-cyber-yellow rounded-full animate-pulse" />
+                                <span className="text-xs text-cyber-yellow font-medium">{status}</span>
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-3 h-3 text-green-400/60 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                                <span className="text-xs text-white/30 line-through">{status}</span>
+                              </>
+                            )}
+                          </div>
+                        ))
+                      )}
                     </div>
-                    <span className="text-xs font-bold text-white/40 italic">Aether is thinking</span>
                   </div>
                 )}
 
@@ -430,7 +608,6 @@ export default function ChatPage() {
               </div>
             </div>
 
-            {/* Composer */}
             <div className="absolute bottom-0 left-0 right-0 p-8 pt-0 bg-gradient-to-t from-deep-onyx via-deep-onyx/90 to-transparent">
               <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
                 <div className="glass-card-premium rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">

@@ -1,12 +1,12 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
-const GEMINI_EMBEDDING_URL = "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent";
+const GEMINI_EMBEDDING_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
 
 export interface EmbeddingResult {
   embedding: number[];
 }
 
 /**
- * Generate an embedding for a single text using Gemini text-embedding-004.
+ * Generate an embedding for a single text using Gemini gemini-embedding-001.
  * Returns a 768-dimensional vector.
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
@@ -14,9 +14,10 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "models/text-embedding-004",
+      model: "models/gemini-embedding-001",
       content: { parts: [{ text }] },
       taskType: "RETRIEVAL_DOCUMENT",
+      outputDimensionality: 768,
     }),
   });
 
@@ -59,9 +60,10 @@ export async function generateQueryEmbedding(query: string): Promise<number[]> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "models/text-embedding-004",
+      model: "models/gemini-embedding-001",
       content: { parts: [{ text: query }] },
       taskType: "RETRIEVAL_QUERY",
+      outputDimensionality: 768,
     }),
   });
 
