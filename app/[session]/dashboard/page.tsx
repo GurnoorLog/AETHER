@@ -108,10 +108,10 @@ export default function SessionDashboardPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-12 pb-8 overflow-y-auto space-y-8 relative z-10">
+        <div className="flex-1 px-12 pb-8 overflow-y-auto space-y-8 relative z-10 pt-8">
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-3 gap-4 -mt-8 mb-8">
+          <div className="grid grid-cols-3 gap-4 mb-8">
             {currentModule && (
               <button
                 onClick={() => startModule(currentModule.id)}
