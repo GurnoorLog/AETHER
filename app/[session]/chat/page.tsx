@@ -707,43 +707,49 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
               </div>
             </div>
 
-            <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-8">
-              <div className="pointer-events-auto">
-                <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
-                  <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
-                    <button
-                      onClick={createConversation}
-                      className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer"
-                    >
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 4.5v15m7.5-7.5h-15" />
-                      </svg>
-                    </button>
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      placeholder={moduleContext ? `Ask about ${moduleContext.title}...` : "Ask Aether anything..."}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      disabled={sending}
-                      className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none disabled:opacity-50"
-                    />
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={sendMessage}
-                        disabled={!inputValue.trim() || sending}
-                        className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+        {/* Composer Bar */}
+      <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-12">
+        <div className="pointer-events-auto">
+          <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
+            <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
+              <button
+                onClick={createConversation}
+                className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </button>
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder={moduleContext ? `Ask about ${moduleContext.title}...` : "Ask Aether anything..."}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={sending}
+                className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none disabled:opacity-50"
+              />
+              <div className="flex items-center gap-2">
+                <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                  </svg>
+                </button>
+                <button
+                  onClick={sendMessage}
+                  disabled={!inputValue.trim() || sending}
+                  className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
           </>
         )}
       </main>
