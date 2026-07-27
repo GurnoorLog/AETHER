@@ -51,6 +51,13 @@ export interface Session {
   updated_at: string;
 }
 
+export interface Lesson {
+  title: string;
+  description: string;
+  duration_minutes: number;
+  key_topics: string[];
+}
+
 export interface SessionRoadmapModule {
   id: string;
   session_id: string;
@@ -59,7 +66,30 @@ export interface SessionRoadmapModule {
   title: string;
   description: string | null;
   status: "completed" | "current" | "locked";
+  lessons: Lesson[];
+  learning_objectives: string | null;
+  key_concepts: string | null;
   completed_at: string | null;
+  created_at: string;
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correct_index: number;
+  explanation: string;
+}
+
+export interface SessionQuiz {
+  id: string;
+  session_id: string;
+  user_id: string;
+  module_id: string | null;
+  title: string;
+  questions: QuizQuestion[];
+  score: number | null;
+  total_questions: number;
+  completed: boolean;
   created_at: string;
 }
 

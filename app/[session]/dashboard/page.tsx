@@ -1,132 +1,108 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import type { Document } from "@/types/database";
+import { useSession } from "../layout";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
+import type { Lesson } from "@/types/database";
 
-interface RecentConversation {
+interface RoadmapModule {
+  id: string;
+  module_index: number;
   title: string;
-  created_at: string;
-}
-
-function timeAgo(date: string): string {
-  const diff = Date.now() - new Date(date).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
-
-function Skeleton({ className }: { className?: string }) {
-  return <div className={`animate-pulse bg-white/5 rounded-2xl ${className ?? ""}`} />;
+  description: string;
+  status: "completed" | "current" | "locked";
+  lessons: Lesson[];
+  completed_at: string | null;
 }
 
 export default function SessionDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [profile, setProfile] = useState<{ full_name: string; onboarding_completed: boolean; preferences: Record<string, unknown> } | null>(null);
-  const [subjects, setSubjects] = useState<{ subject: string; mastery_level: number }[]>([]);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [recentConversation, setRecentConversation] = useState<RecentConversation | null>(null);
+  const { session } = useSession();
+  const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchDashboardData = useCallback(async () => {
-    if (!user) return;
-    const supabase = createClient();
-
-    const [profileRes, subjectsRes, docsRes, convRes] = await Promise.all([
-      supabase.from("user_profiles").select("full_name, onboarding_completed, preferences").eq("user_id", user.id).single(),
-      supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id),
-      supabase.from("documents").select("*").eq("user_id", user.id).order("uploaded_at", { ascending: false }).limit(5),
-      supabase.from("conversations").select("title, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    ]);
-
-    if (profileRes.data) setProfile(profileRes.data as { full_name: string; onboarding_completed: boolean; preferences: Record<string, unknown> });
-    if (subjectsRes.data) setSubjects(subjectsRes.data as { subject: string; mastery_level: number }[]);
-    if (docsRes.data) setDocuments(docsRes.data as Document[]);
-    if (convRes.data) setRecentConversation(convRes.data as RecentConversation);
-    setLoading(false);
-  }, [user]);
-
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.replace("/");
-    }
+    if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (user) fetchDashboardData();
-  }, [user, fetchDashboardData]);
+  const fetchModules = useCallback(async () => {
+    if (!user || !session) return;
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("session_roadmap_modules")
+      .select("*")
+      .eq("session_id", session.id)
+      .eq("user_id", user.id)
+      .order("module_index", { ascending: true });
+    if (data) {
+      setModules(data.map((m) => ({
+        ...m,
+        lessons: typeof m.lessons === "string" ? JSON.parse(m.lessons) : (m.lessons || []),
+      })) as RoadmapModule[]);
+    }
+    setLoading(false);
+  }, [user, session]);
 
-  if (authLoading || !user) {
+  useEffect(() => {
+    if (user) fetchModules();
+  }, [user, fetchModules]);
+
+  const startModule = (moduleId: string) => {
+    router.push(`/${session?.slug}/chat?module=${moduleId}`);
+  };
+
+  const completedCount = modules.filter((m) => m.status === "completed").length;
+  const currentModule = modules.find((m) => m.status === "current");
+  const progress = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
+
+  if (authLoading || !user || !session) {
     return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
+      <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
         <div className="w-[15%] shrink-0 p-6 space-y-4">
-          <Skeleton className="w-10 h-10 rounded-xl" />
-          <Skeleton className="h-10 rounded-full" />
-          <Skeleton className="h-48 rounded-2xl" />
-          <Skeleton className="h-10 rounded-2xl mt-auto" />
+          <div className="animate-pulse bg-white/5 rounded-2xl w-10 h-10" />
+          <div className="animate-pulse bg-white/5 rounded-full h-10" />
         </div>
-        <main className="flex-1 flex flex-col">
-          <div className="h-[45vh] bg-cyber-yellow/20 p-12">
-            <Skeleton className="h-4 w-48 mb-4" />
-            <Skeleton className="h-16 w-3/4 mb-4" />
-            <Skeleton className="h-8 w-1/2" />
-          </div>
-          <div className="flex-1 px-12 space-y-8">
-            <Skeleton className="h-24 rounded-[32px]" />
-            <Skeleton className="h-48 rounded-[28px] max-w-4xl mx-auto" />
-            <Skeleton className="h-16 rounded-full max-w-4xl mx-auto" />
-          </div>
+        <main className="flex-1 flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
         </main>
-        <div className="w-[20%] shrink-0 p-6 space-y-6">
-          <Skeleton className="h-64 rounded-[32px]" />
-          <Skeleton className="h-32 rounded-2xl" />
-          <Skeleton className="h-32 rounded-2xl" />
+        <div className="w-[20%] shrink-0 p-6">
+          <div className="animate-pulse bg-white/5 rounded-[32px] h-64" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
-
+    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
       <SidebarLeft currentPage="home" />
 
-      {/* Center Workspace */}
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
-
         {/* Hero Section */}
         <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
-            <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
-            <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{subjects.length} Subjects</div>
+            <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">{session.title}</div>
+            <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{modules.length} Modules</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">
-              Welcome back, {profile?.full_name?.split(" ")[0] || "Student"}.
-            </p>
+            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Session Dashboard</p>
             <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">
-              {recentConversation
-                ? `Continue "${recentConversation.title}"?`
-                : documents.length > 0
-                  ? "I remembered where we stopped yesterday."
-                  : "Ready to start your learning journey?"}
+              {currentModule
+                ? `Continue "${currentModule.title}"`
+                : completedCount === modules.length && modules.length > 0
+                  ? "All Modules Complete!"
+                  : `Welcome to ${session.subject || "your session"}`}
             </h1>
-            <p className="text-xl font-medium opacity-80">
-              {recentConversation
-                ? `Last studied ${timeAgo(recentConversation.created_at)}`
-                : subjects.length > 0
-                  ? `Shall we continue with ${subjects[0].subject} or review your latest quiz?`
-                  : "Upload your first document and start building your knowledge base."}
-            </p>
+            <div className="flex items-center gap-6 mt-6">
+              <div className="flex-1 h-3 bg-black/10 rounded-full overflow-hidden">
+                <div className="h-full bg-black rounded-full" style={{ width: `${progress}%` }} />
+              </div>
+              <span className="text-2xl font-black tracking-tighter">{progress}%</span>
+            </div>
           </div>
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
@@ -134,142 +110,117 @@ export default function SessionDashboardPage() {
         {/* Content */}
         <div className="flex-1 px-12 pb-8 overflow-y-auto space-y-8 relative z-10">
 
-          {/* Aether Core Status */}
-          <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-cyber-yellow">
-                  <svg className="w-8 h-8 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+          {/* Quick Actions */}
+          <div className="grid grid-cols-3 gap-4 -mt-8 mb-8">
+            {currentModule && (
+              <button
+                onClick={() => startModule(currentModule.id)}
+                className="glass-card rounded-[24px] p-6 text-left hover:border-cyber-yellow/30 border-l-4 border-cyber-yellow transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <svg className="w-5 h-5 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                   </svg>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow">Continue Learning</span>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-deep-onyx" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Aether Core</h3>
-                <div className="flex items-center gap-3 text-xs text-white/50">
-                  <span className="flex items-center gap-1 text-green-400">
-                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                    Listening
-                  </span>
-                  <span>•</span>
-                  <span>{documents.length > 0 ? "Reviewing your notes" : "Ready to learn"}</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-end gap-1.5 h-10">
-                <div className="waveform-bar bg-cyber-yellow w-1 rounded-full" style={{ animationDuration: '0.5s' }} />
-                <div className="waveform-bar bg-cyan-400 w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
-                <div className="waveform-bar bg-cyber-yellow w-1 rounded-full" style={{ animationDuration: '0.7s' }} />
-                <div className="waveform-bar bg-white/60 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
-                <div className="waveform-bar bg-cyber-yellow w-1 rounded-full" style={{ animationDuration: '0.9s' }} />
-              </div>
-              <button type="button" className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                </svg>
+                <h3 className="text-lg font-bold group-hover:text-cyber-yellow transition-colors">{currentModule.title}</h3>
+                <p className="text-xs text-white/40 mt-1">Start or resume this module</p>
               </button>
-            </div>
+            )}
+
+            <button
+              onClick={() => router.push(`/${session?.slug}/roadmap`)}
+              className="glass-card rounded-[24px] p-6 text-left hover:border-white/20 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+                </svg>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">View Roadmap</span>
+              </div>
+              <h3 className="text-lg font-bold group-hover:text-purple-400 transition-colors">Learning Roadmap</h3>
+              <p className="text-xs text-white/40 mt-1">{modules.length} modules, {completedCount} completed</p>
+            </button>
+
+            <button
+              onClick={() => router.push(`/${session?.slug}/quizzes`)}
+              className="glass-card rounded-[24px] p-6 text-left hover:border-white/20 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                </svg>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Test Knowledge</span>
+              </div>
+              <h3 className="text-lg font-bold group-hover:text-green-400 transition-colors">Quizzes</h3>
+              <p className="text-xs text-white/40 mt-1">Take a quiz on any module</p>
+            </button>
           </div>
 
-          {/* Chat Messages */}
-          <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="flex justify-end">
-              <div className="bg-white/5 border border-white/10 rounded-[28px] rounded-tr-lg p-5 max-w-[80%]">
-                <p className="text-sm">Can you help me understand the key concepts I should focus on?</p>
-              </div>
-            </div>
-
-            <div className="flex justify-start">
-              <div className="flex gap-4 max-w-[90%]">
-                <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex-shrink-0 flex items-center justify-center text-black">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                  </svg>
-                </div>
-                <div className="space-y-4">
-                  <div className="glass-card rounded-[28px] rounded-tl-lg p-6">
-                    <p className="text-sm leading-relaxed mb-4">
-                      Based on your {subjects.length > 0 ? subjects.map(s => s.subject).join(", ") : "learning profile"}, I recommend starting with the fundamentals. I&apos;ve analyzed your uploaded materials and identified the key areas where focused practice will help most.<span className="typing-cursor" />
-                    </p>
+          {/* Module Overview */}
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 mb-6">Module Overview</h2>
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="glass-card rounded-[20px] p-5 animate-pulse">
+                    <div className="w-48 h-4 bg-white/5 rounded" />
                   </div>
+                ))}
+              </div>
+            ) : modules.length === 0 ? (
+              <div className="text-center py-12 glass-card rounded-[32px]">
+                <p className="text-white/30 text-sm">No modules yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {modules.map((mod) => {
+                  const isCompleted = mod.status === "completed";
+                  const isCurrent = mod.status === "current";
+                  const lessonCount = mod.lessons?.length || 0;
 
-                  <div className="glass-card rounded-[32px] p-6 border-l-4 border-cyber-yellow shadow-2xl">
-                    <div className="flex items-center gap-2 mb-4">
-                      <svg className="w-5 h-5 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-                      </svg>
-                      <span className="text-xs font-bold uppercase tracking-widest">Study Tip</span>
+                  return (
+                    <div
+                      key={mod.id}
+                      onClick={() => isCurrent ? startModule(mod.id) : undefined}
+                      className={`glass-card rounded-[20px] p-5 flex items-center gap-4 transition-all ${
+                        isCurrent ? "cursor-pointer hover:border-cyber-yellow/30 border-l-4 border-cyber-yellow" :
+                        isCompleted ? "border-l-4 border-green-500 opacity-60" :
+                        "opacity-30"
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-black ${
+                        isCompleted ? "bg-green-500 text-black" :
+                        isCurrent ? "bg-cyber-yellow text-black" :
+                        "bg-white/5 text-white/30"
+                      }`}>
+                        {isCompleted ? (
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          </svg>
+                        ) : (
+                          mod.module_index + 1
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-sm truncate">{mod.title}</h4>
+                        <p className="text-xs text-white/40">{lessonCount} lessons {isCompleted && "— Completed"}</p>
+                      </div>
+                      {isCurrent && (
+                        <span className="bg-cyber-yellow text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase">Current</span>
+                      )}
+                      {isCurrent && (
+                        <svg className="w-4 h-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      )}
                     </div>
-                    <p className="text-sm text-white/70">Try the &ldquo;Active Recall&rdquo; method — quiz yourself on each topic after studying it. Aether can generate practice questions from any of your documents.</p>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
-            </div>
-
-            <div className="flex items-center gap-3 opacity-60">
-              <div className="w-10 h-10 rounded-full bg-cyber-yellow/20 flex items-center justify-center shrink-0">
-                <svg className="text-cyber-yellow w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-              </div>
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: '0s' }} />
-                <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 bg-white rounded-full typing-dot" style={{ animationDelay: '0.4s' }} />
-              </div>
-              <span className="text-xs font-bold text-white/40 italic">Aether is thinking</span>
-              <span className="text-white/60 font-black cursor-blink">|</span>
-            </div>
-          </div>
-
-          {/* Input Composer */}
-          <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
-            <div className="glass-card-premium rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
-              <button type="button" className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </button>
-
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Ask Aether anything..."
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none"
-              />
-
-              <div className="flex items-center gap-2">
-                <button type="button" className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                  </svg>
-                </button>
-                <button type="button" className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
+            )}
+          </section>
         </div>
-
-        {/* Ticker */}
-        <div className="mt-auto p-12 border-t border-white/5 bg-black">
-          <div className="flex items-center justify-between opacity-30 grayscale">
-            <span className="text-[10px] font-bold tracking-widest">TRUSTED BY STUDENTS AT</span>
-            <div className="flex gap-12">
-              <span className="font-bold tracking-tighter">OpenAI</span>
-              <span className="font-bold tracking-tighter">Notion</span>
-              <span className="font-bold tracking-tighter">Figma</span>
-              <span className="font-bold tracking-tighter">Github</span>
-            </div>
-          </div>
-        </div>
-
       </main>
 
       <SidebarRight />

@@ -166,14 +166,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
 
       if (sessionError || !session) throw new Error(sessionError?.message || "Failed to create session");
 
-      // 2. Create conversation for this session
-      await supabase.from("conversations").insert({
-        user_id: user.id,
-        session_id: session.id,
-        title: `${subject} Study Session`,
-      });
-
-      // 3. Create progress tracking
+      // 2. Create progress tracking
       await supabase.from("progress_tracking").upsert({
         user_id: user.id,
         subject,
@@ -181,7 +174,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
         session_id: session.id,
       });
 
-      // 4. Generate roadmap via Gemini
+      // 3. Generate roadmap via Gemini
       const res = await fetch("/api/session-creation/generate-roadmap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -190,19 +183,34 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
 
       const data = await res.json();
       if (data.modules && data.modules.length > 0) {
-        // 5. Save roadmap modules to DB
-        const modulesToInsert = data.modules.map((mod: { title: string; description: string }, i: number) => ({
+        // 4. Save roadmap modules to DB with lesson structure
+        const modulesToInsert = data.modules.map((mod: {
+          title: string;
+          description: string;
+          lessons?: { title: string; description: string; duration_minutes: number; key_topics: string[] }[];
+          learning_objectives?: string;
+          key_concepts?: string;
+        }, i: number) => ({
           session_id: session.id,
           user_id: user.id,
           module_index: i,
           title: mod.title,
           description: mod.description,
           status: i === 0 ? "current" : "locked",
+          lessons: JSON.stringify(mod.lessons || []),
+          learning_objectives: mod.learning_objectives || null,
+          key_concepts: mod.key_concepts || null,
         }));
 
         await supabase.from("session_roadmap_modules").insert(modulesToInsert);
 
-        setRoadmapModules(data.modules.map((mod: { title: string; description: string }, i: number) => ({
+        setRoadmapModules(data.modules.map((mod: {
+          title: string;
+          description: string;
+          lessons?: { title: string; description: string; duration_minutes: number; key_topics: string[] }[];
+          learning_objectives?: string;
+          key_concepts?: string;
+        }, i: number) => ({
           ...mod,
           status: i === 0 ? "current" : "locked",
         })));
@@ -211,7 +219,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
         setShowRoadmap(true);
       } else {
         onClose();
-        router.push(`/${session.slug}/chat`);
+        router.push(`/${session.slug}/dashboard`);
       }
     } catch (err) {
       console.error("Failed to create session:", err);
@@ -225,7 +233,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
   const handleStartLearning = () => {
     setShowRoadmap(false);
     onClose();
-    router.push(`/${createdSlug}/chat`);
+    router.push(`/${createdSlug}/dashboard`);
   };
 
   if (!open) return null;

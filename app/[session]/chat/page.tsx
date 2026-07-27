@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef, use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
+import type { Lesson } from "@/types/database";
 
 interface ChatMessage {
   id: string;
@@ -19,6 +20,15 @@ interface Conversation {
   id: string;
   title: string;
   created_at: string;
+}
+
+interface ModuleContext {
+  id: string;
+  title: string;
+  description: string;
+  lessons: Lesson[];
+  learning_objectives: string;
+  key_concepts: string;
 }
 
 function generateTitle(text: string): string {
@@ -79,6 +89,9 @@ function parseStructuredBlocks(content: string) {
 export default function SessionChatPage({ params }: { params: Promise<{ session: string }> }) {
   const resolvedParams = use(params);
   const slug = resolvedParams.session;
+  const searchParams = useSearchParams();
+  const moduleId = searchParams.get("module");
+
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
@@ -89,15 +102,41 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [thinkingStatus, setThinkingStatus] = useState<string[]>([]);
+  const [moduleContext, setModuleContext] = useState<ModuleContext | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(false);
+  const autoCreatedRef = useRef(false);
 
   const STORAGE_KEY = `aether_active_conversation_${slug}`;
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
+
+  // Load module context from DB
+  useEffect(() => {
+    if (!moduleId || !user || !session) return;
+    const supabase = createClient();
+    supabase
+      .from("session_roadmap_modules")
+      .select("*")
+      .eq("id", moduleId)
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setModuleContext({
+            id: data.id,
+            title: data.title,
+            description: data.description || "",
+            lessons: typeof data.lessons === "string" ? JSON.parse(data.lessons) : (data.lessons || []),
+            learning_objectives: data.learning_objectives || "",
+            key_concepts: data.key_concepts || "",
+          });
+        }
+      });
+  }, [moduleId, user, session]);
 
   useEffect(() => {
     if (mountedRef.current) return;
@@ -159,12 +198,34 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
     if (!exists) setActiveConversation(null);
   }, [conversations, activeConversation]);
 
+  // Auto-create conversation when module is loaded and no active conversation
+  useEffect(() => {
+    if (moduleContext && !activeConversation && !autoCreatedRef.current && user && session) {
+      autoCreatedRef.current = true;
+      const title = `Module: ${moduleContext.title}`;
+      const supabase = createClient();
+      supabase
+        .from("conversations")
+        .insert({ user_id: user.id, session_id: session.id, title })
+        .select("id, title, created_at")
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setConversations((prev) => [data as Conversation, ...prev]);
+            setActiveConversation(data.id);
+            setMessages([]);
+          }
+        });
+    }
+  }, [moduleContext, activeConversation, user, session]);
+
   const createConversation = useCallback(async () => {
     if (!user || !session) return;
     const supabase = createClient();
+    const title = moduleContext ? `Module: ${moduleContext.title}` : "New Chat";
     const { data, error } = await supabase
       .from("conversations")
-      .insert({ user_id: user.id, session_id: session.id, title: "New Chat" })
+      .insert({ user_id: user.id, session_id: session.id, title })
       .select("id, title, created_at")
       .single();
     if (data && !error) {
@@ -172,7 +233,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
       setActiveConversation(data.id);
       setMessages([]);
     }
-  }, [user, session]);
+  }, [user, session, moduleContext]);
 
   const deleteConversation = useCallback(async (convId: string) => {
     if (!user) return;
@@ -208,20 +269,32 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
     setSending(true);
     setThinkingStatus([]);
 
-    if (isFirstMessage) {
+    if (isFirstMessage && !moduleContext) {
       const title = generateTitle(userMsg.content);
       updateConversationTitle(activeConversation, title);
     }
 
     try {
+      const body: Record<string, unknown> = {
+        message: userMsg.content,
+        conversation_id: activeConversation,
+        session_id: session.id,
+      };
+
+      if (moduleContext) {
+        body.module_context = {
+          title: moduleContext.title,
+          description: moduleContext.description,
+          lessons: moduleContext.lessons,
+          learning_objectives: moduleContext.learning_objectives,
+          key_concepts: moduleContext.key_concepts,
+        };
+      }
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: userMsg.content,
-          conversation_id: activeConversation,
-          session_id: session.id,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -306,7 +379,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
       setThinkingStatus([]);
       inputRef.current?.focus();
     }
-  }, [inputValue, sending, activeConversation, messages.length, updateConversationTitle, session]);
+  }, [inputValue, sending, activeConversation, messages.length, updateConversationTitle, session, moduleContext]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -361,9 +434,11 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
               </div>
               <div>
                 <h3 className="text-xl font-bold">
-                  {activeConversation
-                    ? conversations.find((c) => c.id === activeConversation)?.title || "Chat"
-                    : `${session.title}`}
+                  {moduleContext
+                    ? moduleContext.title
+                    : activeConversation
+                      ? conversations.find((c) => c.id === activeConversation)?.title || "Chat"
+                      : session.title}
                 </h3>
                 <div className="flex items-center gap-3 text-xs text-white/50">
                   <span className="flex items-center gap-1 text-green-400">
@@ -371,7 +446,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                     Online
                   </span>
                   <span>•</span>
-                  <span>RAG-powered</span>
+                  <span>{moduleContext ? "Module Tutor" : "RAG-powered"}</span>
                 </div>
               </div>
             </div>
@@ -472,7 +547,31 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
           <>
             <div className="flex-1 overflow-y-auto px-8 pb-32">
               <div className="max-w-4xl mx-auto space-y-8 py-6">
-                {messages.length === 0 && (
+                {messages.length === 0 && moduleContext && (
+                  <div className="glass-card rounded-[32px] p-8 border-l-4 border-cyber-yellow mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <svg className="w-6 h-6 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                      </svg>
+                      <div>
+                        <h3 className="text-lg font-bold">{moduleContext.title}</h3>
+                        <p className="text-xs text-white/40">{moduleContext.lessons?.length || 0} lessons in this module</p>
+                      </div>
+                    </div>
+                    {moduleContext.description && (
+                      <p className="text-sm text-white/60 mb-4">{moduleContext.description}</p>
+                    )}
+                    {moduleContext.learning_objectives && (
+                      <div className="mb-4">
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Learning Objectives</h4>
+                        <div className="text-sm text-white/70 whitespace-pre-line">{moduleContext.learning_objectives}</div>
+                      </div>
+                    )}
+                    <p className="text-xs text-cyber-yellow font-bold">Aether will guide you through each lesson. Start chatting to begin!</p>
+                  </div>
+                )}
+
+                {messages.length === 0 && !moduleContext && (
                   <div className="text-center py-16">
                     <div className="w-16 h-16 mx-auto bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mb-4">
                       <svg className="w-8 h-8 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -614,7 +713,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                   <input
                     ref={inputRef}
                     type="text"
-                    placeholder="Ask Aether anything..."
+                    placeholder={moduleContext ? `Ask about ${moduleContext.title}...` : "Ask Aether anything..."}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}

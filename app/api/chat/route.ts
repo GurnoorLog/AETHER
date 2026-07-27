@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       };
 
       try {
-        const { message, conversation_id, session_id } = await request.json();
+        const { message, conversation_id, session_id, module_context } = await request.json();
 
         if (!message || !conversation_id) {
           send("error", { error: "message and conversation_id are required" });
@@ -101,6 +101,45 @@ export async function POST(request: Request) {
           ? historyMessages.map((m) => `${m.role === "user" ? userName : tutorName}: ${m.content}`).join("\n")
           : "";
 
+        // Module-aware system prompt
+        let moduleSection = "";
+        if (module_context) {
+          const mc = module_context as {
+            title: string;
+            description: string;
+            lessons: { title: string; description: string; key_topics: string[] }[];
+            learning_objectives: string;
+            key_concepts: string;
+          };
+
+          const lessonsBlock = mc.lessons?.length
+            ? mc.lessons.map((l, i) =>
+              `### Lesson ${i + 1}: ${l.title}\n${l.description}\nTopics: ${l.key_topics?.join(", ")}`
+            ).join("\n\n")
+            : "No lessons defined.";
+
+          moduleSection = `
+## Active Module Context
+You are currently teaching the module: **${mc.title}**
+${mc.description ? `\nDescription: ${mc.description}` : ""}
+
+${mc.learning_objectives ? `\n## Learning Objectives\n${mc.learning_objectives}` : ""}
+
+${mc.key_concepts ? `\n## Key Concepts\n${mc.key_concepts}` : ""}
+
+## Lessons
+${lessonsBlock}
+
+## Teaching Instructions
+- Guide the student through this module lesson by lesson
+- Start with the first lesson and work through systematically
+- Use examples, analogies, and practice problems
+- Check understanding before moving to the next lesson
+- When the student has covered all lessons in this module, say: "You've completed all lessons in ${mc.title}! Head to the Quizzes section to test your knowledge with a quiz on this module."
+- If the student asks about topics outside this module, still help them but gently redirect back
+`;
+        }
+
         const systemPrompt = `You are ${tutorName}, an expert AI tutor helping ${userName} learn.
 
 ## Your Role
@@ -109,7 +148,7 @@ export async function POST(request: Request) {
 - Adapt to the student's level based on context
 - Use markdown formatting for clarity (headers, code blocks, bullet points)
 - When referencing the student's documents, cite the source number
-
+${moduleSection}
 ## Retrieved Document Context
 ${chunks.length > 0 ? contextBlocks.join("\n\n") : "No relevant documents found for this query."}
 ${memoryBlock}
@@ -119,7 +158,7 @@ ${historyBlock || "No previous messages."}
 
 ## Instructions
 Answer the student's question using the retrieved context when relevant.
-If the documents don't contain relevant information, answer from general knowledge.
+${moduleSection ? "Always relate answers back to the active module content when possible." : "If the documents don't contain relevant information, answer from general knowledge."}
 Always be helpful and educational. Keep responses focused and clear.`;
 
         // 8. Call Gemini with streaming

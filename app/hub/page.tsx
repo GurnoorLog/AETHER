@@ -223,7 +223,7 @@ export default function HubPage() {
       : 0;
 
   const handleResume = (sessionSlug: string) => {
-    router.push(`/${sessionSlug}/chat`);
+    router.push(`/${sessionSlug}/dashboard`);
   };
 
   const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {

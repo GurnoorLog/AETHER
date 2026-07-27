@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
+import type { Lesson } from "@/types/database";
 
 interface RoadmapModule {
   id: string;
@@ -14,6 +15,9 @@ interface RoadmapModule {
   title: string;
   description: string;
   status: "completed" | "current" | "locked";
+  lessons: Lesson[];
+  learning_objectives: string | null;
+  key_concepts: string | null;
   completed_at: string | null;
 }
 
@@ -23,6 +27,7 @@ export default function SessionRoadmapPage() {
   const { session } = useSession();
   const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
@@ -37,7 +42,12 @@ export default function SessionRoadmapPage() {
       .eq("session_id", session.id)
       .eq("user_id", user.id)
       .order("module_index", { ascending: true });
-    if (data) setModules(data as RoadmapModule[]);
+    if (data) {
+      setModules(data.map((m) => ({
+        ...m,
+        lessons: typeof m.lessons === "string" ? JSON.parse(m.lessons) : (m.lessons || []),
+      })) as RoadmapModule[]);
+    }
     setLoading(false);
   }, [user, session]);
 
@@ -45,28 +55,9 @@ export default function SessionRoadmapPage() {
     if (user) fetchModules();
   }, [user, fetchModules]);
 
-  const markComplete = useCallback(async (moduleId: string) => {
-    if (!user) return;
-    const supabase = createClient();
-    await supabase
-      .from("session_roadmap_modules")
-      .update({ status: "completed", completed_at: new Date().toISOString() })
-      .eq("id", moduleId)
-      .eq("user_id", user.id);
-
-    const current = modules.find((m) => m.id === moduleId);
-    if (current) {
-      const nextModule = modules.find((m) => m.module_index === current.module_index + 1 && m.status === "locked");
-      if (nextModule) {
-        await supabase
-          .from("session_roadmap_modules")
-          .update({ status: "current" })
-          .eq("id", nextModule.id)
-          .eq("user_id", user.id);
-      }
-    }
-    fetchModules();
-  }, [user, modules, fetchModules]);
+  const startModule = useCallback((moduleId: string) => {
+    router.push(`/${session?.slug}/chat?module=${moduleId}`);
+  }, [router, session]);
 
   const completedCount = modules.filter((m) => m.status === "completed").length;
   const progress = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
@@ -113,7 +104,6 @@ export default function SessionRoadmapPage() {
 
         {/* Content Layer */}
         <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-12 relative z-10">
-          {/* Module Sequence */}
           <section>
             <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 mb-8">Module Sequence</h2>
 
@@ -141,6 +131,8 @@ export default function SessionRoadmapPage() {
                 {modules.map((mod) => {
                   const isCompleted = mod.status === "completed";
                   const isCurrent = mod.status === "current";
+                  const isExpanded = expandedModule === mod.id;
+                  const lessons = mod.lessons || [];
 
                   return (
                     <div key={mod.id} className="flex items-start gap-8" style={{ position: "relative", zIndex: 10 }}>
@@ -191,19 +183,85 @@ export default function SessionRoadmapPage() {
                               <h4 className="font-black text-cyber-yellow uppercase tracking-wide">{mod.title}</h4>
                               <span className="bg-cyber-yellow text-black text-[10px] px-2 py-0.5 rounded-full font-bold">CURRENT</span>
                             </div>
-                            {mod.description && <p className="text-sm mb-4 text-white/60">{mod.description}</p>}
+                            {mod.description && <p className="text-sm mb-3 text-white/60">{mod.description}</p>}
+
+                            {/* Expand/Collapse Details */}
+                            {lessons.length > 0 && (
+                              <button
+                                onClick={() => setExpandedModule(isExpanded ? null : mod.id)}
+                                className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow hover:text-white transition-colors mb-3 cursor-pointer flex items-center gap-1"
+                              >
+                                {isExpanded ? "Hide Details" : "More Details"}
+                                <svg className={`w-3 h-3 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                              </button>
+                            )}
+
+                            {/* Expanded Content */}
+                            {isExpanded && (
+                              <div className="space-y-4 mb-4 border-t border-white/10 pt-4">
+                                {/* Learning Objectives */}
+                                {mod.learning_objectives && (
+                                  <div>
+                                    <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Learning Objectives</h5>
+                                    <div className="text-sm text-white/70 whitespace-pre-line">{mod.learning_objectives}</div>
+                                  </div>
+                                )}
+
+                                {/* Key Concepts */}
+                                {mod.key_concepts && (
+                                  <div>
+                                    <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Key Concepts</h5>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {mod.key_concepts.split(",").map((concept, i) => (
+                                        <span key={i} className="bg-white/5 border border-white/10 text-white/60 text-[10px] px-2.5 py-1 rounded-full">
+                                          {concept.trim()}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Lessons */}
+                                <div>
+                                  <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Lessons</h5>
+                                  <div className="space-y-2">
+                                    {lessons.map((lesson, li) => (
+                                      <div key={li} className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                                        <div className="flex items-center justify-between mb-1">
+                                          <h6 className="text-sm font-bold">{lesson.title}</h6>
+                                          <span className="text-[10px] text-white/30 font-bold">{lesson.duration_minutes}m</span>
+                                        </div>
+                                        <p className="text-xs text-white/40">{lesson.description}</p>
+                                        {lesson.key_topics && lesson.key_topics.length > 0 && (
+                                          <div className="flex flex-wrap gap-1 mt-2">
+                                            {lesson.key_topics.map((topic, ti) => (
+                                              <span key={ti} className="text-[9px] bg-cyber-yellow/10 text-cyber-yellow px-2 py-0.5 rounded-full font-bold">
+                                                {topic}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="flex items-center gap-3">
                               <button
-                                onClick={() => markComplete(mod.id)}
-                                className="bg-cyber-yellow text-black text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-full hover:scale-105 active:scale-95 transition-all"
+                                onClick={() => startModule(mod.id)}
+                                className="bg-cyber-yellow text-black text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-full hover:scale-105 active:scale-95 transition-all cursor-pointer"
                               >
-                                Mark as Complete
+                                Start Module
                               </button>
                               <button
-                                onClick={() => router.push(`/${session?.slug}/chat`)}
-                                className="bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:bg-white/10 transition-all"
+                                onClick={() => router.push(`/${session?.slug}/quizzes?module=${mod.id}`)}
+                                className="bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:bg-white/10 transition-all cursor-pointer"
                               >
-                                Resume Session
+                                Take Quiz
                               </button>
                             </div>
                           </>
