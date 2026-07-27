@@ -67,7 +67,7 @@ export default function SessionMusicPage() {
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [latestAudio, setLatestAudio] = useState<string | null>(null);
 
-  const { play: playTrack, currentTrack, isPlaying, togglePlay, currentTime, duration, seek } = usePlayer();
+  const { play: playTrack, currentTrack, isPlaying, togglePlay, currentTime, duration, seek, nextTrack, prevTrack, setQueue } = usePlayer();
 
   const [tracks, setTracks] = useState<GeneratedTrack[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -204,7 +204,7 @@ export default function SessionMusicPage() {
       };
       setTracks((prev) => [newTrack, ...prev]);
       setLatestAudio(audio_url);
-      playTrack(newTrack);
+      playTrack(newTrack, [newTrack, ...tracks]);
 
       try {
         await supabase.from("generated_tracks").insert({
@@ -274,7 +274,7 @@ export default function SessionMusicPage() {
     }));
   };
 
-  const activeTrack = tracks.length > 0 ? tracks[0] : null;
+  const activeTrack = currentTrack;
   const userName = user?.user_metadata?.full_name?.split(" ")[0] || "Student";
 
   if (authLoading || !user) {
@@ -347,9 +347,11 @@ export default function SessionMusicPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <svg className="w-6 h-6 cursor-pointer hover:text-cyber-yellow transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M21 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953l7.108-4.062A1.125 1.125 0 0121 8.688v8.123zM11.25 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953L9.567 7.71a1.125 1.125 0 011.683.977v8.123z" />
-                  </svg>
+                  <button onClick={prevTrack} className="w-6 h-6 cursor-pointer hover:text-cyber-yellow transition-colors">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M21 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953l7.108-4.062A1.125 1.125 0 0121 8.688v8.123zM11.25 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953L9.567 7.71a1.125 1.125 0 011.683.977v8.123z" />
+                    </svg>
+                  </button>
                   <div
                     className="w-12 h-12 rounded-full bg-cyber-yellow text-black flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 active:scale-95 transition-all"
                     onClick={togglePlay}
@@ -364,9 +366,11 @@ export default function SessionMusicPage() {
                       </svg>
                     )}
                   </div>
-                  <svg className="w-6 h-6 cursor-pointer hover:text-cyber-yellow transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.811V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z" />
-                  </svg>
+                  <button onClick={nextTrack} className="w-6 h-6 cursor-pointer hover:text-cyber-yellow transition-colors">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.811V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
               <div className="space-y-2">
@@ -407,37 +411,43 @@ export default function SessionMusicPage() {
               <div className="grid grid-cols-3 gap-4">
                 {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-[24px]" />)}
               </div>
-            ) : latestAudio && tracks.length > 0 && (
-              <div className="glass-card rounded-[24px] p-4 mb-4 border-cyber-yellow/50">
-                <h4 className="text-xs font-semibold text-cyber-yellow mb-2">Latest Generated Track</h4>
-                <audio controls className="w-full" src={latestAudio} preload="auto" />
-                <a href={latestAudio} target="_blank" rel="noopener noreferrer" className="text-[10px] text-cyber-yellow/70 hover:underline mt-1 inline-block">Download</a>
-              </div>
-            )}
-
-            {historyLoading ? (
-              <div className="grid grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-[24px]" />)}
-              </div>
             ) : (
               <div className="grid grid-cols-3 gap-4">
                 {(selectedPlaylistId
                   ? (playlistTracks[selectedPlaylistId] || [])
                   : tracks
-                ).map((track) => (
+                ).map((track, trackIdx) => {
+                  const trackList = selectedPlaylistId
+                    ? (playlistTracks[selectedPlaylistId] || [])
+                    : tracks;
+                  const isActive = currentTrack?.id === track.id;
+                  const isThisPlaying = isActive && isPlaying;
+                  return (
                   <div key={track.id} className="glass-card rounded-[24px] p-5 hover:border-cyber-yellow/30 transition-all group relative">
                     <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-black flex items-center justify-center flex-shrink-0 border border-white/5 group-hover:border-cyber-yellow/50 transition-all">
-                        <svg className="w-6 h-6 text-cyber-yellow" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-sm truncate">{track.title}</h4>
-                        <p className="text-[10px] text-white/40 mt-1">{timeAgo(track.created_at)}</p>
-                        {track.audio_url && (
-                          <audio controls className="mt-2 w-full h-8" src={track.audio_url} preload="none" />
+                      <button
+                        onClick={() => {
+                          if (isActive) {
+                            togglePlay();
+                          } else {
+                            playTrack(track, trackList);
+                          }
+                        }}
+                        className="w-14 h-14 rounded-xl bg-black flex items-center justify-center flex-shrink-0 border border-white/5 group-hover:border-cyber-yellow/50 transition-all cursor-pointer hover:scale-105 active:scale-95"
+                      >
+                        {isThisPlaying ? (
+                          <svg className="w-6 h-6 text-cyber-yellow" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-6 h-6 text-cyber-yellow" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                          </svg>
                         )}
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <h4 className={`font-bold text-sm truncate ${isActive ? "text-cyber-yellow" : ""}`}>{track.title}</h4>
+                        <p className="text-[10px] text-white/40 mt-1">{timeAgo(track.created_at)}</p>
                       </div>
                     </div>
                     <div className="absolute top-3 right-3 flex gap-1">
@@ -480,7 +490,8 @@ export default function SessionMusicPage() {
                       </button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
                 {tracks.length === 0 && !selectedPlaylistId && (
                   <div className="col-span-3 glass-card rounded-[32px] p-12 text-center">
                     <svg className="w-12 h-12 mx-auto text-white/20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
