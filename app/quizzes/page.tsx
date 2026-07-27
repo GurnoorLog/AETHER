@@ -106,7 +106,7 @@ export default function QuizzesPage() {
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Avg. Score</p>
               <p className="text-3xl font-bold">88%</p>
             </div>
-            <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center border-l-4 border-cyber-yellow">
+            <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Current Streak</p>
               <p className="text-3xl font-bold">7 Days</p>
             </div>
@@ -175,7 +175,7 @@ export default function QuizzesPage() {
             </div>
 
             {/* Card 2: Medium (Active) */}
-            <div className="glass-card p-8 rounded-[40px] quiz-card transition-all duration-300 group border-l-4 border-cyber-yellow">
+            <div className="glass-card p-8 rounded-[40px] quiz-card transition-all duration-300 group">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
@@ -342,7 +342,7 @@ export default function QuizzesPage() {
 
       {/* Floating Notification */}
       <div className="fixed bottom-10 left-10 space-y-3 z-50">
-        <div className="bg-black/80 backdrop-blur-xl border border-cyber-yellow/30 px-6 py-4 rounded-full flex items-center gap-4 animate-bounce shadow-[0_20px_50px_rgba(253,224,71,0.1)]">
+        <div className="bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-full flex items-center gap-4 animate-scale-in shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
           <div className="w-3 h-3 bg-cyber-yellow rounded-full shadow-[0_0_10px_#FDE047]" />
           <span className="text-[10px] font-black uppercase tracking-[0.2em]">🎯 New Quiz Generated</span>
         </div>

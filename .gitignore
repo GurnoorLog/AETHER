@@ -41,3 +41,18 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# project extras
+aether-backup/
+aether/
+.claude/
+.codex/
+.cursor/
+.superdesign/
+22/
+HeartMuLa-Studio/
+sesison_25/
+session27/
+sessionlatest
+IMPLEMENTATION_PLAN.md
+session-1.md

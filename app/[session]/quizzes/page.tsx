@@ -228,7 +228,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Avg. Score</p>
                   <p className="text-3xl font-bold">{avgScore}%</p>
                 </div>
-                <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center border-l-4 border-cyber-yellow">
+                <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Modules</p>
                   <p className="text-3xl font-bold">{modules.length}</p>
                 </div>
@@ -434,9 +434,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 {activeQuiz.questions.map((q: QuizQuestion, i: number) => {
                   const isCorrect = selectedAnswers[i] === q.correct_index;
                   return (
-                    <div key={i} className={`glass-card rounded-[24px] p-6 border-l-4 ${
-                      isCorrect ? "border-green-500" : "border-red-500"
-                    }`}>
+                    <div key={i} className="glass-card rounded-[24px] p-6">
                       <div className="flex items-start justify-between mb-3">
                         <h4 className="text-sm font-bold flex-1 mr-4">{q.question}</h4>
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${

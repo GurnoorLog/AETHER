@@ -53,7 +53,8 @@ export default function ProgressPage() {
     <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
       <style>{`
         .chart-bar {
-          transition: height 1s cubic-bezier(0.22, 1, 0.36, 1);
+          transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+          transform-origin: bottom;
         }
         .progress-line-animate {
           stroke-dasharray: 1000;
@@ -145,7 +146,7 @@ export default function ProgressPage() {
                   <div key={bar.day} className="flex-1 flex flex-col items-center gap-2">
                     <div
                       className={`w-full rounded-t-lg chart-bar ${bar.peak ? "bg-gradient-to-t from-cyber-yellow to-cyan-400 shadow-[0_0_20px_rgba(253,224,71,0.2)]" : "bg-white/5"}`}
-                      style={{ height: animateBars ? `${bar.height}%` : "0%" }}
+                      style={{ height: `${bar.height}%`, transform: animateBars ? "scaleY(1)" : "scaleY(0)" }}
                     />
                     <span className={`text-[10px] font-bold ${bar.peak ? "text-cyber-yellow" : "opacity-30"}`}>{bar.day}</span>
                   </div>
@@ -237,7 +238,7 @@ export default function ProgressPage() {
                 <p className="text-xs font-bold mb-1">Derivatives Mastery</p>
                 <p className="text-[10px] text-white/40">MASTERED &bull; MAR 15</p>
               </div>
-              <div className="glass-card p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group border-l-4 border-cyber-yellow">
+              <div className="glass-card p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group">
                 <div className="w-10 h-10 rounded-xl bg-cyber-yellow text-black flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
@@ -261,7 +262,7 @@ export default function ProgressPage() {
 
           {/* Strengths vs Weaknesses */}
           <div className="grid grid-cols-2 gap-6">
-            <div className="glass-card rounded-[32px] p-8 border-l-4 border-red-500/50">
+            <div className="glass-card rounded-[32px] p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-400 mb-6">Focus Areas (Weaknesses)</h4>
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -285,7 +286,7 @@ export default function ProgressPage() {
                 <button className="w-full py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all mt-4 cursor-pointer">Start Targeted Practice</button>
               </div>
             </div>
-            <div className="glass-card rounded-[32px] p-8 border-l-4 border-green-500/50">
+            <div className="glass-card rounded-[32px] p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400 mb-6">Your Strengths</h4>
               <div className="space-y-6">
                 <div className="space-y-2">

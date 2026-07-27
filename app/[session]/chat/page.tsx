@@ -107,8 +107,46 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
   const inputRef = useRef<HTMLInputElement>(null);
   const mountedRef = useRef(false);
   const autoCreatedRef = useRef(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Attachment menu state
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showYouTubeModal, setShowYouTubeModal] = useState(false);
+  const [showGDriveModal, setShowGDriveModal] = useState(false);
+  const [youTubeUrl, setYouTubeUrl] = useState("");
+  const [gDriveUrl, setGDriveUrl] = useState("");
+  const [attaching, setAttaching] = useState(false);
+  const [attachStatus, setAttachStatus] = useState<string | null>(null);
+
+  // Voice input state
+  const [isRecording, setIsRecording] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const STORAGE_KEY = `aether_active_conversation_${slug}`;
+
+  // Check speech recognition support
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setSpeechSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = "en-US";
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          const transcript = Array.from(event.results)
+            .map((r) => r[0].transcript)
+            .join("");
+          setInputValue((prev) => transcript || prev);
+        };
+        recognition.onend = () => setIsRecording(false);
+        recognition.onerror = () => setIsRecording(false);
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
@@ -252,6 +290,101 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
     await supabase.from("conversations").update({ title }).eq("id", convId);
     setConversations((prev) => prev.map((c) => c.id === convId ? { ...c, title } : c));
   }, []);
+
+  // Voice input
+  const toggleRecording = useCallback(() => {
+    if (!recognitionRef.current) return;
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
+  }, [isRecording]);
+
+  // Attachment handlers
+  const handleImageUpload = useCallback(async (files: FileList | null) => {
+    if (!files || !user || !session) return;
+    setShowAttachMenu(false);
+    setAttaching(true);
+    setAttachStatus("Uploading image...");
+
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("session_id", session.id);
+
+      try {
+        const res = await fetch("/api/knowledge/image", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.success) {
+          setAttachStatus(`"${file.name}" added to knowledge base`);
+          setTimeout(() => setAttachStatus(null), 3000);
+        } else {
+          setAttachStatus(`Failed: ${data.error}`);
+        }
+      } catch {
+        setAttachStatus("Upload failed");
+      }
+    }
+    setAttaching(false);
+  }, [user, session]);
+
+  const handleYouTubeSubmit = useCallback(async () => {
+    if (!youTubeUrl.trim() || !session) return;
+    setShowYouTubeModal(false);
+    setAttaching(true);
+    setAttachStatus("Extracting YouTube content...");
+
+    try {
+      const res = await fetch("/api/knowledge/youtube", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: youTubeUrl.trim(), session_id: session.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAttachStatus(`"${data.title}" added to knowledge base`);
+        setTimeout(() => setAttachStatus(null), 3000);
+      } else {
+        setAttachStatus(`Failed: ${data.error}`);
+      }
+    } catch {
+      setAttachStatus("Failed to add YouTube link");
+    }
+    setAttaching(false);
+    setYouTubeUrl("");
+  }, [youTubeUrl, session]);
+
+  const handleGDriveSubmit = useCallback(async () => {
+    if (!gDriveUrl.trim() || !session) return;
+    setShowGDriveModal(false);
+    setAttaching(true);
+    setAttachStatus("Adding Google Drive file...");
+
+    try {
+      const res = await fetch("/api/knowledge/gdrive", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: gDriveUrl.trim(), session_id: session.id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAttachStatus("Added to knowledge base");
+        setTimeout(() => setAttachStatus(null), 3000);
+      } else {
+        setAttachStatus(`Failed: ${data.error}`);
+      }
+    } catch {
+      setAttachStatus("Failed to add Google Drive file");
+    }
+    setAttaching(false);
+    setGDriveUrl("");
+  }, [gDriveUrl, session]);
 
   const sendMessage = useCallback(async () => {
     if (!inputValue.trim() || sending || !activeConversation || !session) return;
@@ -548,7 +681,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
             <div className="flex-1 overflow-y-auto px-8 pb-32">
               <div className="max-w-4xl mx-auto space-y-8 py-6">
                 {messages.length === 0 && moduleContext && (
-                  <div className="glass-card rounded-[32px] p-8 border-l-4 border-cyber-yellow mb-8">
+                  <div className="glass-card rounded-[32px] p-8 mb-8">
                     <div className="flex items-center gap-3 mb-4">
                       <svg className="w-6 h-6 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                         <path d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
@@ -601,7 +734,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                         parseStructuredBlocks(msg.content).map((block, bi) => {
                           if (block.type === "code") {
                             return (
-                              <div key={bi} className="glass-card rounded-[28px] p-5 border-l-4 border-cyber-yellow">
+                              <div key={bi} className="glass-card rounded-[28px] p-5">
                                 <div className="bg-black/50 rounded-2xl p-4 border border-white/10 font-mono text-xs overflow-x-auto">
                                   <pre className="text-cyber-yellow whitespace-pre-wrap">{block.text}</pre>
                                 </div>
@@ -610,7 +743,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                           }
                           if (block.type === "visual") {
                             return (
-                              <div key={bi} className="glass-card rounded-[32px] p-6 border-l-4 border-cyan-400 shadow-2xl">
+                              <div key={bi} className="glass-card rounded-[32px] p-6">
                                 <div className="flex items-center gap-2 mb-4">
                                   <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                                     <path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -624,7 +757,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                           }
                           if (block.type === "interactive") {
                             return (
-                              <div key={bi} className="glass-card rounded-[32px] p-6 border-l-4 border-cyber-yellow shadow-2xl">
+                              <div key={bi} className="glass-card rounded-[32px] p-6 shadow-2xl">
                                 <div className="flex items-center gap-2 mb-4">
                                   <svg className="w-5 h-5 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                                     <path d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v1.222c0 .355.186.676.401.959.221.29.349.634.349 1.003 0 1.036-1.007 1.875-2.25 1.875S0 10.235 0 11.2c0 .369.128.713.349 1.003.215.283.401.604.401.959V18a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021.75 18v-4.841c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959V18" />
@@ -637,7 +770,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                           }
                           if (block.type === "stepbystep") {
                             return (
-                              <div key={bi} className="glass-card rounded-[32px] p-6 border-l-4 border-purple-400 shadow-2xl">
+                              <div key={bi} className="glass-card rounded-[32px] p-6">
                                 <div className="flex items-center gap-2 mb-4">
                                   <svg className="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                                     <path d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
@@ -707,49 +840,198 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
               </div>
             </div>
 
-        {/* Composer Bar */}
-      <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-12">
-        <div className="pointer-events-auto">
-          <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
-            <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
-              <button
-                onClick={createConversation}
-                className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </button>
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder={moduleContext ? `Ask about ${moduleContext.title}...` : "Ask Aether anything..."}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={sending}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none disabled:opacity-50"
-              />
-              <div className="flex items-center gap-2">
-                <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                  </svg>
-                </button>
-                <button
-                  onClick={sendMessage}
-                  disabled={!inputValue.trim() || sending}
-                  className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-                  </svg>
-                </button>
+            {/* Attach status toast */}
+            {attachStatus && (
+              <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60]">
+                <div className="bg-black/80 backdrop-blur-xl border border-white/10 px-5 py-3 rounded-full flex items-center gap-3 shadow-2xl">
+                  <div className={`w-2 h-2 rounded-full ${attaching ? "bg-cyber-yellow animate-pulse" : "bg-green-400"}`} />
+                  <span className="text-xs font-medium text-white/80">{attachStatus}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Composer Bar */}
+            <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-12">
+              <div className="pointer-events-auto">
+                <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
+                  <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl relative">
+                    {/* Left: + button with attachment menu */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowAttachMenu(!showAttachMenu)}
+                        className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                      </button>
+
+                      {/* Attachment dropdown menu */}
+                      {showAttachMenu && (
+                        <div className="absolute bottom-full left-0 mb-3 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl p-2 min-w-[200px] shadow-2xl z-[60]">
+                          <button
+                            onClick={() => { fileInputRef.current?.click(); setShowAttachMenu(false); }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer"
+                          >
+                            <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v14.25a1.5 1.5 0 001.5 1.5z" />
+                            </svg>
+                            Attach Image
+                          </button>
+                          <button
+                            onClick={() => { setShowYouTubeModal(true); setShowAttachMenu(false); }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer"
+                          >
+                            <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                            </svg>
+                            Add YouTube Link
+                          </button>
+                          <button
+                            onClick={() => { setShowGDriveModal(true); setShowAttachMenu(false); }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all cursor-pointer"
+                          >
+                            <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
+                            </svg>
+                            Add Google Drive File
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      placeholder={moduleContext ? `Ask about ${moduleContext.title}...` : "Ask Aether anything..."}
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      disabled={sending}
+                      className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none disabled:opacity-50"
+                    />
+
+                    {/* Right side: mic or send */}
+                    <div className="flex items-center gap-2">
+                      {inputValue.trim() ? (
+                        <button
+                          onClick={sendMessage}
+                          disabled={sending}
+                          className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                          </svg>
+                        </button>
+                      ) : speechSupported ? (
+                        <button
+                          onClick={toggleRecording}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                            isRecording
+                              ? "bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-pulse"
+                              : "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
+                          }`}
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={sendMessage}
+                          disabled={!inputValue.trim() || sending}
+                          className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+
+            {/* Hidden file input for images */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => handleImageUpload(e.target.files)}
+            />
+
+            {/* YouTube Modal */}
+            {showYouTubeModal && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowYouTubeModal(false)} />
+                <div className="relative glass-card rounded-[32px] max-w-md w-full p-8 z-10">
+                  <h3 className="text-xl font-bold mb-2">Add YouTube Video</h3>
+                  <p className="text-sm text-white/40 mb-6">Paste a YouTube URL to extract its transcript and add it to your knowledge base.</p>
+                  <input
+                    type="url"
+                    placeholder="https://youtube.com/watch?v=..."
+                    value={youTubeUrl}
+                    onChange={(e) => setYouTubeUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleYouTubeSubmit()}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder-white/30 outline-none focus:border-cyber-yellow/50 transition-all mb-4"
+                    autoFocus
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowYouTubeModal(false)}
+                      className="flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleYouTubeSubmit}
+                      disabled={!youTubeUrl.trim()}
+                      className="flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      Add to Knowledge
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Google Drive Modal */}
+            {showGDriveModal && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowGDriveModal(false)} />
+                <div className="relative glass-card rounded-[32px] max-w-md w-full p-8 z-10">
+                  <h3 className="text-xl font-bold mb-2">Add Google Drive File</h3>
+                  <p className="text-sm text-white/40 mb-6">Paste a Google Drive share link to add the file to your knowledge base.</p>
+                  <input
+                    type="url"
+                    placeholder="https://drive.google.com/file/d/..."
+                    value={gDriveUrl}
+                    onChange={(e) => setGDriveUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleGDriveSubmit()}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder-white/30 outline-none focus:border-cyber-yellow/50 transition-all mb-4"
+                    autoFocus
+                  />
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowGDriveModal(false)}
+                      className="flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleGDriveSubmit}
+                      disabled={!gDriveUrl.trim()}
+                      className="flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      Add to Knowledge
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </main>

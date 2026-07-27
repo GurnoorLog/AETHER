@@ -162,9 +162,9 @@ export default function SessionRoadmapPage() {
                       {/* Module card */}
                       <div className={`flex-1 rounded-[24px] p-6 transition-all ${
                         isCompleted
-                          ? "glass-card border-l-4 border-green-500 opacity-60"
+                          ? "glass-card opacity-60"
                           : isCurrent
-                            ? "glass-card border-l-4 border-cyber-yellow border-white/20"
+                            ? "glass-card border-white/20"
                             : "glass-card opacity-30"
                       }`}>
                         {isCompleted ? (

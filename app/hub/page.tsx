@@ -73,83 +73,10 @@ function extractSubjectColor(subject: string): string {
   return colors[subject] || "#FDE047";
 }
 
-function ZapIcon({ className }: { className?: string }) {
+function Icon({ d, className }: { d: string; className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-    </svg>
-  );
-}
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-    </svg>
-  );
-}
-
-function PlusIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-  );
-}
-
-function ClockIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path d="M12 6v6l4 2" />
-    </svg>
-  );
-}
-
-function TargetIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path d="M21 12.75l-9 9-9-9 9-9 9 9z" />
-    </svg>
-  );
-}
-
-function BookOpenIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-      <path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-    </svg>
-  );
-}
-
-function SparklesIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-      <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-    </svg>
-  );
-}
-
-function FlameIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-      <path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-      <path d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
-    </svg>
-  );
-}
-
-function MoreVerticalIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-      <path d="M12 5v.01M12 10v.01M12 15v.01M12 20v.01" />
-    </svg>
-  );
-}
-
-function TrashIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-      <path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+    <svg className={className || "w-5 h-5"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d={d} />
     </svg>
   );
 }
@@ -167,7 +94,6 @@ export default function HubPage() {
   const fetchHubData = useCallback(async () => {
     if (!user) return;
     const supabase = createClient();
-
     const [subjectsRes, sessionsRes] = await Promise.all([
       supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id),
       supabase
@@ -176,18 +102,13 @@ export default function HubPage() {
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false }),
     ]);
-
     if (subjectsRes.data) setSubjects(subjectsRes.data as Subject[]);
-    if (sessionsRes.data) {
-      setConversations(sessionsRes.data as Conversation[]);
-    }
+    if (sessionsRes.data) setConversations(sessionsRes.data as Conversation[]);
     setLoading(false);
   }, [user]);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.replace("/");
-    }
+    if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
   useEffect(() => {
@@ -217,9 +138,7 @@ export default function HubPage() {
 
   const totalMastery =
     subjects.length > 0
-      ? Math.round(
-          subjects.reduce((acc, s) => acc + s.mastery_level, 0) / subjects.length
-        )
+      ? Math.round(subjects.reduce((acc, s) => acc + s.mastery_level, 0) / subjects.length)
       : 0;
 
   const handleResume = (sessionSlug: string) => {
@@ -238,99 +157,107 @@ export default function HubPage() {
     return (
       <div className="min-h-screen bg-deep-onyx flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
-          <span className="text-white/40 text-sm font-bold uppercase tracking-widest">Loading...</span>
+          <div className="w-5 h-5 border-2 border-cyber-yellow/40 border-t-cyber-yellow rounded-full animate-spin" />
+          <span className="text-white/30 text-xs font-medium tracking-wide">Loading</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-[#0A0A0A] flex flex-col overflow-hidden">
+    <div className="h-screen bg-deep-onyx flex flex-col overflow-hidden">
 
-      {/* Fixed Top Navigation */}
-      <nav className="fixed top-0 left-0 right-0 h-20 px-8 flex items-center justify-between z-50 bg-white/5 border-b border-white/5 header-blur">
+      {/* Top Nav */}
+      <nav className="fixed top-0 left-0 right-0 h-16 px-8 flex items-center justify-between z-50 glass border-b border-white/[0.04]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#FDE047] rounded-xl flex items-center justify-center">
-            <ZapIcon className="text-black text-xl" />
+          <div className="w-9 h-9 bg-cyber-yellow rounded-[10px] flex items-center justify-center">
+            <svg className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
           </div>
-          <span className="text-2xl font-black tracking-tighter uppercase text-white">Aether</span>
+          <span className="text-[15px] font-bold tracking-[-0.03em] text-white/90">Aether</span>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 w-4 h-4" />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
             <input
               type="text"
-              placeholder="Search sessions..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder-white/40 focus:outline-none focus:border-cyber-yellow/50 w-48"
+              className="bg-white/[0.03] border border-white/[0.06] rounded-full py-2 pl-10 pr-4 text-xs text-white placeholder-white/25 focus:outline-none focus:border-white/[0.12] w-44 transition-colors"
             />
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1 bg-white/[0.02] rounded-full p-1">
             {(["all", "active", "completed"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-5 py-2 rounded-full text-xs font-bold premium-transition ${
+                className={`px-4 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 ${
                   filter === f
-                    ? "bg-white/10 text-white"
-                    : "text-white/40 hover:text-white"
+                    ? "bg-white/[0.08] text-white"
+                    : "text-white/30 hover:text-white/60"
                 }`}
               >
-                {f === "all" ? "All" : f === "active" ? "In Progress" : "Completed"}
+                {f === "all" ? "All" : f === "active" ? "In Progress" : "Done"}
               </button>
             ))}
           </div>
 
           <button
             onClick={() => setShowModal(true)}
-            className="bg-[#FDE047] text-black font-black py-2.5 px-6 rounded-full text-xs uppercase tracking-widest hover:scale-105 active:scale-95 premium-transition shadow-[0_0_20px_rgba(253,224,71,0.2)]"
+            className="btn-primary py-2 px-5 text-[11px] font-bold uppercase tracking-wider"
           >
-            Create New Session
+            New Session
           </button>
         </div>
       </nav>
 
-      {/* Page Content Container */}
-      <main className="flex-1 mt-20 overflow-y-auto">
+      {/* Page Content */}
+      <main className="flex-1 mt-16 overflow-y-auto">
 
-        {/* Hero Section */}
-        <section className="h-[35vh] liquid-wave flex flex-col items-center justify-center text-center px-6 relative overflow-hidden">
-          <div className="absolute top-[-50px] left-[-50px] w-64 h-64 bg-black/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-[-30px] right-[10%] w-48 h-48 bg-black/5 rounded-full blur-2xl"></div>
+        {/* Hero */}
+        <section className="relative h-[34vh] liquid-wave flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+          {/* Subtle dot pattern */}
+          <div className="absolute inset-0 noise-texture" />
+          <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-black/[0.03] rounded-full blur-3xl" />
+          <div className="absolute bottom-[-40px] right-[8%] w-56 h-56 bg-black/[0.03] rounded-full blur-2xl" />
 
           <div className="relative z-10">
-            <h1 className="text-6xl md:text-7xl font-black tracking-tighter text-black mb-4">Your Learning Hub</h1>
-            <p className="text-xl font-medium text-black/60 mb-8">All your sessions in one place.</p>
+            <h1 className="heading-display text-black mb-3">Your Learning Hub</h1>
+            <p className="text-base font-medium text-black/50 mb-8 max-w-md mx-auto">All your sessions, organized and ready.</p>
 
-            <div className="flex items-center justify-center gap-4">
-              <div className="bg-black text-white px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-center gap-3">
+              <div className="bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-semibold tracking-wide">
                 {conversations.length} Active Sessions
               </div>
-              <div className="bg-black/10 border border-black/10 backdrop-blur-md px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                {totalMastery}% Avg. Mastery
+              <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-4 py-1.5 rounded-full text-[10px] font-semibold tracking-wide text-black/70">
+                {totalMastery}% Mastery
               </div>
             </div>
           </div>
         </section>
 
         {/* Featured Carousel */}
-        <section className="-mt-12 px-8">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4 pl-2">Featured Sessions</h3>
-          <div className="flex overflow-x-auto gap-8 no-scrollbar scroll-smooth pb-10 px-2" style={{ scrollSnapType: "x mandatory" }}>
+        <section className="-mt-10 px-8 relative z-20">
+          <p className="label-micro text-white/25 mb-4 pl-1">Featured</p>
+          <div className="flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-8 px-1" style={{ scrollSnapType: "x mandatory" }}>
             {featuredSessions.length === 0 ? (
               <div
                 onClick={() => setShowModal(true)}
-                className="carousel-item w-full h-[320px] glass-card rounded-[32px] overflow-hidden relative flex items-center justify-center cursor-pointer hover:scale-[1.02] premium-transition border-dashed border-2 border-white/10"
+                className="carousel-item w-full h-[280px] glass-card rounded-[28px] overflow-hidden flex items-center justify-center cursor-pointer hover:bg-white/[0.06] border-dashed border-white/[0.08]"
               >
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-[#FDE047]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <PlusIcon className="text-4xl text-[#FDE047]" />
+                  <div className="w-14 h-14 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-6 h-6 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
                   </div>
-                  <p className="text-white/60 text-sm font-bold">Create your first session to get started</p>
+                  <p className="text-white/40 text-sm font-medium">Create your first session</p>
                 </div>
               </div>
             ) : (
@@ -338,36 +265,37 @@ export default function HubPage() {
                 <div
                   key={session.id}
                   onClick={() => session.slug && handleResume(session.slug)}
-                  className="carousel-item w-[600px] h-[320px] glass-card rounded-[32px] overflow-hidden relative group hover:scale-[1.02] premium-transition cursor-pointer"
+                  className="carousel-item w-[520px] h-[280px] glass-card rounded-[28px] overflow-hidden relative group cursor-pointer"
                 >
                   <div
-                    className="absolute inset-0 bg-gradient-to-br to-transparent z-0"
-                    style={{ backgroundImage: `linear-gradient(135deg, ${extractSubjectColor(session.subject)}33, transparent)` }}
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{ background: `radial-gradient(circle at 30% 30%, ${extractSubjectColor(session.subject)}, transparent 70%)` }}
                   />
-                  <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
-                    <span className="text-2xl">{getSubjectEmoji(session.subject)}</span>
-                    <span className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black text-white uppercase tracking-widest border border-white/10">
+                  <div className="absolute top-5 left-5 z-10 flex items-center gap-2">
+                    <span className="text-xl">{getSubjectEmoji(session.subject)}</span>
+                    <span className="px-2.5 py-1 bg-white/[0.06] backdrop-blur-sm rounded-full text-[9px] font-semibold text-white/70 uppercase tracking-wider border border-white/[0.06]">
                       {session.subject}
                     </span>
                   </div>
-                  <div className="absolute bottom-6 left-8 right-8 z-10">
-                    <h2 className="text-3xl font-black mb-2">{session.title}</h2>
-                    <p className="text-white/60 text-sm mb-6">Last studied {timeAgo(session.updated_at || session.created_at)}</p>
+                  <div className="absolute bottom-5 left-6 right-6 z-10">
+                    <h2 className="text-2xl font-bold tracking-tight mb-1.5">{session.title}</h2>
+                    <p className="text-white/40 text-xs mb-5">{timeAgo(session.updated_at || session.created_at)}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-                        Last Accessed: {timeAgo(session.updated_at || session.created_at)}
-                      </span>
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1.5 text-[10px] font-bold">
-                          <ClockIcon className="w-3 h-3" /> {timeAgo(session.created_at)}
+                      <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-medium text-white/30 uppercase tracking-wider">
+                          {session.progress}%
                         </span>
-                        <span
-                          className="flex items-center gap-1.5 text-[10px] font-bold"
-                          style={{ color: extractSubjectColor(session.subject) }}
-                        >
-                          <TargetIcon className="w-3 h-3" /> {session.progress}%
-                        </span>
+                        <div className="w-24 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${session.progress}%`,
+                              backgroundColor: extractSubjectColor(session.subject),
+                            }}
+                          />
+                        </div>
                       </div>
+                      <span className="text-[10px] font-medium text-white/40">Resume</span>
                     </div>
                   </div>
                 </div>
@@ -376,109 +304,89 @@ export default function HubPage() {
           </div>
         </section>
 
-        {/* Recent Sessions Grid */}
-        <section className="px-10 py-16">
-          <h3 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-6 pl-2">All Sessions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* All Sessions Grid */}
+        <section className="px-8 py-12">
+          <p className="label-micro text-white/25 mb-6 pl-1">All Sessions</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger-children">
 
-            {/* Quick Create Card */}
+            {/* Create Card */}
             <div
               onClick={() => setShowModal(true)}
-              className="glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center group hover:scale-110 premium-transition border-dashed border-2 border-white/10 cursor-pointer"
+              className="glass-card rounded-[24px] p-7 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-white/[0.06] hover:border-white/[0.12]"
             >
-              <div className="w-16 h-16 bg-[#FDE047]/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-[#FDE047] premium-transition">
-                <PlusIcon className="text-4xl text-[#FDE047] group-hover:text-black" />
+              <div className="w-12 h-12 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-cyber-yellow/15 transition-colors">
+                <svg className="w-5 h-5 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
               </div>
-              <h3 className="text-xl font-black text-white">Create New Session</h3>
-              <p className="text-xs text-white/30 mt-2 uppercase tracking-widest">Launch your next tutor</p>
+              <h3 className="text-sm font-semibold mb-1">New Session</h3>
+              <p className="text-[10px] text-white/25 uppercase tracking-wider">Start learning</p>
             </div>
 
             {recentSessions.length === 0 && filter === "all" ? (
               <>
-                <div className="glass-card rounded-[32px] p-6 group animate-float hover:scale-105 premium-transition relative" style={{ animationDelay: "-1.2s" }}>
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="text-3xl">🧠</span>
-                    <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-black uppercase tracking-widest text-white/50">Coming Soon</span>
+                <div className="glass-card rounded-[24px] p-6 animate-float relative" style={{ animationDelay: "-1s" }}>
+                  <div className="flex justify-between items-start mb-5">
+                    <span className="text-2xl">🧠</span>
+                    <span className="px-2 py-0.5 bg-white/[0.04] rounded-full text-[8px] font-semibold uppercase tracking-wider text-white/30">Soon</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-1">AI / Machine Learning</h3>
-                  <p className="text-sm text-white/40 mb-6 truncate">Neural networks, transformers, and deep learning fundamentals.</p>
-                  <div className="space-y-3 mb-8 text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                    <div className="flex justify-between">
-                      <span>Progress</span>
-                      <span className="text-white/60">0%</span>
-                    </div>
-                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-purple-500 w-0"></div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                    <span className="bg-white/10 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase">Coming Soon</span>
-                    <MoreVerticalIcon className="text-white/20" />
+                  <h3 className="text-sm font-semibold mb-1">AI / Machine Learning</h3>
+                  <p className="text-xs text-white/30 mb-5">Neural networks and deep learning.</p>
+                  <div className="pt-3 border-t border-white/[0.04]">
+                    <span className="text-[9px] text-white/20 uppercase tracking-wider">Coming Soon</span>
                   </div>
                 </div>
 
-                <div className="glass-card rounded-[32px] p-6 group animate-float hover:scale-105 premium-transition relative" style={{ animationDelay: "-2.5s" }}>
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="text-3xl">📝</span>
-                    <span className="px-3 py-1 bg-white/5 rounded-full text-[9px] font-black uppercase tracking-widest text-white/50">Coming Soon</span>
+                <div className="glass-card rounded-[24px] p-6 animate-float relative" style={{ animationDelay: "-2s" }}>
+                  <div className="flex justify-between items-start mb-5">
+                    <span className="text-2xl">📝</span>
+                    <span className="px-2 py-0.5 bg-white/[0.04] rounded-full text-[8px] font-semibold uppercase tracking-wider text-white/30">Soon</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-1">SAT Prep</h3>
-                  <p className="text-sm text-white/40 mb-6 truncate">Full-length practice tests, strategies, and score prediction.</p>
-                  <div className="space-y-3 mb-8 text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                    <div className="flex justify-between">
-                      <span>Progress</span>
-                      <span className="text-white/60">0%</span>
-                    </div>
-                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#FDE047] w-0"></div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                    <span className="bg-white/10 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase">Coming Soon</span>
-                    <MoreVerticalIcon className="text-white/20" />
+                  <h3 className="text-sm font-semibold mb-1">SAT Prep</h3>
+                  <p className="text-xs text-white/30 mb-5">Practice tests and strategies.</p>
+                  <div className="pt-3 border-t border-white/[0.04]">
+                    <span className="text-[9px] text-white/20 uppercase tracking-wider">Coming Soon</span>
                   </div>
                 </div>
               </>
             ) : recentSessions.length === 0 ? (
-              <div className="glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center col-span-3">
-                <p className="text-white/30 text-sm">
-                  {filter === "all"
-                    ? "No sessions yet. Create your first session to get started!"
-                    : `No ${filter} sessions found.`}
+              <div className="glass-card rounded-[24px] p-8 flex flex-col items-center justify-center text-center col-span-3">
+                <p className="text-white/25 text-sm">
+                  {filter === "all" ? "No sessions yet." : `No ${filter} sessions.`}
                 </p>
               </div>
             ) : (
               recentSessions.map((session, idx) => (
-                <div key={session.id} onClick={() => session.slug && handleResume(session.slug)} className="glass-card rounded-[32px] p-6 group animate-float hover:scale-105 premium-transition relative cursor-pointer" style={{ animationDelay: `${-idx * 1.2}s` }}>
+                <div key={session.id} onClick={() => session.slug && handleResume(session.slug)} className="glass-card rounded-[24px] p-6 group cursor-pointer relative">
                   <button
                     onClick={(e) => handleDeleteSession(session.id, e)}
-                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer z-10"
+                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg bg-white/[0.04] flex items-center justify-center hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer z-10"
                   >
-                    <TrashIcon className="w-4 h-4" />
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
                   </button>
 
-                  <div className="flex justify-between items-start mb-6">
-                    <span className="text-3xl">{getSubjectEmoji(session.subject)}</span>
-                    <span
-                      className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                        session.progress >= 100
-                          ? "bg-[#10B981]/10 text-[#10B981]"
-                          : "bg-white/5 text-white/50"
-                      }`}
-                    >
-                      {session.progress >= 100 ? "Finished" : "Active"}
+                  <div className="flex justify-between items-start mb-5">
+                    <span className="text-2xl">{getSubjectEmoji(session.subject)}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider ${
+                      session.progress >= 100
+                        ? "bg-green-500/10 text-green-400"
+                        : "bg-white/[0.04] text-white/30"
+                    }`}>
+                      {session.progress >= 100 ? "Done" : "Active"}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-1">{session.title}</h3>
-                  <p className="text-sm text-white/40 mb-6 truncate">Last studied {timeAgo(session.updated_at || session.created_at)}</p>
-                  <div className="space-y-3 mb-8 text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                    <div className="flex justify-between">
+                  <h3 className="text-sm font-semibold mb-1">{session.title}</h3>
+                  <p className="text-xs text-white/30 mb-5">{timeAgo(session.updated_at || session.created_at)}</p>
+                  <div className="space-y-2 mb-5">
+                    <div className="flex justify-between text-[9px] font-medium text-white/25 uppercase tracking-wider">
                       <span>Progress</span>
-                      <span className="text-white/60">{session.progress}%</span>
+                      <span className="text-white/40">{session.progress}%</span>
                     </div>
-                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className="w-full h-1 bg-white/[0.04] rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full transition-all"
+                        className="h-full rounded-full transition-all duration-700"
                         style={{
                           width: `${session.progress}%`,
                           backgroundColor: extractSubjectColor(session.subject),
@@ -486,14 +394,13 @@ export default function HubPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between">
                     <button
-                      onClick={() => session.slug && handleResume(session.slug)}
-                      className="bg-[#FDE047] text-black px-6 py-2 rounded-full text-[10px] font-black uppercase shadow-lg hover:scale-105 active:scale-95 premium-transition"
+                      onClick={(e) => { e.stopPropagation(); session.slug && handleResume(session.slug); }}
+                      className="bg-cyber-yellow text-black px-5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
                     >
                       Resume
                     </button>
-                    <MoreVerticalIcon className="text-white/20 cursor-pointer hover:text-white" />
                   </div>
                 </div>
               ))
@@ -501,52 +408,35 @@ export default function HubPage() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="px-10 pb-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="glass-card rounded-[32px] p-8 text-center">
-              <BookOpenIcon className="w-8 h-8 text-[#FDE047] mb-3 mx-auto" />
-              <p className="text-4xl font-black">{conversations.length}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Sessions Created</p>
-            </div>
-            <div className="glass-card rounded-[32px] p-8 text-center">
-              <ClockIcon className="w-8 h-8 text-blue-400 mb-3 mx-auto" />
-              <p className="text-4xl font-black">{subjects.length}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Subjects</p>
-            </div>
-            <div className="glass-card rounded-[32px] p-8 text-center">
-              <SparklesIcon className="w-8 h-8 text-purple-400 mb-3 mx-auto" />
-              <p className="text-4xl font-black">{totalMastery}%</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Avg. Mastery</p>
-            </div>
-            <div className="glass-card rounded-[32px] p-8 text-center">
-              <FlameIcon className="w-8 h-8 text-orange-500 mb-3 mx-auto" />
-              <p className="text-4xl font-black">{conversations.filter((c) => {
+        {/* Stats */}
+        <section className="px-8 pb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25", value: conversations.length, label: "Sessions" },
+              { icon: "M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342", value: subjects.length, label: "Subjects" },
+              { icon: "M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5", value: `${totalMastery}%`, label: "Mastery" },
+              { icon: "M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z", value: conversations.filter((c) => {
                 const daysSince = (Date.now() - new Date(c.updated_at || c.created_at).getTime()) / 86400000;
                 return daysSince <= 7;
-              }).length}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">Sessions This Week</p>
-            </div>
+              }).length, label: "This Week" },
+            ].map((stat, i) => (
+              <div key={i} className="glass-card rounded-[20px] p-6 text-center">
+                <Icon d={stat.icon} className="w-5 h-5 text-white/20 mx-auto mb-3" />
+                <p className="text-2xl font-bold tracking-tight">{stat.value}</p>
+                <p className="label-micro text-white/20 mt-1">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Footer Ticker */}
-        <div className="p-12 border-t border-white/5 bg-black">
-          <div className="flex items-center justify-between opacity-30 grayscale">
-            <span className="text-[10px] font-bold tracking-widest uppercase">Powering the future of learning</span>
-            <div className="flex gap-12">
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0014.959 2a5.985 5.985 0 00-4.215 1.816 6.046 6.046 0 00-7.49 2.914 5.985 5.985 0 00-.515 4.91 6.046 6.046 0 002.79 5.271 5.985 5.985 0 00.516 4.91 6.046 6.046 0 006.51 2.9A6.065 6.065 0 0010.459 23a5.985 5.985 0 004.215-1.816 6.046 6.046 0 007.49-2.914 5.985 5.985 0 00.515-4.91 6.046 6.046 0 00-2.79-5.271zM10.459 21.41c-3.72 0-6.74-2.05-6.74-4.58 0-1.58.86-3.11 2.34-4.11a6.046 6.046 0 011.04-1.19 4.55 4.55 0 002.47-.99c.14-.1.28-.2.42-.3a6.065 6.065 0 0110.17 1.68 5.985 5.985 0 012.54 4.23c0 2.53-3.02 4.57-6.74 4.57h-.76zm7.38-13.28c-.14.1-.28.2-.42.3a4.55 4.55 0 00-2.47.99 6.046 6.046 0 01-1.04 1.19c-1.48 1-2.34 2.53-2.34 4.11 0 2.53 3.02 4.58 6.74 4.58h.76c3.72 0 6.74-2.05 6.74-4.58 0-1.58-.86-3.11-2.34-4.11a6.046 6.046 0 01-1.04-1.19 4.55 4.55 0 00-2.57-1.3zM12 0C5.373 0 0 4.477 0 10c0 3.31 1.68 6.23 4.24 8.13-.06.51-.11 1.04-.11 1.57 0 .53.05 1.06.11 1.57C2.46 22.47 0 18.99 0 15c0-5.523 5.373-10 12-10s12 4.477 12 10c0 3.99-2.46 7.47-4.24 8.13.06.51.11 1.04.11 1.57 0 .53-.05 1.06-.11 1.57C22.32 26.23 24 23.31 24 20c0-5.523-5.373-10-12-10z"/></svg>
-                <span className="font-bold tracking-tighter">OpenAI</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L18.2 2.16c-.42-.326-.98-.7-2.055-.606l-12.8.934c-.466.047-.56.28-.327.466l1.38 1.187zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.166V6.354c0-.606-.233-.933-.748-.886l-15.177.887c-.56.046-.747.326-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952l1.449.327s0 .84-1.168.84l-3.222.187c-.093-.187 0-.653.327-.746l.84-.233V9.854c0-.746.326-1.026.934-1.073l3.675-.234c.654 0 .793.327.793.933v3.98l4.53-3.98c.42-.42.933-.467.933.233v.087z"/></svg>
-                <span className="font-bold tracking-tighter">Notion</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M15.852 8.981h-4.588V0h4.588c2.506 0 4.588 2.082 4.588 4.588 0 2.506-2.082 4.393-4.588 4.393zM12.735 7.51h3.117c1.695 0 3.117-1.331 3.117-3.117 0-1.695-1.331-3.117-3.117-3.117h-3.117V7.51zm0 8.981H8.148c-2.506 0-4.588-2.082-4.588-4.588 0-2.506 2.082-4.393 4.588-4.393h3.117v8.981H8.148c-1.695 0-3.117 1.331-3.117 3.117 0 1.695 1.331 3.117 3.117 3.117h3.117v-8.981zm-1.471-7.51v-3.117H8.148c-1.695 0-3.117 1.331-3.117 3.117 0 1.695 1.331 3.117 3.117 3.117h3.117zm4.588 11.427h-4.588V24h4.588c2.506 0 4.588-2.082 4.588-4.588 0-2.506-2.082-3.914-4.588-3.914zm-1.471 6.459h3.117c1.695 0 3.117-1.331 3.117-3.117 0-1.695-1.331-2.444-3.117-2.444h-3.117v5.561z"/></svg>
-                <span className="font-bold tracking-tighter">Figma</span>
-              </div>
+        {/* Footer */}
+        <div className="px-8 py-8 border-t border-white/[0.04]">
+          <div className="flex items-center justify-between opacity-20">
+            <span className="text-[9px] font-medium tracking-wider uppercase text-white/50">Powering the future of learning</span>
+            <div className="flex gap-8">
+              {["OpenAI", "Notion", "Figma"].map((name) => (
+                <span key={name} className="text-[10px] font-semibold tracking-tight text-white/40">{name}</span>
+              ))}
             </div>
           </div>
         </div>

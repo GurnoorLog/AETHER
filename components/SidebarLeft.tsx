@@ -32,33 +32,36 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
   const [collapsed, setCollapsed] = useState(false);
 
   const userName = user?.user_metadata?.full_name?.split(" ")[0] || "Student";
-
-  // Extract session slug from pathname (e.g. "/physics/chat" -> "physics")
   const pathParts = pathname.split("/").filter(Boolean);
   const sessionSlug = pathParts.length >= 2 ? pathParts[0] : null;
 
   return (
-    <div className={`${collapsed ? "w-[72px]" : "w-[15%]"} shrink-0 transition-all duration-300 h-screen`}>
-      <aside className="h-full flex flex-col border-r border-white/5 bg-deep-onyx p-4 relative">
+    <div className={`${collapsed ? "w-[72px]" : "w-[15%]"} shrink-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] h-screen`}>
+      <aside className="h-full flex flex-col border-r border-white/[0.04] bg-deep-onyx p-4 relative">
+        {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3 top-6 w-6 h-6 bg-cyber-yellow rounded-full flex items-center justify-center text-black hover:scale-110 transition-all z-10 cursor-pointer"
+          className="absolute -right-3 top-8 w-6 h-6 bg-surface-elevated border border-white/[0.08] rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.08] hover:scale-110 transition-all z-10 cursor-pointer"
         >
-          <svg className={`w-3 h-3 transition-transform ${collapsed ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+          <svg className={`w-2.5 h-2.5 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        <div className={`flex items-center gap-3 mb-8 ${collapsed ? "justify-center" : ""}`}>
-          <div className="w-10 h-10 bg-cyber-yellow rounded-xl flex items-center justify-center shrink-0">
-            <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        {/* Logo */}
+        <div className={`flex items-center gap-3 mb-10 ${collapsed ? "justify-center" : ""}`}>
+          <div className="w-9 h-9 bg-cyber-yellow rounded-[10px] flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
           </div>
-          {!collapsed && <span className="text-2xl font-bold tracking-tighter uppercase">Aether</span>}
+          {!collapsed && (
+            <span className="text-[15px] font-bold tracking-[-0.03em] text-white/90">Aether</span>
+          )}
         </div>
 
-        <nav className="space-y-2 overflow-y-auto">
+        {/* Navigation */}
+        <nav className="space-y-1 overflow-y-auto flex-1">
           {navItems.map((item) => {
             const href = item.href || (sessionSlug ? `/${sessionSlug}/${item.segment}` : `/hub`);
             const isActive = item.href
@@ -68,27 +71,33 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
               <a
                 key={item.key}
                 href={href}
-                className={`flex items-center gap-3 p-3 rounded-xl transition-all ${collapsed ? "justify-center" : ""} ${isActive ? "bg-white/5 text-cyber-yellow" : "opacity-60 hover:opacity-100"}`}
+                className={`nav-item ${collapsed ? "justify-center px-0" : ""} ${isActive ? "active" : ""}`}
                 title={collapsed ? item.label : undefined}
               >
-                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   {navIcons[item.icon]}
                 </svg>
-                {!collapsed && item.label}
+                {!collapsed && <span>{item.label}</span>}
               </a>
             );
           })}
         </nav>
 
-        <div className={`pt-6 border-t border-white/5 mt-auto flex items-center gap-3 opacity-60 ${collapsed ? "justify-center" : ""}`}>
+        {/* User */}
+        <div className={`pt-5 border-t border-white/[0.04] mt-auto flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
           {user?.user_metadata?.avatar_url ? (
-            <img src={user.user_metadata.avatar_url} alt="" className="w-8 h-8 rounded-full border border-white/20 object-cover shrink-0" />
+            <img src={user.user_metadata.avatar_url} alt="" className="w-8 h-8 rounded-full border border-white/[0.08] object-cover shrink-0" />
           ) : (
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyber-yellow to-amber-500 border border-white/20 flex items-center justify-center text-[10px] font-bold text-black shrink-0">
+            <div className="w-8 h-8 rounded-full bg-cyber-yellow/10 border border-cyber-yellow/20 flex items-center justify-center text-[10px] font-bold text-cyber-yellow shrink-0">
               {userName.charAt(0).toUpperCase()}
             </div>
           )}
-          {!collapsed && <span className="text-xs font-semibold">{userName}</span>}
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-white/80 truncate">{userName}</p>
+              <p className="text-[10px] text-white/30">Student</p>
+            </div>
+          )}
         </div>
       </aside>
     </div>
