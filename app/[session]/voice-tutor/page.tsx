@@ -78,7 +78,7 @@ IMPORTANT RULES:
         },
         speak: { provider: { type: "deepgram", model: "aura-2-odysseus-en" } },
       },
-      reconnect: { enabled: true, maxAttempts: 10, delay: 2000 },
+      reconnect: { enabled: false },
     },
     micOptions: { vad: true },
     playerSampleRate: 24_000,
