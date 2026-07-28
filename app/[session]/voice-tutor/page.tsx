@@ -6,10 +6,6 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useSession } from "../layout";
 import { createClient } from "@/lib/supabase/client";
 
-const DG_KEY = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "";
-const STT_WS = (key: string) => `wss://api.deepgram.com/v1/listen?model=nova-2&language=en&encoding=linear16&sample_rate=48000&interim_results=false&endpointing=500&vad_turnoff=500&utterance_end_ms=1000&api_key=${key}`;
-const TTS_URL = "https://api.deepgram.com/v1/speak?model=aura-2-odysseus-en";
-
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60).toString().padStart(2, "0");
   const s = (seconds % 60).toString().padStart(2, "0");
@@ -50,13 +46,10 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
   const [voiceTranscripts, setVoiceTranscripts] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
 
-  const wsRef = useRef<WebSocket | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const processorRef = useRef<ScriptProcessorNode | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const startedRef = useRef(false);
+  const processingRef = useRef(false);
 
   const STORAGE_KEY = `aether_active_conversation_${slug}`;
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
@@ -66,14 +59,12 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const MUTED_REFS = useRef({ outputMuted: false });
   MUTED_REFS.current.outputMuted = outputMuted;
 
-  // --- Load active conversation ---
   useEffect(() => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) setActiveConversation(saved);
   }, [STORAGE_KEY]);
 
-  // --- Fetch existing messages from Supabase ---
   const fetchDbMessages = useCallback(async (convId: string) => {
     if (!convId) return;
     const supabase = createClient();
@@ -92,7 +83,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     if (activeConversation) fetchDbMessages(activeConversation);
   }, [activeConversation, fetchDbMessages]);
 
-  // --- Save a message to Supabase ---
   const saveMessage = useCallback(async (role: string, content: string) => {
     if (!activeConversation || !user) return;
     const supabase = createClient();
@@ -110,13 +100,12 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     }
   }, [activeConversation, user]);
 
-  // --- Speak via Deepgram TTS ---
   const speakText = useCallback(async (text: string) => {
     if (MUTED_REFS.current.outputMuted) return;
     try {
-      const res = await fetch(TTS_URL, {
+      const res = await fetch("/api/tts", {
         method: "POST",
-        headers: { Authorization: `Token ${DG_KEY}`, "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
       if (!res.ok) return;
@@ -137,7 +126,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     }
   }, [volume]);
 
-  // --- Handle a user transcript: save → chat API → speak response ---
   const handleTranscript = useCallback(async (text: string) => {
     if (!text || !activeConversation) return;
     setVoiceTranscripts((p) => [...p, { role: "user", content: text }]);
@@ -180,7 +168,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     }
   }, [activeConversation, saveMessage, speakText]);
 
-  // --- Start the session ---
   const start = useCallback(async () => {
     setState("connecting");
     try {
@@ -188,67 +175,46 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       streamRef.current = stream;
       setMicActive(true);
 
-      const ws = new WebSocket(STT_WS(DG_KEY));
-      wsRef.current = ws;
+      const mr = new MediaRecorder(stream);
+      mediaRecorderRef.current = mr;
 
-      ws.onopen = () => {
-        setState("connected");
-        const ctx = new AudioContext();
-        audioCtxRef.current = ctx;
-        const src = ctx.createMediaStreamSource(stream);
-        sourceRef.current = src;
-        const proc = ctx.createScriptProcessor(4096, 1, 1);
-        processorRef.current = proc;
-
-        proc.onaudioprocess = (e) => {
-          if (ws.readyState !== WebSocket.OPEN) return;
-          const input = e.inputBuffer.getChannelData(0);
-          const i16 = new Int16Array(input.length);
-          for (let i = 0; i < input.length; i++) {
-            const s = Math.max(-1, Math.min(1, input[i]));
-            i16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      mr.ondataavailable = async (event) => {
+        if (event.data.size > 0 && !processingRef.current) {
+          processingRef.current = true;
+          try {
+            const res = await fetch("/api/stt", {
+              method: "POST",
+              body: event.data,
+            });
+            const data = await res.json();
+            if (data.transcript) handleTranscript(data.transcript);
+          } catch (err) {
+            console.error("STT error:", err);
+          } finally {
+            processingRef.current = false;
           }
-          ws.send(i16.buffer);
-        };
-        src.connect(proc);
-        proc.connect(ctx.destination);
+        }
       };
 
-      ws.onmessage = (msg) => {
-        try {
-          const d = JSON.parse(msg.data);
-          if (d.type === "Results" && d.channel?.alternatives?.[0]?.transcript && d.is_final) {
-            const t = d.channel.alternatives[0].transcript.trim();
-            if (t) handleTranscript(t);
-          }
-        } catch {}
-      };
+      mr.onstart = () => setState("connected");
+      mr.onerror = () => setState("disconnected");
 
-      ws.onerror = () => { setState("disconnected"); };
-      ws.onclose = () => { setState("disconnected"); };
+      mr.start(2000);
     } catch (err) {
       console.error("Start error:", err);
       setState("disconnected");
     }
   }, [handleTranscript]);
 
-  // --- Stop the session ---
   const stop = useCallback(() => {
-    wsRef.current?.close();
-    wsRef.current = null;
-    processorRef.current?.disconnect();
-    processorRef.current = null;
-    sourceRef.current?.disconnect();
-    sourceRef.current = null;
-    audioCtxRef.current?.close();
-    audioCtxRef.current = null;
+    mediaRecorderRef.current?.stop();
+    mediaRecorderRef.current = null;
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setMicActive(false);
     setState("disconnected");
   }, []);
 
-  // --- Auto-start on mount ---
   useEffect(() => {
     if (!startedRef.current && state === "idle") {
       startedRef.current = true;
@@ -256,12 +222,10 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     }
   }, [state, start]);
 
-  // --- Auth redirect ---
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
-  // --- Timer ---
   useEffect(() => {
     if (state === "connected" && !isSpeaking) {
       setElapsed(0);
@@ -273,7 +237,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [state, isSpeaking]);
 
-  // --- End call ---
   const handleEndCall = useCallback(() => {
     stop();
     router.push(`/${slug}/chat`);
@@ -287,7 +250,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     }
   };
 
-  // --- Merge DB + live transcripts ---
   const allMessages: ChatMsg[] = (() => {
     const merged = [...dbMessages];
     const seen = new Set(merged.map((m) => `${m.role}:${m.content.slice(0, 100)}`));
