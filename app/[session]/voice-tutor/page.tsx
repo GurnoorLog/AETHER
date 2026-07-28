@@ -429,22 +429,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         </div>
       </div>
 
-      {/* Live transcript (merged DB + voice) */}
-      {allMessages.length > 0 && (
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-30 max-w-2xl w-full max-h-[140px] overflow-y-auto rounded-[24px] bg-black/40 backdrop-blur-xl border border-white/5 p-4 space-y-2 no-scrollbar">
-          {allMessages.slice(-6).map((msg) => (
-            <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] px-4 py-2 rounded-2xl text-xs leading-relaxed ${
-                msg.role === "user"
-                  ? "bg-white/10 text-white/80 rounded-br-md"
-                  : "bg-[#FDE047]/10 text-[#FDE047]/90 rounded-bl-md"
-              }`}>
-                {msg.content.length > 150 ? msg.content.slice(0, 150) + "..." : msg.content}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+
     </div>
   );
 }
