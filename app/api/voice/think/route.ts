@@ -58,6 +58,7 @@ export async function POST(request: Request) {
         }
         const decoder = new TextDecoder();
         let buffer = "";
+        let prevText = "";
 
         try {
           while (true) {
@@ -77,8 +78,12 @@ export async function POST(request: Request) {
                 const parsed = JSON.parse(jsonStr);
                 const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (text) {
-                  const openaiChunk = `data: ${JSON.stringify({ choices: [{ delta: { content: text }, index: 0 }] })}\n\n`;
-                  controller.enqueue(encoder.encode(openaiChunk));
+                  const delta = text.slice(prevText.length);
+                  prevText = text;
+                  if (delta) {
+                    const openaiChunk = `data: ${JSON.stringify({ choices: [{ delta: { content: delta }, index: 0 }] })}\n\n`;
+                    controller.enqueue(encoder.encode(openaiChunk));
+                  }
                 }
               } catch {
                 // skip malformed lines
