@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
+import SettingsPanel from "./SettingsPanel";
 
 const navItems = [
   { href: "/hub", icon: "hub", label: "Sessions Hub", key: "hub" },
@@ -31,13 +32,14 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const userName = user?.user_metadata?.full_name?.split(" ")[0] || "Student";
   const pathParts = pathname.split("/").filter(Boolean);
   const sessionSlug = pathParts.length >= 2 ? pathParts[0] : null;
 
   return (
-    <div className={`${collapsed ? "w-[72px]" : "w-[15%]"} shrink-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] h-screen`}>
+    <>      <div className={`${collapsed ? "w-[72px]" : "w-[15%]"} shrink-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] h-screen`}>
       <aside className="h-full flex flex-col border-r border-white/[0.04] bg-deep-onyx p-4 relative">
         {/* Collapse toggle */}
         <button
@@ -114,7 +116,7 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
                   <p className="text-[10px] text-white/40 truncate">{user?.email || ""}</p>
                 </div>
                 <button
-                  onClick={() => { setMenuOpen(false); }}
+                  onClick={() => { setMenuOpen(false); setSettingsOpen(true); }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-xs text-white/70 hover:bg-white/[0.04] hover:text-white transition-all cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -147,6 +149,9 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
           )}
         </div>
       </aside>
-    </div>
+      </div>
+
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </>
   );
 }

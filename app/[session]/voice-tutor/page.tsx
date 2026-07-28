@@ -109,18 +109,13 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         body: JSON.stringify({ text }),
       });
       if (!res.ok) return;
-      const audioBuf = await res.arrayBuffer();
-      const audioCtx = new AudioContext();
-      const decoded = await audioCtx.decodeAudioData(audioBuf);
-      const gain = audioCtx.createGain();
-      gain.gain.value = volume / 100;
-      gain.connect(audioCtx.destination);
-      const src = audioCtx.createBufferSource();
-      src.buffer = decoded;
-      src.connect(gain);
-      src.start();
-      await new Promise((r) => { src.onended = r; });
-      audioCtx.close();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.volume = volume / 100;
+      await audio.play();
+      await new Promise((r) => { audio.onended = r; });
+      URL.revokeObjectURL(url);
     } catch (err) {
       console.error("TTS error:", err);
     }
