@@ -48,6 +48,12 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [volume, setVolume] = useState(65);
 
+  // --- Think endpoint URL (SSR-safe: needs window.location) ---
+  const [thinkUrl, setThinkUrl] = useState("");
+  useEffect(() => {
+    setThinkUrl(`${window.location.origin}/api/voice/think`);
+  }, []);
+
   // --- Shared conversation state ---
   const STORAGE_KEY = `aether_active_conversation_${slug}`;
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
@@ -66,7 +72,11 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       agent: {
         listen: { provider: { type: "deepgram", version: "v2", model: "flux-general-en" } },
         think: {
-          provider: { type: "google", model: "gemini-2.5-flash" },
+          provider: { type: "open_ai", model: "gemini-2.5-flash" },
+          endpoint: thinkUrl ? {
+            url: thinkUrl,
+            headers: {},
+          } : undefined,
           instructions: `You are Aether, an expert AI voice tutor. Your student is studying "${session?.subject || "a subject"}".
 
 IMPORTANT RULES:
