@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabase = await createServerSupabaseClient();
 
   const {
@@ -14,6 +14,7 @@ export async function GET() {
   }
 
   const userId = user.id;
+  const sessionId = request.nextUrl.searchParams.get("session_id");
 
   const [
     progressData,
@@ -24,47 +25,79 @@ export async function GET() {
   ] = await Promise.all([
     supabase
       .from("progress_tracking")
-      .select("subject, mastery_level, last_studied")
+      .select("subject, mastery_level, last_studied, session_id")
       .eq("user_id", userId),
 
     supabase
       .from("session_quizzes")
-      .select("score, total_questions, completed, created_at, title")
+      .select("score, total_questions, completed, created_at, title, session_id")
       .eq("user_id", userId)
       .eq("completed", true),
 
     supabase
       .from("session_roadmap_modules")
-      .select("title, status, completed_at, module_index")
+      .select("title, status, completed_at, module_index, session_id")
       .eq("user_id", userId)
       .order("module_index", { ascending: true }),
 
     supabase
       .from("chat_messages")
-      .select("created_at, role")
+      .select("created_at, role, conversation_id")
       .eq("user_id", userId)
       .eq("role", "user"),
 
     supabase
       .from("documents")
-      .select("id, created_at:uploaded_at")
+      .select("id, created_at:uploaded_at, session_id")
       .eq("user_id", userId),
   ]);
 
-  const subjects = progressData.data ?? [];
+  // If session_id provided, fetch conversation IDs for that session to filter messages
+  let sessionConversationIds: string[] = [];
+  if (sessionId) {
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("id")
+      .eq("session_id", sessionId)
+      .eq("user_id", userId);
+    sessionConversationIds = (convs ?? []).map((c: { id: string }) => c.id);
+  }
+
+  // Filter by session_id where applicable
+  const filterBySession = <T extends Record<string, unknown>>(
+    items: T[],
+    key: string = "session_id"
+  ): T[] => {
+    if (!sessionId) return items;
+    return items.filter((item) => item[key] === sessionId);
+  };
+
+  const sessionProgress = filterBySession(progressData.data ?? []);
+  const sessionQuizzes = filterBySession(quizzesData.data ?? []);
+  const sessionModules = filterBySession(modulesData.data ?? []);
+  const sessionDocuments = filterBySession(documentsData.data ?? []);
+
+  // Filter messages to only those belonging to this session's conversations
+  const sessionMessages = sessionId
+    ? (messagesData.data ?? []).filter((m) =>
+        sessionConversationIds.includes(m.conversation_id)
+      )
+    : (messagesData.data ?? []);
+
+  // === Compute metrics ===
+
   const avgMastery =
-    subjects.length > 0
+    sessionProgress.length > 0
       ? Math.round(
-          subjects.reduce((sum: number, s: { mastery_level: number | null }) => sum + (s.mastery_level ?? 0), 0) /
-            subjects.length
+          sessionProgress.reduce((sum: number, s: { mastery_level: number | null }) => sum + (s.mastery_level ?? 0), 0) /
+            sessionProgress.length
         )
       : 0;
 
-  const allModules = modulesData.data ?? [];
-  const completedModules = allModules.filter((m: { status: string }) => m.status === "completed");
+  const completedModules = sessionModules.filter((m: { status: string }) => m.status === "completed");
   const conceptsLearned = completedModules.length;
 
-  const completedQuizzes = quizzesData.data ?? [];
+  const completedQuizzes = sessionQuizzes;
   const accuracyStreak =
     completedQuizzes.length > 0
       ? Math.round(
@@ -75,7 +108,7 @@ export async function GET() {
         )
       : 0;
 
-  const messages = messagesData.data ?? [];
+  const messages = sessionMessages;
   const dayCounts: Record<string, number> = {
     MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0,
   };
@@ -96,7 +129,6 @@ export async function GET() {
     })
   );
 
-  // Peak day name for hero subtitle
   const peakDay = BAR_DATA.find((b) => b.peak)?.day ?? "MON";
 
   const totalMessages = messages.length;
@@ -108,14 +140,14 @@ export async function GET() {
     0
   );
   const reviewXP = totalMessages * 10;
-  const analysisXP = (documentsData.data?.length ?? 0) * 25;
+  const analysisXP = sessionDocuments.length * 25;
   const totalXP = quizXP + reviewXP + analysisXP;
 
   const level = Math.floor(totalXP / 1000) + 1;
   const xpInLevel = totalXP % 1000;
   const levelProgress = Math.round((xpInLevel / 1000) * 100);
 
-  const sortedSubjects = [...subjects].sort(
+  const sortedSubjects = [...sessionProgress].sort(
     (a: { mastery_level: number | null }, b: { mastery_level: number | null }) =>
       (b.mastery_level ?? 0) - (a.mastery_level ?? 0)
   );
@@ -147,7 +179,6 @@ export async function GET() {
     trendByDay[dayKeys[d.getDay()]]++;
   }
 
-  // Week range: Monday to Sunday of current week
   const now = new Date();
   const dayOfWeek = now.getDay();
   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
@@ -162,13 +193,11 @@ export async function GET() {
   ];
   const weekRange = `${monthNames[monday.getMonth()]} ${monday.getDate()} - ${sunday.getDate()}`;
 
-  // Next module (first non-completed module) for third recommendation card
-  const nextModule = allModules.find(
+  const nextModule = sessionModules.find(
     (m: { status: string }) => m.status === "current" || m.status === "locked"
   );
   const nextModuleName = nextModule?.title ?? null;
 
-  // Recent high score: any quiz completed with 90%+ in last 7 days
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const recentHighScore = completedQuizzes.some(
     (q: { score: number | null; total_questions: number; created_at: string }) => {
@@ -177,7 +206,6 @@ export async function GET() {
     }
   );
 
-  // Top quiz title for trophy notification
   const topQuiz = completedQuizzes
     .filter((q: { score: number | null; total_questions: number }) => {
       const pct = q.total_questions > 0 ? ((q.score ?? 0) / q.total_questions) * 100 : 0;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
+import { useSession } from "@/app/[session]/layout";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
 
@@ -35,6 +36,7 @@ interface ProgressData {
 
 export default function SessionProgressPage() {
   const { user, loading: authLoading } = useAuth();
+  const { session } = useSession();
   const router = useRouter();
 
   const [animateBars, setAnimateBars] = useState(false);
@@ -47,15 +49,15 @@ export default function SessionProgressPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (!authLoading && user) {
-      fetch("/api/progress")
+    if (!authLoading && user && session) {
+      fetch(`/api/progress?session_id=${session.id}`)
         .then((res) => res.json())
         .then((d) => setData(d))
         .catch(() => {});
       const timer = setTimeout(() => setAnimateBars(true), 700);
       return () => clearTimeout(timer);
     }
-  }, [authLoading, user]);
+  }, [authLoading, user, session]);
 
   if (authLoading || !user) {
     return (

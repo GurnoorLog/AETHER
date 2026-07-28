@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { usePlayer } from "@/providers/PlayerProvider";
+import { useSession } from "@/app/[session]/layout";
 import { createClient } from "@/lib/supabase/client";
 import type { GeneratedTrack } from "@/types/database";
 
 export default function SidebarRight() {
   const { user } = useAuth();
+  const { session } = useSession();
   const { currentTrack, isPlaying, togglePlay, play } = usePlayer();
   const supabase = createClient();
 
@@ -17,28 +19,53 @@ export default function SidebarRight() {
   const [memories, setMemories] = useState<{ content: string; context: string }[]>([]);
   const [documents, setDocuments] = useState<{ id: string; filename: string; status?: string }[]>([]);
   const [latestTrack, setLatestTrack] = useState<GeneratedTrack | null>(null);
+  const [messageCount, setMessageCount] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
-    Promise.all([
-      supabase.from("user_profiles").select("full_name").eq("user_id", user.id).single(),
-      supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id),
-      supabase.from("ai_memories").select("content, context").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
-      supabase.from("documents").select("id, filename, status").eq("user_id", user.id).order("uploaded_at", { ascending: false }).limit(5),
-      supabase.from("generated_tracks").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    ]).then(([profileRes, subjectsRes, memoriesRes, docsRes, tracksRes]) => {
-      if (profileRes.data) setProfile(profileRes.data as { full_name: string });
-      if (subjectsRes.data) setSubjects(subjectsRes.data as { subject: string; mastery_level: number }[]);
-      if (memoriesRes.data) setMemories(memoriesRes.data as { content: string; context: string }[]);
-      if (docsRes.data) setDocuments(docsRes.data as { id: string; filename: string; status?: string }[]);
-      if (tracksRes.data) setLatestTrack(tracksRes.data as GeneratedTrack);
+    if (!user || !session) return;
+
+    const fetchData = async () => {
+      try {
+        const { data: convs } = await supabase
+          .from("conversations")
+          .select("id")
+          .eq("session_id", session.id)
+          .eq("user_id", user.id);
+
+        const convIds = (convs ?? []).map((c: { id: string }) => c.id);
+
+        const [profileRes, subjectsRes, memoriesRes, docsRes, tracksRes, msgCountRes] = await Promise.all([
+          supabase.from("user_profiles").select("full_name").eq("user_id", user.id).single(),
+          supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id).eq("session_id", session.id),
+          supabase.from("ai_memories").select("content, context").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
+          supabase.from("documents").select("id, filename, status").eq("user_id", user.id).eq("session_id", session.id).order("uploaded_at", { ascending: false }).limit(5),
+          supabase.from("generated_tracks").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+          convIds.length > 0
+            ? supabase.from("chat_messages").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("role", "user").in("conversation_id", convIds)
+            : Promise.resolve({ count: 0 }),
+        ]);
+
+        if (profileRes.data) setProfile(profileRes.data as { full_name: string });
+        if (subjectsRes.data) setSubjects(subjectsRes.data as { subject: string; mastery_level: number }[]);
+        if (memoriesRes.data) setMemories(memoriesRes.data as { content: string; context: string }[]);
+        if (docsRes.data) setDocuments(docsRes.data as { id: string; filename: string; status?: string }[]);
+        if (tracksRes.data) setLatestTrack(tracksRes.data as GeneratedTrack);
+        setMessageCount(msgCountRes.count ?? 0);
+      } catch {
+        // ignore
+      }
       setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [user]);
+    };
+
+    fetchData();
+  }, [user, session]);
 
   const masteryTotal = subjects.length > 0
     ? Math.round(subjects.reduce((sum, s) => sum + s.mastery_level, 0) / subjects.length)
     : 0;
+
+  const studyHours = ((messageCount * 2) / 60).toFixed(1);
+  const estimatedXP = messageCount * 10 + documents.length * 25;
 
   const indexingDocs = documents.filter((d) => d.status === "INDEXING");
   const readyDocs = documents.filter((d) => d.status === "READY" || !d.status);
@@ -83,11 +110,11 @@ export default function SidebarRight() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-white/[0.03] rounded-xl p-3 text-center">
                   <p className="text-[9px] text-white/30 uppercase tracking-wider mb-0.5">Study</p>
-                  <p className="text-sm font-semibold">{(masteryTotal / 10).toFixed(1)}h</p>
+                  <p className="text-sm font-semibold">{studyHours}h</p>
                 </div>
                 <div className="bg-white/[0.03] rounded-xl p-3 text-center">
                   <p className="text-[9px] text-white/30 uppercase tracking-wider mb-0.5">XP</p>
-                  <p className="text-sm font-semibold text-cyber-yellow">+{masteryTotal * 12}</p>
+                  <p className="text-sm font-semibold text-cyber-yellow">+{estimatedXP}</p>
                 </div>
               </div>
             </div>
