@@ -59,6 +59,10 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const { state, conversation, micActive, outputMuted, start, stop, setMicMuted, setOutputMuted } = useDeepgramAgent({
     config: {
       auth: { apiKey: process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "" },
+      audio: {
+        input: { encoding: "linear16", sampleRate: 16000 },
+        output: { encoding: "linear16", sampleRate: 24000 },
+      },
       agent: {
         listen: { provider: { type: "deepgram", version: "v2", model: "flux-general-en" } },
         think: { provider: { type: "google", model: "gemini-2.5-flash" } },
