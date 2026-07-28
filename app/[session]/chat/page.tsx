@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
@@ -584,6 +585,15 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                href={`/${slug}/voice-tutor`}
+                className="flex items-center gap-2 bg-white/5 border border-white/10 text-xs font-bold px-4 py-2.5 rounded-full hover:bg-white/10 hover:border-cyber-yellow/30 transition-all cursor-pointer"
+              >
+                <svg className="w-4 h-4 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+                <span className="text-cyber-yellow">Voice Mode</span>
+              </Link>
               {activeConversation && (
                 <button
                   onClick={() => deleteConversation(activeConversation)}

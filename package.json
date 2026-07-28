@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@deepgram/agents": "^0.1.1",
+    "@deepgram/react": "^0.1.0",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.7",
     "jszip": "^3.10.1",
