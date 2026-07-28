@@ -8,6 +8,41 @@ interface Turn {
   content: string;
 }
 
+interface SRAlternative {
+  readonly transcript: string;
+  readonly confidence: number;
+}
+interface SRResult {
+  readonly isFinal: boolean;
+  readonly length: number;
+  [index: number]: SRAlternative;
+}
+interface SRResultList {
+  readonly length: number;
+  [index: number]: SRResult;
+}
+interface SREvent {
+  readonly resultIndex: number;
+  readonly results: SRResultList;
+}
+interface SRErrorEvent {
+  readonly error: string;
+  readonly message: string;
+}
+interface SRInstance extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SREvent) => void) | null;
+  onerror: ((event: SRErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+declare var SpeechRecognition: { new (): SRInstance; prototype: SRInstance };
+declare var webkitSpeechRecognition: { new (): SRInstance; prototype: SRInstance };
+
 export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   const [state, setState] = useState<
     "idle" | "connecting" | "connected" | "disconnected"
@@ -16,11 +51,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   const [micActive, setMicActive] = useState(false);
   const [outputMuted, setOutputMuted] = useState(false);
 
-  const wsRef = useRef<WebSocket | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const processorRef = useRef<ScriptProcessorNode | null>(null);
-  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const recognitionRef = useRef<SRInstance | null>(null);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const conversationIdRef = useRef<string>("");
   const turnIdRef = useRef(0);
@@ -29,6 +60,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   const outputMutedRef = useRef(false);
   const stateRef = useRef(state);
   const convRef = useRef<Turn[]>([]);
+  const restartRecognitionRef = useRef(false);
 
   stateRef.current = state;
 
@@ -55,21 +87,132 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
     window.speechSynthesis.speak(utterance);
   }, []);
 
-  const cleanup = useCallback(() => {
-    if (sourceRef.current) sourceRef.current.disconnect();
-    if (processorRef.current) processorRef.current.disconnect();
-    if (audioContextRef.current) audioContextRef.current.close();
-    if (wsRef.current) wsRef.current.close();
-    if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
-    window.speechSynthesis.cancel();
-    wsRef.current = null;
-    streamRef.current = null;
-    audioContextRef.current = null;
-    processorRef.current = null;
-    sourceRef.current = null;
-    micActiveRef.current = false;
-    processingRef.current = false;
+  const stopRecognition = useCallback(() => {
+    if (recognitionRef.current) {
+      restartRecognitionRef.current = false;
+      try { recognitionRef.current.stop(); } catch {}
+      recognitionRef.current = null;
+    }
   }, []);
+
+  const startRecognition = useCallback(() => {
+    const SRImpl = SpeechRecognition || webkitSpeechRecognition;
+    if (!SRImpl) {
+      console.error("SpeechRecognition not supported in this browser");
+      setState("disconnected");
+      return;
+    }
+
+    restartRecognitionRef.current = true;
+    const recognition = new SRImpl();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: SREvent) => {
+      if (processingRef.current) return;
+
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      transcript = transcript.trim();
+      if (!transcript) return;
+
+      try { recognition.stop(); } catch {}
+
+      processingRef.current = true;
+      micActiveRef.current = false;
+      setMicActive(false);
+
+      addTurn("user", transcript);
+
+      (async () => {
+        try {
+          const chatRes = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: transcript,
+              conversation_id: conversationIdRef.current,
+              session_id: sessionId,
+            }),
+          });
+
+          if (!chatRes.ok) throw new Error(`Chat API error: ${chatRes.status}`);
+
+          const reader = chatRes.body?.getReader();
+          const decoder = new TextDecoder();
+          let buf = "";
+          let fullResponse = "";
+
+          if (reader) {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buf += decoder.decode(value, { stream: true });
+
+              const lines = buf.split("\n");
+              buf = lines.pop() || "";
+
+              for (const line of lines) {
+                if (!line.startsWith("data: ")) continue;
+                try {
+                  const parsed = JSON.parse(line.slice(6));
+                  if (parsed.type === "chunk" && parsed.text) {
+                    fullResponse += parsed.text;
+                    speakText(parsed.text);
+                  }
+                } catch {}
+              }
+            }
+          }
+
+          if (fullResponse) {
+            addTurn("assistant", fullResponse);
+          }
+        } catch (err) {
+          console.error("Chat API error:", err);
+        } finally {
+          processingRef.current = false;
+          if (stateRef.current === "connected") {
+            micActiveRef.current = true;
+            setMicActive(true);
+            if (restartRecognitionRef.current) {
+              try { recognition.start(); } catch {}
+            }
+          }
+        }
+      })();
+    };
+
+    recognition.onerror = (event: SRErrorEvent) => {
+      if (event.error === "no-speech") return;
+      if (event.error === "aborted") return;
+      console.error("SpeechRecognition error:", event.error);
+    };
+
+    recognition.onend = () => {
+      if (
+        restartRecognitionRef.current &&
+        stateRef.current === "connected" &&
+        !processingRef.current
+      ) {
+        try { recognition.start(); } catch {}
+      }
+    };
+
+    try { recognition.start(); } catch (err) {
+      console.error("Failed to start SpeechRecognition:", err);
+      setState("disconnected");
+      return;
+    }
+
+    recognitionRef.current = recognition;
+    setState("connected");
+    setMicActive(true);
+    micActiveRef.current = true;
+  }, [sessionId, addTurn, speakText]);
 
   const start = useCallback(
     async (conversationId: string) => {
@@ -78,159 +221,40 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
       conversationIdRef.current = conversationId;
       setState("connecting");
 
-      const apiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY;
-      if (!apiKey) {
-        console.error("Missing NEXT_PUBLIC_DEEPGRAM_API_KEY");
-        setState("disconnected");
-        return;
-      }
-
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        await navigator.mediaDevices.getUserMedia({
           audio: { echoCancellation: true, noiseSuppression: true },
         });
-        streamRef.current = stream;
 
-        const audioContext = new AudioContext({ sampleRate: 16000 });
-        if (audioContext.state === "suspended") {
-          await audioContext.resume();
-        }
-        audioContextRef.current = audioContext;
-        const source = audioContext.createMediaStreamSource(stream);
-        sourceRef.current = source;
-
-        const processor = audioContext.createScriptProcessor(4096, 1, 1);
-        processorRef.current = processor;
-
-        const ws = new WebSocket(
-          `wss://api.deepgram.com/v1/listen?access_token=${apiKey}&encoding=linear16&sample_rate=${audioContext.sampleRate}&channels=1&interim_results=false&endpointing=200&model=nova-2-general`
-        );
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-          source.connect(processor);
-          processor.connect(audioContext.destination);
-
-          processor.onaudioprocess = (event) => {
-            if (ws.readyState !== WebSocket.OPEN) return;
-            if (!micActiveRef.current || processingRef.current) return;
-            const input = event.inputBuffer.getChannelData(0);
-            const pcm = new Int16Array(input.length);
-            for (let i = 0; i < input.length; i++) {
-              const s = Math.max(-1, Math.min(1, input[i]));
-              pcm[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
-            }
-            ws.send(pcm.buffer);
-          };
-
-          setState("connected");
-          setMicActive(true);
-          micActiveRef.current = true;
-        };
-
-        ws.onmessage = async (event) => {
-          let data: Record<string, unknown>;
-          try {
-            data = JSON.parse(event.data as string);
-          } catch {
-            return;
-          }
-
-          if (
-            data.type === "Results" &&
-            data.is_final === true &&
-            data.channel
-          ) {
-            const alt = (data.channel as Record<string, unknown>)
-              .alternatives as Array<{ transcript: string }> | undefined;
-            const transcript = alt?.[0]?.transcript?.trim();
-            if (!transcript || processingRef.current) return;
-
-            processingRef.current = true;
-            micActiveRef.current = false;
-
-            addTurn("user", transcript);
-
-            try {
-              const chatRes = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  message: transcript,
-                  conversation_id: conversationIdRef.current,
-                  session_id: sessionId,
-                }),
-              });
-
-              if (!chatRes.ok) throw new Error(`Chat API error: ${chatRes.status}`);
-
-              const reader = chatRes.body?.getReader();
-              const decoder = new TextDecoder();
-              let buf = "";
-              let fullResponse = "";
-
-              if (reader) {
-                while (true) {
-                  const { done, value } = await reader.read();
-                  if (done) break;
-                  buf += decoder.decode(value, { stream: true });
-
-                  const lines = buf.split("\n");
-                  buf = lines.pop() || "";
-
-                  for (const line of lines) {
-                    if (!line.startsWith("data: ")) continue;
-                    try {
-                      const parsed = JSON.parse(line.slice(6));
-                      if (parsed.type === "chunk" && parsed.text) {
-                        fullResponse += parsed.text;
-                        speakText(parsed.text);
-                      }
-                    } catch {}
-                  }
-                }
-              }
-
-              if (fullResponse) {
-                addTurn("assistant", fullResponse);
-              }
-            } catch (err) {
-              console.error("Chat API error:", err);
-            } finally {
-              processingRef.current = false;
-              if (stateRef.current === "connected") {
-                micActiveRef.current = true;
-                setMicActive(true);
-              }
-            }
-          }
-        };
-
-        ws.onclose = () => {
-          cleanup();
-          setMicActive(false);
-          setState("disconnected");
-        };
+        startRecognition();
       } catch (err) {
-        console.error("Failed to start voice session:", err);
-        cleanup();
-        setMicActive(false);
+        console.error("Microphone permission denied:", err);
         setState("disconnected");
       }
     },
-    [sessionId, addTurn, speakText, cleanup]
+    [startRecognition]
   );
 
   const stop = useCallback(() => {
-    cleanup();
+    restartRecognitionRef.current = false;
+    stopRecognition();
+    window.speechSynthesis.cancel();
     setMicActive(false);
     setState("disconnected");
-  }, [cleanup]);
+  }, [stopRecognition]);
 
   const setMicMuted = useCallback((muted: boolean) => {
-    micActiveRef.current = !muted;
-    setMicActive(!muted);
-  }, []);
+    if (muted) {
+      restartRecognitionRef.current = false;
+      stopRecognition();
+      micActiveRef.current = false;
+      setMicActive(false);
+    } else {
+      startRecognition();
+      micActiveRef.current = true;
+      setMicActive(true);
+    }
+  }, [startRecognition, stopRecognition]);
 
   const setOutputMutedFn = useCallback(
     (muted: boolean) => {
@@ -243,9 +267,11 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
 
   useEffect(() => {
     return () => {
-      cleanup();
+      restartRecognitionRef.current = false;
+      stopRecognition();
+      window.speechSynthesis.cancel();
     };
-  }, [cleanup]);
+  }, [stopRecognition]);
 
   return {
     state,
