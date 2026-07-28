@@ -149,7 +149,7 @@ export default function HubPage() {
     e.stopPropagation();
     if (!user) return;
     const supabase = createClient();
-    // Cascade-delete all session-related data
+    // Cascade-delete all session-related data (FK-safe order)
     const { data: convs } = await supabase.from("conversations").select("id").eq("session_id", sessionId);
     if (convs) {
       for (const conv of convs) {
@@ -157,13 +157,13 @@ export default function HubPage() {
       }
     }
     await supabase.from("conversations").delete().eq("session_id", sessionId);
-    await supabase.from("session_roadmap_modules").delete().eq("session_id", sessionId);
-    await supabase.from("progress_tracking").delete().eq("session_id", sessionId);
-    await supabase.from("session_quizzes").delete().eq("session_id", sessionId);
     await supabase.from("document_chunks").delete().eq("session_id", sessionId);
     await supabase.from("documents").delete().eq("session_id", sessionId);
     await supabase.from("kingdom_events").delete().eq("session_id", sessionId);
     await supabase.from("session_kingdom").delete().eq("session_id", sessionId);
+    await supabase.from("session_quizzes").delete().eq("session_id", sessionId);
+    await supabase.from("session_roadmap_modules").delete().eq("session_id", sessionId);
+    await supabase.from("progress_tracking").delete().eq("session_id", sessionId);
     await supabase.from("sessions").delete().eq("id", sessionId);
     fetchHubData();
   };

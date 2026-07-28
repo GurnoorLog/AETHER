@@ -78,7 +78,7 @@ IMPORTANT RULES:
         },
         speak: { provider: { type: "deepgram", model: "aura-2-odysseus-en" } },
       },
-      reconnect: { enabled: false },
+      reconnect: { enabled: true, maxAttempts: 10, delay: 2000 },
     },
     micOptions: { vad: true },
     playerSampleRate: 24_000,
@@ -280,9 +280,7 @@ IMPORTANT RULES:
 
         {/* Center Visualization */}
         <section className="flex flex-col items-center gap-12">
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 w-[400px] h-[400px] border border-[#FDE047]/10 rounded-full animate-pulse" />
-            <div className="absolute inset-0 w-[300px] h-[300px] border border-[#FDE047]/5 rounded-full animate-ping" style={{ animationDuration: "3s" }} />
+          <div className="relative flex items-center justify-center overflow-hidden">
             <div className="relative z-20 floating">
               <div className={`w-40 h-40 rounded-full bg-black border-4 flex items-center justify-center overflow-hidden shadow-2xl transition-all duration-500 ${
                 state === "connected" ? "border-[#FDE047] glow-pulse" : "border-white/10"
