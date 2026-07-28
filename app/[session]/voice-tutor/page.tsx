@@ -131,6 +131,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
           .from("chat_messages")
           .insert({
             conversation_id: activeConversation,
+            user_id: user.id,
             role: turn.role,
             content: turn.content,
           })
