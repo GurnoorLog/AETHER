@@ -62,12 +62,6 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
   const [filter, setFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [viewingDoc, setViewingDoc] = useState<Document | null>(null);
-  const [showYouTubeModal, setShowYouTubeModal] = useState(false);
-  const [showGDriveModal, setShowGDriveModal] = useState(false);
-  const [youTubeUrl, setYouTubeUrl] = useState("");
-  const [gDriveUrl, setGDriveUrl] = useState("");
-  const [attaching, setAttaching] = useState(false);
-  const [attachStatus, setAttachStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
@@ -191,64 +185,6 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
     fetchDocuments();
   }, [user, session, uploads.length, fetchDocuments]);
 
-  const handleYouTubeSubmit = useCallback(async () => {
-    if (!youTubeUrl.trim() || !session) return;
-    setShowYouTubeModal(false);
-    setAttaching(true);
-    setAttachStatus("Extracting YouTube content...");
-
-    try {
-      const res = await fetch("/api/knowledge/youtube", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: youTubeUrl.trim(), session_id: session.id }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setAttachStatus(`"${data.title}" added to knowledge base`);
-        setTimeout(() => setAttachStatus(null), 3000);
-        fetchDocuments();
-      } else {
-        setAttachStatus(`Failed: ${data.error}`);
-        setTimeout(() => setAttachStatus(null), 3000);
-      }
-    } catch {
-      setAttachStatus("Failed to add YouTube link");
-      setTimeout(() => setAttachStatus(null), 3000);
-    }
-    setAttaching(false);
-    setYouTubeUrl("");
-  }, [youTubeUrl, session, fetchDocuments]);
-
-  const handleGDriveSubmit = useCallback(async () => {
-    if (!gDriveUrl.trim() || !session) return;
-    setShowGDriveModal(false);
-    setAttaching(true);
-    setAttachStatus("Adding Google Drive file...");
-
-    try {
-      const res = await fetch("/api/knowledge/gdrive", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: gDriveUrl.trim(), session_id: session.id }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setAttachStatus("Added to knowledge base");
-        setTimeout(() => setAttachStatus(null), 3000);
-        fetchDocuments();
-      } else {
-        setAttachStatus(`Failed: ${data.error}`);
-        setTimeout(() => setAttachStatus(null), 3000);
-      }
-    } catch {
-      setAttachStatus("Failed to add Google Drive file");
-      setTimeout(() => setAttachStatus(null), 3000);
-    }
-    setAttaching(false);
-    setGDriveUrl("");
-  }, [gDriveUrl, session, fetchDocuments]);
-
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
@@ -349,13 +285,13 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
 
         {/* Content */}
         <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-10 relative z-10">
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             <div
               onDrop={onDrop}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
               onClick={() => fileInputRef.current?.click()}
-              className={`col-span-1 glass-card rounded-[32px] p-8 border-2 border-dashed flex flex-col items-center justify-center text-center group cursor-pointer transition-all ${
+              className={`glass-card rounded-[32px] p-8 border-2 border-dashed flex flex-col items-center justify-center text-center group cursor-pointer transition-all ${
                 dragOver ? "border-cyber-yellow/40 bg-cyber-yellow/[0.03]" : "border-white/10 hover:border-cyber-yellow/30"
               }`}
             >
@@ -371,38 +307,6 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                 Browse Files
               </button>
             </div>
-
-            <button
-              onClick={() => setShowYouTubeModal(true)}
-              className="glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center group cursor-pointer transition-all hover:border-red-400/30 border-2 border-dashed border-white/10"
-            >
-              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center text-red-400 mb-4 border border-red-500/20 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold">YouTube Video</h3>
-              <p className="text-sm text-white/40 mt-1">Extract transcript from video</p>
-              <button type="button" className="mt-6 bg-white/5 border border-white/10 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all">
-                Add Link
-              </button>
-            </button>
-
-            <button
-              onClick={() => setShowGDriveModal(true)}
-              className="glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center group cursor-pointer transition-all hover:border-green-400/30 border-2 border-dashed border-white/10"
-            >
-              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-green-400 mb-4 border border-green-500/20 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold">Google Drive</h3>
-              <p className="text-sm text-white/40 mt-1">Add Drive file link</p>
-              <button type="button" className="mt-6 bg-white/5 border border-white/10 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all">
-                Add Link
-              </button>
-            </button>
 
             <div className="glass-card rounded-[32px] p-8 flex flex-col justify-between">
               <div className="space-y-4">
@@ -556,86 +460,6 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
       </main>
 
       <SidebarRight />
-
-      {/* Attach status toast */}
-      {attachStatus && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60]">
-          <div className="bg-black/80 backdrop-blur-xl border border-white/10 px-5 py-3 rounded-full flex items-center gap-3 shadow-2xl">
-            <div className={`w-2 h-2 rounded-full ${attaching ? "bg-cyber-yellow animate-pulse" : "bg-green-400"}`} />
-            <span className="text-xs font-medium text-white/80">{attachStatus}</span>
-          </div>
-        </div>
-      )}
-
-      {/* YouTube Modal */}
-      {showYouTubeModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowYouTubeModal(false)} />
-          <div className="relative glass-card rounded-[32px] max-w-md w-full p-8 z-10">
-            <h3 className="text-xl font-bold mb-2">Add YouTube Video</h3>
-            <p className="text-sm text-white/40 mb-6">Paste a YouTube URL to extract its transcript and add it to your knowledge base.</p>
-            <input
-              type="url"
-              placeholder="https://youtube.com/watch?v=..."
-              value={youTubeUrl}
-              onChange={(e) => setYouTubeUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleYouTubeSubmit()}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder-white/30 outline-none focus:border-cyber-yellow/50 transition-all mb-4"
-              autoFocus
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowYouTubeModal(false)}
-                className="flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleYouTubeSubmit}
-                disabled={!youTubeUrl.trim()}
-                className="flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-              >
-                Add to Knowledge
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Google Drive Modal */}
-      {showGDriveModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowGDriveModal(false)} />
-          <div className="relative glass-card rounded-[32px] max-w-md w-full p-8 z-10">
-            <h3 className="text-xl font-bold mb-2">Add Google Drive File</h3>
-            <p className="text-sm text-white/40 mb-6">Paste a Google Drive share link to add the file to your knowledge base.</p>
-            <input
-              type="url"
-              placeholder="https://drive.google.com/file/d/..."
-              value={gDriveUrl}
-              onChange={(e) => setGDriveUrl(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleGDriveSubmit()}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder-white/30 outline-none focus:border-cyber-yellow/50 transition-all mb-4"
-              autoFocus
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowGDriveModal(false)}
-                className="flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleGDriveSubmit}
-                disabled={!gDriveUrl.trim()}
-                className="flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-              >
-                Add to Knowledge
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* File Viewer Modal */}
       {viewingDoc && (
