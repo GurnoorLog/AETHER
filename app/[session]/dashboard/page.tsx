@@ -85,22 +85,22 @@ export default function SessionDashboardPage() {
 
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
         {/* Hero */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute inset-0 noise-texture" />
           <div className="absolute top-8 right-8 flex gap-3">
             <div className="bg-black text-white px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>
             <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider text-black/60">{modules.length} Modules</div>
           </div>
-          <div className="max-w-3xl mb-12 relative z-10">
-            <p className="label-micro text-black/50 mb-4">Session Dashboard</p>
-            <h1 className="heading-display text-black leading-none mb-5">
-              {currentModule
+          <div className={`max-w-3xl relative z-10 transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "mb-12" : "mb-0"}`}>
+            <p className={`label-micro text-black/50 transition-all duration-500 ${expanded ? "mb-4 opacity-100" : "mb-0 opacity-0 h-0 overflow-hidden"}`}>Session Dashboard</p>
+            <h1 className={`text-black leading-none transition-all duration-[800ms] ${expanded ? "heading-display mb-5" : "text-2xl font-extrabold tracking-tight mb-0"}`}>
+              <span className="block truncate">{currentModule
                 ? `Continue "${currentModule.title}"`
                 : completedCount === modules.length && modules.length > 0
                   ? "All Complete!"
-                  : `Welcome to ${session.subject || "your session"}`}
+                  : `Welcome to ${session.subject || "your session"}`}</span>
             </h1>
-            <div className={`flex items-center gap-5 overflow-hidden transition-all duration-500 ${expanded ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}>
+            <div className={`flex items-center gap-5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-20 opacity-100 mt-5" : "max-h-0 opacity-0 mt-0 overflow-hidden"}`}>
               <div className="flex-1 h-2 bg-black/10 rounded-full overflow-hidden">
                 <div className="h-full bg-black rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `${progress}%` }} />
               </div>

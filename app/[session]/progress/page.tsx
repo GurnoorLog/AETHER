@@ -155,14 +155,16 @@ export default function SessionProgressPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{weekRange}</div>
           </div>
-          <div className="max-w-3xl mb-12">
-            <h1 className={`${expanded ? "text-7xl" : "text-3xl"} font-bold tracking-tighter leading-tight mb-4 transition-all duration-700`}>Your Learning Journey</h1>
-            <div className={`overflow-hidden transition-all duration-500 ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+          <div className={`max-w-3xl transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "mb-12" : "mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-2xl font-extrabold tracking-tight mb-0"}`}>
+              <span className="block truncate">Your Learning Journey</span>
+            </h1>
+            <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
               <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Performance Analytics</p>
               <p className="text-xl font-medium opacity-80">{totalXP > 0 ? `You're making great progress! Your focus peaked on ${peakDay}.` : "Start your learning journey to see your progress here."}</p>
             </div>
