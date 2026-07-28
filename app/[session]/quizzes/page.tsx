@@ -196,8 +196,13 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{session.title}</div>
           </div>
-          <div className={`max-w-3xl transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "mb-12" : "mb-0"}`}>
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-2xl font-extrabold tracking-tight mb-0"}`}>
+          <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
+            {!expanded && (
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">{session.title}</div>
+              </div>
+            )}
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">
                 {view === "taking" ? "Quiz in Progress" : view === "results" ? "Quiz Results" : "Quiz Your Knowledge"}
               </span>

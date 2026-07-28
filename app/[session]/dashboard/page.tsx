@@ -91,9 +91,15 @@ export default function SessionDashboardPage() {
             <div className="bg-black text-white px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>
             <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider text-black/60">{modules.length} Modules</div>
           </div>
-          <div className={`max-w-3xl relative z-10 transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "mb-12" : "mb-0"}`}>
-            <p className={`label-micro text-black/50 transition-all duration-500 ${expanded ? "mb-4 opacity-100" : "mb-0 opacity-0 h-0 overflow-hidden"}`}>Session Dashboard</p>
-            <h1 className={`text-black leading-none transition-all duration-[800ms] ${expanded ? "heading-display mb-5" : "text-2xl font-extrabold tracking-tight mb-0"}`}>
+          <div className={`relative z-10 transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
+            {!expanded && (
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">{session.title}</div>
+                <span className="text-[10px] font-bold text-black/40">{progress}%</span>
+              </div>
+            )}
+            {expanded && <p className="label-micro text-black/50 mb-4">Session Dashboard</p>}
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "heading-display mb-5" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">{currentModule
                 ? `Continue "${currentModule.title}"`
                 : completedCount === modules.length && modules.length > 0

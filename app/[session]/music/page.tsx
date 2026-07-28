@@ -305,8 +305,13 @@ export default function SessionMusicPage() {
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">PRO PLAN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
           </div>
-          <div className={`max-w-3xl transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "mb-12" : "mb-0"}`}>
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-2xl font-extrabold tracking-tight mb-0"}`}>
+          <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
+            {!expanded && (
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">FOCUS MUSIC</div>
+              </div>
+            )}
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Your Focus. Your Sound.</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
