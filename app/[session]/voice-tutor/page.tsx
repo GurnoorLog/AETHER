@@ -60,8 +60,8 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     config: {
       auth: { apiKey: process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "" },
       agent: {
-        listen: { provider: { type: "deepgram" }, model: "flux-general-en" },
-        think: { provider: { type: "google" }, model: "gemini-2.0-flash" },
+        listen: { provider: { type: "deepgram", version: "v2" }, model: "flux-general-en" },
+        think: { provider: { type: "google" }, model: "gemini-2.5-flash" },
         speak: { provider: { type: "deepgram" }, model: "aura-2-odysseus-en" },
       },
       reconnect: { enabled: false },
