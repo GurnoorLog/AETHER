@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const DG_KEY = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "";
 const STT_WS = "wss://api.deepgram.com/v1/listen?model=nova-2&language=en&encoding=linear16&sample_rate=48000&interim_results=false&endpointing=500&vad_turnoff=500&utterance_end_ms=1000";
-const TTS_URL = "https://api.deepgram.com/v1/speak?model=aura-2-odysseus-en&encoding=linear16&container=none";
+const TTS_URL = "https://api.deepgram.com/v1/speak?model=aura-2-odysseus-en";
 
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60).toString().padStart(2, "0");
