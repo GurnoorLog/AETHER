@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
+import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
 import type { Document } from "@/types/database";
@@ -55,6 +56,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
+  const expanded = useAutoCollapse(2000);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [uploads, setUploads] = useState<UploadState[]>([]);
@@ -270,15 +272,17 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
 
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{stats.total} Files</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Vault of Intelligence</p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Knowledge Base</h1>
-            <p className="text-xl font-medium opacity-80">Your private library. Aether indexes every word to build your unique learning model.</p>
+            <h1 className={`${expanded ? "text-7xl" : "text-3xl"} font-bold tracking-tighter leading-tight mb-4 transition-all duration-700`}>Knowledge Base</h1>
+            <div className={`overflow-hidden transition-all duration-500 ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Vault of Intelligence</p>
+              <p className="text-xl font-medium opacity-80">Your private library. Aether indexes every word to build your unique learning model.</p>
+            </div>
           </div>
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>

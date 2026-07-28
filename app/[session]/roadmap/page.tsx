@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
+import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
 import type { Lesson } from "@/types/database";
@@ -25,6 +26,7 @@ export default function SessionRoadmapPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
+  const expanded = useAutoCollapse(2000);
   const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
@@ -85,18 +87,20 @@ export default function SessionRoadmapPage() {
 
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">{session.title}</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Path</p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Your Learning Roadmap</h1>
-            <div className="flex items-center gap-6 mt-6">
-              <div className="flex-1 h-3 bg-black/10 rounded-full overflow-hidden">
-                <div className="h-full bg-black rounded-full" style={{ width: `${progress}%` }} />
+            <h1 className={`${expanded ? "text-7xl" : "text-3xl"} font-bold tracking-tighter leading-tight mb-4 transition-all duration-700`}>Your Learning Roadmap</h1>
+            <div className={`overflow-hidden transition-all duration-500 ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Path</p>
+              <div className="flex items-center gap-6 mt-6">
+                <div className="flex-1 h-3 bg-black/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-black rounded-full" style={{ width: `${progress}%` }} />
+                </div>
+                <span className="text-2xl font-black tracking-tighter">{progress}%</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter">{progress}%</span>
             </div>
           </div>
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />

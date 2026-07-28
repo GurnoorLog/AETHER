@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { createClient } from "@/lib/supabase/client";
+import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import SidebarLeft from "@/components/SidebarLeft";
 import SidebarRight from "@/components/SidebarRight";
 import type { GeneratedTrack, Playlist } from "@/types/database";
@@ -58,6 +59,7 @@ export default function SessionMusicPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const supabase = createClient();
+  const expanded = useAutoCollapse(2000);
 
   const [modelProvider, setModelProvider] = useState<"heartmula" | "musicgen">("heartmula");
   const [mood, setMood] = useState("Focused");
@@ -298,21 +300,23 @@ export default function SessionMusicPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">PRO PLAN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Audio Intelligence</p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Your Focus. Your Sound.</h1>
-            <p className="text-xl font-medium opacity-80 mb-8">AI-generated music tailored to your learning style.</p>
-            <button className="bg-black text-white font-bold py-4 px-8 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-3 w-fit shadow-2xl cursor-pointer">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Create New Ambience
-            </button>
+            <h1 className={`${expanded ? "text-7xl" : "text-3xl"} font-bold tracking-tighter leading-tight mb-4 transition-all duration-700`}>Your Focus. Your Sound.</h1>
+            <div className={`overflow-hidden transition-all duration-500 ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Audio Intelligence</p>
+              <p className="text-xl font-medium opacity-80 mb-8">AI-generated music tailored to your learning style.</p>
+              <button className="bg-black text-white font-bold py-4 px-8 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-3 w-fit shadow-2xl cursor-pointer">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Create New Ambience
+              </button>
+            </div>
           </div>
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>

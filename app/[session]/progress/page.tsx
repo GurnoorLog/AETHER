@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSession } from "@/app/[session]/layout";
+import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
 
@@ -38,6 +39,7 @@ export default function SessionProgressPage() {
   const { user, loading: authLoading } = useAuth();
   const { session } = useSession();
   const router = useRouter();
+  const expanded = useAutoCollapse(2000);
 
   const [animateBars, setAnimateBars] = useState(false);
   const [data, setData] = useState<ProgressData | null>(null);
@@ -153,15 +155,17 @@ export default function SessionProgressPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{weekRange}</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Performance Analytics</p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Your Learning Journey</h1>
-            <p className="text-xl font-medium opacity-80">{totalXP > 0 ? `You're making great progress! Your focus peaked on ${peakDay}.` : "Start your learning journey to see your progress here."}</p>
+            <h1 className={`${expanded ? "text-7xl" : "text-3xl"} font-bold tracking-tighter leading-tight mb-4 transition-all duration-700`}>Your Learning Journey</h1>
+            <div className={`overflow-hidden transition-all duration-500 ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}>
+              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Performance Analytics</p>
+              <p className="text-xl font-medium opacity-80">{totalXP > 0 ? `You're making great progress! Your focus peaked on ${peakDay}.` : "Start your learning journey to see your progress here."}</p>
+            </div>
           </div>
           <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>

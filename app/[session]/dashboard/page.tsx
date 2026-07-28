@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
+import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
 import type { Lesson } from "@/types/database";
@@ -23,6 +24,7 @@ export default function SessionDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
+  const expanded = useAutoCollapse(2000);
   const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -83,7 +85,7 @@ export default function SessionDashboardPage() {
 
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
         {/* Hero */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
+        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[14vh] p-6"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]`}>
           <div className="absolute inset-0 noise-texture" />
           <div className="absolute top-8 right-8 flex gap-3">
             <div className="bg-black text-white px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>
@@ -98,7 +100,7 @@ export default function SessionDashboardPage() {
                   ? "All Complete!"
                   : `Welcome to ${session.subject || "your session"}`}
             </h1>
-            <div className="flex items-center gap-5">
+            <div className={`flex items-center gap-5 overflow-hidden transition-all duration-500 ${expanded ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}>
               <div className="flex-1 h-2 bg-black/10 rounded-full overflow-hidden">
                 <div className="h-full bg-black rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `${progress}%` }} />
               </div>
