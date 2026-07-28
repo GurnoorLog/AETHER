@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSession } from "../layout";
 import { createClient } from "@/lib/supabase/client";
+import { useDeepgramAgent } from "@deepgram/react";
 
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -21,10 +22,18 @@ interface ChatMsg {
 }
 
 const WAVE_BARS = [
-  { h: "40%", delay: "-0.2s" }, { h: "70%", delay: "-0.5s" }, { h: "35%", delay: "-0.8s" },
-  { h: "85%", delay: "-0.1s" }, { h: "60%", delay: "-0.4s" }, { h: "95%", delay: "-0.7s" },
-  { h: "50%", delay: "-0.3s" }, { h: "80%", delay: "-0.6s" }, { h: "45%", delay: "-0.9s" },
-  { h: "75%", delay: "-0.2s" }, { h: "55%", delay: "-0.5s" }, { h: "90%", delay: "-0.8s" },
+  { h: "40%", delay: "-0.2s" },
+  { h: "70%", delay: "-0.5s" },
+  { h: "35%", delay: "-0.8s" },
+  { h: "85%", delay: "-0.1s" },
+  { h: "60%", delay: "-0.4s" },
+  { h: "95%", delay: "-0.7s" },
+  { h: "50%", delay: "-0.3s" },
+  { h: "80%", delay: "-0.6s" },
+  { h: "45%", delay: "-0.9s" },
+  { h: "75%", delay: "-0.2s" },
+  { h: "55%", delay: "-0.5s" },
+  { h: "90%", delay: "-0.8s" },
   { h: "40%", delay: "-1.1s" },
 ];
 
@@ -38,33 +47,36 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [volume, setVolume] = useState(65);
-  const [state, setState] = useState<"idle" | "connecting" | "connected" | "disconnected">("idle");
-  const [micActive, setMicActive] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isMicMuted, setIsMicMuted] = useState(false);
-  const [outputMuted, setOutputMuted] = useState(false);
 
-  const [voiceTranscripts, setVoiceTranscripts] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
-
-  const streamRef = useRef<MediaStream | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const startedRef = useRef(false);
-  const processingRef = useRef(false);
-
+  // --- Shared conversation state ---
   const STORAGE_KEY = `aether_active_conversation_${slug}`;
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const [dbMessages, setDbMessages] = useState<ChatMsg[]>([]);
   const savedIdsRef = useRef<Set<string>>(new Set());
+  const prevConvLenRef = useRef(0);
 
-  const MUTED_REFS = useRef({ outputMuted: false });
-  MUTED_REFS.current.outputMuted = outputMuted;
+  // --- Deepgram voice agent ---
+  const { state, conversation, micActive, outputMuted, start, stop, setMicMuted, setOutputMuted } = useDeepgramAgent({
+    config: {
+      auth: { apiKey: process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "" },
+      agent: {
+        listen: { provider: { type: "deepgram" }, model: "flux-general-en" },
+        think: { provider: { type: "google" }, model: "gemini-2.0-flash" },
+        speak: { provider: { type: "deepgram" }, model: "aura-2-odysseus-en" },
+      },
+    },
+    micOptions: { vad: true },
+    playerSampleRate: 24_000,
+  });
 
+  // --- Load active conversation from localStorage ---
   useEffect(() => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) setActiveConversation(saved);
   }, [STORAGE_KEY]);
 
+  // --- Fetch existing messages from Supabase ---
   const fetchDbMessages = useCallback(async (convId: string) => {
     if (!convId) return;
     const supabase = createClient();
@@ -83,147 +95,53 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     if (activeConversation) fetchDbMessages(activeConversation);
   }, [activeConversation, fetchDbMessages]);
 
-  const saveMessage = useCallback(async (role: string, content: string) => {
-    if (!activeConversation || !user) return;
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("chat_messages")
-      .insert({ conversation_id: activeConversation, user_id: user.id, role, content })
-      .select("id")
-      .single();
-    if (data) {
-      savedIdsRef.current.add(data.id);
-      setDbMessages((prev) => [...prev, {
-        id: data.id, role: role as "user" | "assistant", content,
-        created_at: new Date().toISOString(), source: "voice",
-      }]);
-    }
-  }, [activeConversation, user]);
-
-  const speakText = useCallback(async (text: string) => {
-    if (MUTED_REFS.current.outputMuted) return;
-    try {
-      const res = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) return;
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.volume = volume / 100;
-      await audio.play();
-      await new Promise((r) => { audio.onended = r; });
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("TTS error:", err);
-    }
-  }, [volume]);
-
-  const handleTranscript = useCallback(async (text: string) => {
-    if (!text || !activeConversation) return;
-    setVoiceTranscripts((p) => [...p, { role: "user", content: text }]);
-    await saveMessage("user", text);
-    setIsSpeaking(true);
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, conversation_id: activeConversation }),
-      });
-      if (!res.ok) return;
-      const reader = res.body?.getReader();
-      if (!reader) return;
-      const decoder = new TextDecoder();
-      let full = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split("\n")) {
-          if (!line.startsWith("data: ")) continue;
-          try {
-            const p = JSON.parse(line.slice(6));
-            if (p.type === "text" && p.text) full += p.text;
-          } catch {}
-        }
-      }
-      if (full) {
-        const clean = full.replace(/\*+/g, "").replace(/#{1,6}\s/g, "").trim();
-        setVoiceTranscripts((p) => [...p, { role: "assistant", content: clean }]);
-        await saveMessage("assistant", clean);
-        if (!MUTED_REFS.current.outputMuted) await speakText(clean);
-      }
-    } catch (err) {
-      console.error("Chat API error:", err);
-    } finally {
-      setIsSpeaking(false);
-    }
-  }, [activeConversation, saveMessage, speakText]);
-
-  const start = useCallback(async () => {
-    setState("connecting");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      setMicActive(true);
-
-      const mr = new MediaRecorder(stream);
-      mediaRecorderRef.current = mr;
-
-          mr.ondataavailable = async (event) => {
-        if (event.data.size > 0 && !processingRef.current) {
-          processingRef.current = true;
-          try {
-            const res = await fetch("/api/stt", {
-              method: "POST",
-              headers: { "Content-Type": event.data.type || "audio/webm" },
-              body: event.data,
-            });
-            const data = await res.json();
-            if (data.transcript) handleTranscript(data.transcript);
-          } catch (err) {
-            console.error("STT error:", err);
-          } finally {
-            processingRef.current = false;
-          }
-        }
-      };
-
-      mr.onstart = () => setState("connected");
-      mr.onerror = () => setState("disconnected");
-
-      mr.start(2000);
-    } catch (err) {
-      console.error("Start error:", err);
-      setState("disconnected");
-    }
-  }, [handleTranscript]);
-
-  const stop = useCallback(() => {
-    mediaRecorderRef.current?.stop();
-    mediaRecorderRef.current = null;
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
-    setMicActive(false);
-    setState("disconnected");
-  }, []);
-
+  // --- Save new Deepgram conversation turns to Supabase ---
   useEffect(() => {
-    if (!startedRef.current && state === "idle") {
-      startedRef.current = true;
-      start();
-    }
-  }, [state, start]);
+    if (!activeConversation || !user || conversation.length === 0) return;
 
+    const prevLen = prevConvLenRef.current;
+    if (conversation.length <= prevLen) return;
+
+    const newTurns = conversation.slice(prevLen);
+    prevConvLenRef.current = conversation.length;
+
+    const supabase = createClient();
+    (async () => {
+      for (const turn of newTurns) {
+        if (savedIdsRef.current.has(turn.id)) continue;
+
+        const { data: inserted } = await supabase
+          .from("chat_messages")
+          .insert({
+            conversation_id: activeConversation,
+            role: turn.role,
+            content: turn.content,
+          })
+          .select("id")
+          .single();
+
+        if (inserted) {
+          savedIdsRef.current.add(inserted.id);
+          setDbMessages((prev) => [...prev, {
+            id: inserted.id,
+            role: turn.role,
+            content: turn.content,
+            created_at: new Date().toISOString(),
+            source: "voice",
+          }]);
+        }
+      }
+    })();
+  }, [conversation, activeConversation, user]);
+
+  // --- Auth redirect ---
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
+  // --- Call timer ---
   useEffect(() => {
-    if (state === "connected" && !isSpeaking) {
+    if (state === "connected") {
       setElapsed(0);
       timerRef.current = setInterval(() => setElapsed((p) => p + 1), 1000);
     } else if (timerRef.current) {
@@ -231,29 +149,29 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       timerRef.current = null;
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [state, isSpeaking]);
+  }, [state]);
 
+  // --- End call -> navigate to chat ---
   const handleEndCall = useCallback(() => {
-    stop();
+    if (state === "connected") stop();
     router.push(`/${slug}/chat`);
-  }, [stop, router, slug]);
+  }, [state, stop, router, slug]);
 
-  const toggleMic = () => {
-    const next = !isMicMuted;
-    setIsMicMuted(next);
-    if (streamRef.current) {
-      streamRef.current.getAudioTracks().forEach((t) => { t.enabled = !next; });
-    }
-  };
-
+  // --- Merge DB messages + live Deepgram conversation (dedup by content+role) ---
   const allMessages: ChatMsg[] = (() => {
     const merged = [...dbMessages];
     const seen = new Set(merged.map((m) => `${m.role}:${m.content.slice(0, 100)}`));
-    for (const v of voiceTranscripts) {
-      const key = `${v.role}:${v.content.slice(0, 100)}`;
+    for (const turn of conversation) {
+      const key = `${turn.role}:${turn.content.slice(0, 100)}`;
       if (!seen.has(key)) {
         seen.add(key);
-        merged.push({ id: `voice-${Date.now()}-${Math.random()}`, role: v.role, content: v.content, created_at: new Date().toISOString(), source: "voice" });
+        merged.push({
+          id: turn.id,
+          role: turn.role,
+          content: turn.content,
+          created_at: new Date().toISOString(),
+          source: "voice",
+        });
       }
     }
     return merged.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
@@ -272,6 +190,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex flex-col relative overflow-hidden font-sans">
+      {/* Decorative glow */}
       <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#FDE047]/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-[#FDE047]/5 rounded-full blur-[100px] pointer-events-none" />
 
@@ -289,7 +208,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
           </div>
         </div>
         <div className="flex items-center gap-6">
-          {state === "connected" && !isSpeaking && (
+          {state === "connected" && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">
@@ -310,6 +229,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
       {/* Main Immersion Area */}
       <main className="flex-1 flex items-center justify-center relative z-10 px-12">
+        {/* User Transcription (Left) */}
         {lastUserMsg && (
           <section className="absolute left-16 top-1/2 -translate-y-1/2 w-[320px] space-y-4">
             <div className="glass rounded-[32px] p-8 text-stream-fade">
@@ -328,7 +248,9 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
         {/* Center Visualization */}
         <section className="flex flex-col items-center gap-12">
-          <div className="relative flex items-center justify-center overflow-hidden">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 w-[400px] h-[400px] border border-[#FDE047]/10 rounded-full animate-pulse" />
+            <div className="absolute inset-0 w-[300px] h-[300px] border border-[#FDE047]/5 rounded-full animate-ping" style={{ animationDuration: "3s" }} />
             <div className="relative z-20 floating">
               <div className={`w-40 h-40 rounded-full bg-black border-4 flex items-center justify-center overflow-hidden shadow-2xl transition-all duration-500 ${
                 state === "connected" ? "border-[#FDE047] glow-pulse" : "border-white/10"
@@ -339,7 +261,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
               </div>
               {state === "connected" && (
                 <div className="absolute -bottom-2 right-4 bg-green-500 px-3 py-1 rounded-full text-[8px] font-black uppercase text-black border-2 border-black">
-                  {isSpeaking ? "Speaking" : "Listening"}
+                  {micActive ? "Listening" : "Speaking"}
                 </div>
               )}
             </div>
@@ -364,9 +286,12 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
           {/* Status */}
           <div className="text-center">
             {state === "idle" && (
-              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 animate-pulse">
-                Initializing...
-              </p>
+              <button
+                onClick={start}
+                className="bg-[#FDE047] text-black font-black px-10 py-4 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
+              >
+                Start Voice Session
+              </button>
             )}
             {state === "connecting" && (
               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#FDE047] animate-pulse">
@@ -375,14 +300,14 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
             )}
             {state === "connected" && (
               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#FDE047]">
-                {isSpeaking ? "Aether is explaining..." : "Aether is listening..."}
+                {micActive ? "Aether is listening..." : "Aether is explaining..."}
               </p>
             )}
             {state === "disconnected" && (
               <div className="space-y-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Connection Lost</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Session Ended</p>
                 <button
-                  onClick={() => { startedRef.current = true; stop(); setTimeout(() => { startedRef.current = false; start(); }, 300); }}
+                  onClick={start}
                   className="bg-[#FDE047] text-black font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
                 >
                   Reconnect
@@ -418,11 +343,11 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         <div className="glass rounded-full px-10 py-5 flex items-center gap-10 shadow-2xl border border-white/20">
           <div className="flex items-center gap-4">
             <button
-              onClick={toggleMic}
+              onClick={() => setMicMuted(!micActive)}
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                isMicMuted
-                  ? "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
-                  : "bg-[#FDE047] text-black shadow-[0_0_15px_rgba(253,224,71,0.3)]"
+                micActive
+                  ? "bg-[#FDE047] text-black shadow-[0_0_15px_rgba(253,224,71,0.3)]"
+                  : "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -480,18 +405,25 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         </div>
       </footer>
 
+      {/* Background Ticker */}
       <div className="absolute bottom-8 w-full flex justify-center opacity-10 grayscale px-24 pointer-events-none">
         <div className="flex gap-16 items-center">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0014.293 3a5.985 5.985 0 00-4.407 1.957A6.046 6.046 0 003.5 10.46a6.065 6.065 0 00.725 5.176 5.985 5.985 0 00.516 4.91 6.046 6.046 0 006.51 2.9A6.065 6.065 0 009.707 21a5.985 5.985 0 004.407-1.957 6.046 6.046 0 008.369-7.714z" /></svg>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0014.293 3a5.985 5.985 0 00-4.407 1.957A6.046 6.046 0 003.5 10.46a6.065 6.065 0 00.725 5.176 5.985 5.985 0 00.516 4.91 6.046 6.046 0 006.51 2.9A6.065 6.065 0 009.707 21a5.985 5.985 0 004.407-1.957 6.046 6.046 0 008.369-7.714z" />
+            </svg>
             <span className="font-black tracking-tighter">OPENAI</span>
           </div>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" /></svg>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" />
+            </svg>
             <span className="font-black tracking-tighter">FIGMA</span>
           </div>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.462 19.538c.456-.087.731-.491.656-.949l-.504-3.054H7.32l.84 5.114c.075.458-.2 0.862-.656.949l-4.042.94zm15.076-12.01l-1.557-.455L16.4 12.5l1.557.455 1.581-5.427zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" /></svg>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4.462 19.538c.456-.087.731-.491.656-.949l-.504-3.054H7.32l.84 5.114c.075.458-.2 0.862-.656.949l-4.042.94zm15.076-12.01l-1.557-.455L16.4 12.5l1.557.455 1.581-5.427zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" />
+            </svg>
             <span className="font-black tracking-tighter">NOTION</span>
           </div>
         </div>
