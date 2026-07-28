@@ -58,12 +58,13 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   // --- Deepgram voice agent ---
   const { state, conversation, micActive, outputMuted, start, stop, setMicMuted, setOutputMuted } = useDeepgramAgent({
     config: {
-      auth: { apiKey: process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "" },
+      auth: { tokenFactory: () => fetch("/api/deepgram-token").then(r => r.json()).then(d => d.token || "") },
       agent: {
         listen: { provider: { type: "deepgram" }, model: "flux-general-en" },
         think: { provider: { type: "google" }, model: "gemini-2.0-flash" },
         speak: { provider: { type: "deepgram" }, model: "aura-2-odysseus-en" },
       },
+      reconnect: { enabled: false },
     },
     micOptions: { vad: true },
     playerSampleRate: 24_000,
@@ -320,7 +321,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
               <div className="space-y-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Connection Lost</p>
                 <button
-                  onClick={start}
+                  onClick={() => { startedRef.current = false; start(); }}
                   className="bg-[#FDE047] text-black font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
                 >
                   Reconnect
