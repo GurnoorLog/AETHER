@@ -11,7 +11,7 @@ export default function Nav() {
 
   return (
     <header className="sticky top-0 z-[100] w-full px-4 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-10 flex justify-center">
-      <nav className="w-full max-w-7xl glass-card rounded-full px-4 sm:px-6 lg:px-12 py-4 sm:py-5 lg:py-6 flex items-center justify-between shadow-2xl backdrop-blur-3xl relative overflow-hidden">
+      <nav className="w-full max-w-7xl glass-card rounded-full px-4 sm:px-6 lg:px-12 py-4 sm:py-5 lg:py-6 flex items-center justify-between shadow-2xl backdrop-blur-3xl relative">
         <div className="absolute inset-0 bg-gradient-to-r from-cyber-yellow/[0.02] via-transparent to-cyber-yellow/[0.02] pointer-events-none" />
         <a href="#" className="flex items-center gap-3 sm:gap-4 group">
           <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-black rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(253,224,71,0.3)] premium-transition">
