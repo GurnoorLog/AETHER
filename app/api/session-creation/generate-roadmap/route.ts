@@ -20,14 +20,18 @@ Configuration:
 - Session Duration: ${duration}
 - Objectives: ${objectives || "General mastery of the subject"}
 
+CRITICAL: The roadmap MUST be SPECIFIC to the subject and objectives above. Do NOT use generic module names like "${subject} Fundamentals" or "Intermediate ${subject}". Instead, create modules that directly address the specific topic or objectives.
+
+For example, if the subject is "Literature" and objectives mention "Dante", modules should be like "Dante's Life and Historical Context", "The Divine Comedy: Inferno", etc. — not "Literature Fundamentals".
+
 Return a JSON array of 4-6 modules. Each module must have:
-- "title": short module name (e.g. "Algebra Fundamentals")
+- "title": short, SPECIFIC module name
 - "status": one of "completed", "current", or "locked". The first 1-2 should be "completed", the next "current", the rest "locked"
 - "description": 1 short sentence describing what this module covers
 - "learning_objectives": a string listing 3-5 specific learning objectives separated by newlines
 - "key_concepts": a string listing the key concepts/theorems/terms separated by commas
 - "lessons": an array of 2-4 lessons, each with:
-  - "title": lesson name (e.g. "Introduction to Variables")
+  - "title": lesson name
   - "description": 1 sentence about what this lesson teaches
   - "duration_minutes": estimated minutes (10-30)
   - "key_topics": array of 2-4 specific topics covered in this lesson
@@ -51,62 +55,66 @@ Return ONLY the JSON array, no markdown, no explanation. Example format:
     const data = await res.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    // Strip markdown code fences before parsing
+    const cleaned = text.replace(/```(?:json)?\s*/g, "").trim();
+    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      return NextResponse.json({ modules: getDefaultModules(subject) });
+      console.error("Roadmap: no JSON found in Gemini response:", text.slice(0, 500));
+      return NextResponse.json({ modules: getDefaultModules(subject, objectives) });
     }
 
     const modules = JSON.parse(jsonMatch[0]);
     return NextResponse.json({ modules });
   } catch (err) {
     console.error("Roadmap generation failed:", err);
-    return NextResponse.json({ modules: getDefaultModules(subject) });
+    return NextResponse.json({ modules: getDefaultModules(subject, objectives) });
   }
 }
 
-function getDefaultModules(subject: string) {
+function getDefaultModules(subject: string, objectives?: string) {
+  const focus = objectives || subject;
   return [
     {
-      title: `${subject} Fundamentals`,
+      title: `Foundations of ${focus}`,
       status: "completed",
-      description: `Core concepts and foundational principles of ${subject}.`,
-      learning_objectives: `- Understand the basic terminology\n- Identify core principles`,
+      description: `Core concepts and foundational principles of ${focus}.`,
+      learning_objectives: `- Understand the fundamental concepts of ${focus}\n- Identify key terminology and principles`,
       key_concepts: `fundamentals, core principles, terminology`,
       lessons: [
-        { title: "Core Terminology", description: "Learn the essential vocabulary.", duration_minutes: 15, key_topics: ["definitions", "basic terms"] },
+        { title: "Introduction to Core Ideas", description: "Learn the essential concepts and vocabulary.", duration_minutes: 15, key_topics: ["definitions", "basic concepts"] },
         { title: "Foundational Principles", description: "Understand the building blocks.", duration_minutes: 20, key_topics: ["principles", "framework"] },
       ],
     },
     {
-      title: `Intermediate ${subject}`,
+      title: `Key Topics in ${focus}`,
       status: "completed",
-      description: `Building on fundamentals with practical applications.`,
-      learning_objectives: `- Apply concepts to real problems\n- Develop analytical skills`,
-      key_concepts: `application, analysis, practical methods`,
+      description: `Exploring the major topics and themes within ${focus}.`,
+      learning_objectives: `- Explore major themes and topics\n- Connect concepts to broader context`,
+      key_concepts: `major themes, key topics, context`,
       lessons: [
-        { title: "Applied Concepts", description: "Putting theory into practice.", duration_minutes: 20, key_topics: ["applications", "practice"] },
-        { title: "Analytical Methods", description: "Develop problem-solving approaches.", duration_minutes: 25, key_topics: ["analysis", "methodology"] },
+        { title: "Major Themes", description: "Survey the key themes and topics.", duration_minutes: 20, key_topics: ["themes", "overview"] },
+        { title: "Context and Connections", description: "Understand how topics relate to each other.", duration_minutes: 25, key_topics: ["connections", "context"] },
       ],
     },
     {
-      title: `Advanced Topics`,
+      title: `Advanced Study of ${focus}`,
       status: "current",
-      description: `Diving into complex theories and problem-solving methods.`,
-      learning_objectives: `- Master advanced techniques\n- Solve complex problems`,
-      key_concepts: `advanced theory, complex problem-solving, synthesis`,
+      description: `Diving deeper into advanced aspects of ${focus}.`,
+      learning_objectives: `- Master advanced concepts\n- Apply knowledge to complex scenarios`,
+      key_concepts: `advanced concepts, deep analysis, synthesis`,
       lessons: [
-        { title: "Complex Theories", description: "Explore advanced theoretical frameworks.", duration_minutes: 25, key_topics: ["theory", "advanced concepts"] },
-        { title: "Problem-Solving Workshop", description: "Tackle challenging problems.", duration_minutes: 30, key_topics: ["workshop", "advanced problems"] },
+        { title: "Advanced Concepts", description: "Explore complex and nuanced topics.", duration_minutes: 25, key_topics: ["advanced theory", "deep analysis"] },
+        { title: "Practical Application", description: "Apply what you've learned to real scenarios.", duration_minutes: 30, key_topics: ["application", "problem-solving"] },
       ],
     },
     {
-      title: `Expert Mastery`,
+      title: `Mastery of ${focus}`,
       status: "locked",
-      description: `Locked until current module complete.`,
-      learning_objectives: `- Demonstrate expert-level understanding\n- Apply to novel situations`,
-      key_concepts: `expertise, novel application, mastery`,
+      description: `Achieving expert-level understanding of ${focus}.`,
+      learning_objectives: `- Demonstrate expert-level understanding\n- Synthesize and evaluate knowledge`,
+      key_concepts: `expertise, synthesis, evaluation`,
       lessons: [
-        { title: "Expert Techniques", description: "Master expert-level methods.", duration_minutes: 20, key_topics: ["expert methods", "mastery"] },
+        { title: "Expert Synthesis", description: "Synthesize all knowledge into comprehensive understanding.", duration_minutes: 20, key_topics: ["synthesis", "mastery"] },
       ],
     },
   ];

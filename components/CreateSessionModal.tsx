@@ -243,7 +243,8 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleStartLearning} />
-        <div className="relative glass-card rounded-[32px] p-8 max-w-2xl w-full mx-4 z-10 max-h-[80vh] overflow-y-auto">
+        <div className="relative glass-card rounded-[32px] max-w-2xl w-full mx-4 z-10 max-h-[80vh] overflow-hidden">
+          <div className="p-8 overflow-y-auto max-h-[80vh]">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-black">{roadmapSubject} Roadmap</h2>
@@ -277,6 +278,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
             Start Learning
           </button>
         </div>
+        </div>
       </div>
     );
   }
@@ -286,7 +288,8 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative glass-card rounded-[32px] p-8 max-w-2xl w-full mx-4 z-10 max-h-[85vh] overflow-y-auto">
+      <div className="relative glass-card rounded-[32px] max-w-2xl w-full mx-4 z-10 max-h-[85vh] overflow-hidden">
+        <div className="p-8 overflow-y-auto max-h-[85vh]">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-black">Create New Session</h2>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer">
@@ -405,6 +408,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
             )}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
