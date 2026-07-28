@@ -69,6 +69,22 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     playerSampleRate: 24_000,
   });
 
+  const [isMicMuted, setIsMicMuted] = useState(false);
+  const toggleMic = () => {
+    const next = !isMicMuted;
+    setIsMicMuted(next);
+    setMicMuted(next);
+  };
+
+  // --- Auto-connect on mount → triggers browser mic permission prompt ---
+  const startedRef = useRef(false);
+  useEffect(() => {
+    if (state === "idle" && !startedRef.current) {
+      startedRef.current = true;
+      start();
+    }
+  }, [state, start]);
+
   // --- Load active conversation from localStorage ---
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -286,12 +302,9 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
           {/* Status */}
           <div className="text-center">
             {state === "idle" && (
-              <button
-                onClick={start}
-                className="bg-[#FDE047] text-black font-black px-10 py-4 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
-              >
-                Start Voice Session
-              </button>
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 animate-pulse">
+                Initializing...
+              </p>
             )}
             {state === "connecting" && (
               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#FDE047] animate-pulse">
@@ -305,7 +318,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
             )}
             {state === "disconnected" && (
               <div className="space-y-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Session Ended</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Connection Lost</p>
                 <button
                   onClick={start}
                   className="bg-[#FDE047] text-black font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
@@ -343,11 +356,11 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         <div className="glass rounded-full px-10 py-5 flex items-center gap-10 shadow-2xl border border-white/20">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setMicMuted(!micActive)}
+              onClick={toggleMic}
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                micActive
-                  ? "bg-[#FDE047] text-black shadow-[0_0_15px_rgba(253,224,71,0.3)]"
-                  : "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
+                isMicMuted
+                  ? "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
+                  : "bg-[#FDE047] text-black shadow-[0_0_15px_rgba(253,224,71,0.3)]"
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
