@@ -6,8 +6,6 @@ import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import { useAutoCollapse } from "@/hooks/useAutoCollapse";
-import SidebarRight from "@/components/SidebarRight";
-import SidebarLeft from "@/components/SidebarLeft";
 import type { Lesson } from "@/types/database";
 
 interface RoadmapModule {
@@ -66,29 +64,17 @@ export default function SessionRoadmapPage() {
 
   if (authLoading || !user || !session) {
     return (
-      <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-        <div className="w-[15%] shrink-0 p-6 space-y-4">
-          <div className="animate-pulse bg-white/5 rounded-2xl w-10 h-10" />
-          <div className="animate-pulse bg-white/5 rounded-full h-10" />
-        </div>
-        <main className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
-        </main>
-        <div className="w-[20%] shrink-0 p-6">
-          <div className="animate-pulse bg-white/5 rounded-[32px] h-64" />
-        </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-      <SidebarLeft currentPage="roadmap" />
-
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
+    <>
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">{session.title}</div>
           </div>
           <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
@@ -98,7 +84,7 @@ export default function SessionRoadmapPage() {
                 <span className="text-[10px] font-bold text-black/40">{progress}%</span>
               </div>
             )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Your Learning Roadmap</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
@@ -115,7 +101,7 @@ export default function SessionRoadmapPage() {
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-12 relative z-10">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-24 overflow-y-auto space-y-6 lg:space-y-12 relative z-10">
           <section>
             <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 mb-8">Module Sequence</h2>
 
@@ -124,7 +110,7 @@ export default function SessionRoadmapPage() {
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex items-start gap-8">
                     <div className="w-10 h-10 rounded-full bg-white/5 animate-pulse shrink-0" />
-                    <div className="flex-1 glass-card rounded-[24px] p-6 animate-pulse">
+                      <div className="flex-1 glass-card rounded-[24px] p-4 sm:p-6 animate-pulse">
                       <div className="w-48 h-4 bg-white/5 rounded mb-2" />
                       <div className="w-64 h-3 bg-white/5 rounded" />
                     </div>
@@ -132,11 +118,11 @@ export default function SessionRoadmapPage() {
                 ))}
               </div>
             ) : modules.length === 0 ? (
-              <div className="text-center py-20">
+              <div className="text-center py-10 lg:py-20">
                 <p className="text-white/30 text-sm">No roadmap modules yet. Create a session to generate one.</p>
               </div>
             ) : (
-              <div className="relative pl-12 space-y-8">
+              <div className="relative pl-8 lg:pl-12 space-y-8">
                 {/* Roadmap line */}
                 <div className="absolute" style={{ left: "19px", top: "32px", bottom: "32px", width: "2px", background: "rgba(255,255,255,0.1)" }} />
 
@@ -147,7 +133,7 @@ export default function SessionRoadmapPage() {
                   const lessons = mod.lessons || [];
 
                   return (
-                    <div key={mod.id} className="flex items-start gap-8" style={{ position: "relative", zIndex: 10 }}>
+                    <div key={mod.id} className="flex items-start gap-4 lg:gap-8" style={{ position: "relative", zIndex: 10 }}>
                       {/* Status dot */}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-deep-onyx shrink-0 ${
                         isCompleted
@@ -172,7 +158,7 @@ export default function SessionRoadmapPage() {
                       </div>
 
                       {/* Module card */}
-                      <div className={`flex-1 rounded-[24px] p-6 transition-all ${
+                      <div className={`flex-1 rounded-[24px] p-4 sm:p-6 transition-all ${
                         isCompleted
                           ? "glass-card opacity-60"
                           : isCurrent
@@ -291,17 +277,15 @@ export default function SessionRoadmapPage() {
             )}
           </section>
         </div>
-      </main>
 
-      <SidebarRight />
 
       {/* Floating Notification */}
-      <div className="fixed bottom-10 left-10 space-y-3 z-50">
+      <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
         <div className="bg-black/80 backdrop-blur-xl border border-cyber-yellow/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl">
           <div className="w-2 h-2 bg-cyber-yellow rounded-full" />
           <span className="text-[10px] font-bold uppercase tracking-widest">Roadmap Synchronized</span>
         </div>
       </div>
-    </div>
+    </>
   );
 }

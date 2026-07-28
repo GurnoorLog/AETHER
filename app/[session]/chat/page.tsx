@@ -6,8 +6,6 @@ import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
-import SidebarRight from "@/components/SidebarRight";
-import SidebarLeft from "@/components/SidebarLeft";
 import type { Lesson } from "@/types/database";
 
 interface ChatMessage {
@@ -524,29 +522,17 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
 
   if (authLoading || !user || !session) {
     return (
-      <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-        <div className="w-[15%] shrink-0 p-6 space-y-4">
-          <div className="animate-pulse bg-white/5 rounded-2xl w-10 h-10" />
-          <div className="animate-pulse bg-white/5 rounded-full h-10" />
-        </div>
-        <main className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
-        </main>
-        <div className="w-[20%] shrink-0 p-6">
-          <div className="animate-pulse bg-white/5 rounded-[32px] h-64" />
-        </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-      <SidebarLeft currentPage="tutor" />
-
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
+    <>
         {/* Header */}
-        <header className="p-6 pb-0">
-          <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">
+        <header className="p-3 sm:p-4 lg:p-6 lg:pb-0">
+          <div className="flex items-center justify-between glass-card rounded-[32px] p-3 sm:p-4 lg:p-6 mb-8">
             <div className="flex items-center gap-6">
               {activeConversation && (
                 <button
@@ -559,8 +545,8 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                 </button>
               )}
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-cyber-yellow">
-                  <svg className="w-8 h-8 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <div className="w-10 sm:w-12 lg:w-16 h-10 sm:h-12 lg:h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-cyber-yellow">
+                  <svg className="w-6 lg:w-8 h-6 lg:h-8 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                 </div>
@@ -584,27 +570,27 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 lg:gap-3 flex-wrap justify-end">
               <Link
                 href={`/${slug}/voice-tutor`}
-                className="flex items-center gap-2 bg-white/5 border border-white/10 text-xs font-bold px-4 py-2.5 rounded-full hover:bg-white/10 hover:border-cyber-yellow/30 transition-all cursor-pointer"
+                className="flex items-center gap-2 bg-white/5 border border-white/10 text-xs font-bold px-2 lg:px-4 py-1.5 lg:py-2.5 rounded-full hover:bg-white/10 hover:border-cyber-yellow/30 transition-all cursor-pointer"
               >
                 <svg className="w-4 h-4 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                 </svg>
-                <span className="text-cyber-yellow">Voice Mode</span>
+                <span className="hidden lg:inline text-cyber-yellow">Voice Mode</span>
               </Link>
               {activeConversation && (
                 <button
                   onClick={() => deleteConversation(activeConversation)}
-                  className="text-red-400/60 hover:text-red-400 text-xs font-bold px-4 py-2.5 rounded-full hover:bg-red-400/10 transition-all cursor-pointer"
+                  className="text-red-400/60 hover:text-red-400 text-xs font-bold px-3 lg:px-4 py-1.5 lg:py-2.5 rounded-full hover:bg-red-400/10 transition-all cursor-pointer"
                 >
                   Delete
                 </button>
               )}
               <button
                 onClick={createConversation}
-                className="bg-cyber-yellow text-black text-xs font-bold px-5 py-2.5 rounded-full hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                className="bg-cyber-yellow text-black text-xs font-bold px-3 lg:px-5 py-1.5 lg:py-2.5 rounded-full hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
                 + New Chat
               </button>
@@ -613,7 +599,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
         </header>
 
         {!activeConversation ? (
-          <div className="flex-1 overflow-y-auto px-8 pb-24">
+          <div className="flex-1 overflow-y-auto px-3 sm:px-4 lg:px-8 pb-24">
             <div className="max-w-3xl mx-auto py-8">
               {loading ? (
                 <div className="space-y-4">
@@ -625,12 +611,12 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                 </div>
               ) : conversations.length === 0 ? (
                 <div className="text-center py-20">
-                  <div className="w-20 h-20 mx-auto bg-cyber-yellow/10 rounded-3xl flex items-center justify-center mb-6">
+                  <div className="w-16 lg:w-20 h-16 lg:h-20 mx-auto bg-cyber-yellow/10 rounded-3xl flex items-center justify-center mb-6">
                     <svg className="w-10 h-10 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-bold mb-3">Start a conversation</h2>
+                  <h2 className="text-xl lg:text-2xl font-bold mb-3">Start a conversation</h2>
                   <p className="text-white/40 text-sm mb-8 max-w-md mx-auto">
                     Ask Aether anything about {session.subject || "this session"}. It retrieves context from your uploaded documents.
                   </p>
@@ -688,7 +674,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto px-8 pb-32">
+            <div className="flex-1 overflow-y-auto px-3 sm:px-4 lg:px-8 pb-28 lg:pb-32">
               <div className="max-w-4xl mx-auto space-y-8 py-6">
                 {messages.length === 0 && moduleContext && (
                   <div className="glass-card rounded-[32px] p-8 mb-8">
@@ -728,14 +714,14 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                 {messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start items-start gap-4"}`}>
                     {msg.role === "assistant" && (
-                      <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex-shrink-0 flex items-center justify-center text-black shadow-[0_0_15px_rgba(253,224,71,0.4)]">
+                      <div className="w-8 lg:w-10 h-8 lg:h-10 rounded-xl bg-cyber-yellow flex-shrink-0 flex items-center justify-center text-black shadow-[0_0_15px_rgba(253,224,71,0.4)]">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                         </svg>
                       </div>
                     )}
 
-                    <div className={`space-y-3 ${msg.role === "user" ? "max-w-[80%]" : "max-w-[85%]"}`}>
+                    <div className={`space-y-3 ${msg.role === "user" ? "max-w-[90%] sm:max-w-[85%] lg:max-w-[80%]" : "max-w-[95%] sm:max-w-[90%] lg:max-w-[85%]"}`}>
                       {msg.role === "user" ? (
                         <div className="bg-white/5 border border-white/10 rounded-[28px] rounded-tr-lg p-5 shadow-lg">
                           <p className="text-sm leading-relaxed">{msg.content}</p>
@@ -861,15 +847,15 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
             )}
 
             {/* Composer Bar */}
-            <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-12">
+            <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-2 sm:px-4 lg:px-12">
               <div className="pointer-events-auto">
                 <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
-                  <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl relative">
+                  <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-1 sm:p-2 flex items-center gap-2 pr-4 shadow-2xl relative">
                     {/* Left: + button with attachment menu */}
                     <div className="relative">
                       <button
                         onClick={() => setShowAttachMenu(!showAttachMenu)}
-                        className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer"
+                        className="w-10 lg:w-12 h-10 lg:h-12 shrink-0 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer"
                       >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path d="M12 4.5v15m7.5-7.5h-15" />
@@ -918,7 +904,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={handleKeyDown}
                       disabled={sending}
-                      className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none disabled:opacity-50"
+                      className="flex-1 bg-transparent border-none focus:ring-0 text-xs sm:text-sm py-2 sm:py-4 min-w-0 text-white placeholder-white/40 outline-none disabled:opacity-50"
                     />
 
                     {/* Right side: mic or send */}
@@ -927,7 +913,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                         <button
                           onClick={sendMessage}
                           disabled={sending}
-                          className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-10 lg:w-12 h-10 lg:h-12 shrink-0 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
@@ -936,7 +922,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                       ) : speechSupported ? (
                         <button
                           onClick={toggleRecording}
-                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                          className={`w-10 lg:w-12 h-10 lg:h-12 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer ${
                             isRecording
                               ? "bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)] animate-pulse"
                               : "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
@@ -950,7 +936,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                         <button
                           onClick={sendMessage}
                           disabled={!inputValue.trim() || sending}
-                          className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-10 lg:w-12 h-10 lg:h-12 shrink-0 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
@@ -1044,9 +1030,6 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
             )}
           </>
         )}
-      </main>
-
-      <SidebarRight />
-    </div>
+    </>
   );
 }

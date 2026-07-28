@@ -81,7 +81,7 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
       <AuthInput
         id="signup-name"
         label="Full Name"

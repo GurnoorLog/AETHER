@@ -35,18 +35,18 @@ const steps = [
 
 export default function LearningJourney() {
   return (
-    <section id="methodology" className="bg-deep-onyx py-48 px-12 relative">
+    <section id="methodology" className="bg-deep-onyx py-24 md:py-48 px-6 sm:px-12 relative">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-40">
-          <h2 className="text-6xl md:text-[6rem] font-black mb-8 tracking-tighter">
+        <div className="text-center mb-16 md:mb-24 lg:mb-40">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[6rem] font-black mb-6 md:mb-8 tracking-tighter">
             Build Your <span className="text-cyber-yellow italic">Knowledge.</span>
           </h2>
-          <p className="text-white/40 max-w-2xl mx-auto text-2xl font-medium">
+          <p className="text-white/40 max-w-2xl mx-auto text-lg md:text-2xl font-medium">
             A living cycle of discovery, organized by intelligence.
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-16 lg:gap-8 relative">
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-12 sm:gap-16 lg:gap-8 relative">
           {steps.map((step, index) => (
             <div key={step.title} className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left group relative step-container">
               <div
@@ -56,11 +56,11 @@ export default function LearningJourney() {
                     : 'bg-[#171717] border border-white/10 group-hover:bg-cyber-yellow group-hover:text-black'
                 }`}
               >
-                {step.icon || <span className="text-3xl font-black">{step.number}</span>}
+                {step.icon || <span className="text-2xl sm:text-3xl font-black">{step.number}</span>}
               </div>
-              <div className="space-y-6">
-                <h5 className="text-4xl font-black text-white">{step.title}</h5>
-                <p className="text-white/40 text-xl leading-relaxed font-medium">
+              <div className="space-y-4 sm:space-y-6">
+                <h5 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white">{step.title}</h5>
+                <p className="text-white/40 text-sm sm:text-base lg:text-xl leading-relaxed font-medium">
                   {step.description}
                 </p>
               </div>

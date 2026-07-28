@@ -37,24 +37,24 @@ export default function QuizzesPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className="min-h-[40vh] bg-cyber-yellow text-black p-6 sm:p-8 lg:p-12 liquid-wave relative flex flex-col justify-end">
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">DAILY GOAL: 2/3</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
           </div>
           <div className="max-w-3xl mb-12">
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Challenge</p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Quiz Your Knowledge</h1>
-            <p className="text-xl font-medium opacity-80">Challenge yourself and strengthen your mastery across 14 categories.</p>
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4">Quiz Your Knowledge</h1>
+            <p className="text-base sm:text-lg lg:text-xl font-medium opacity-80">Challenge yourself and strengthen your mastery across 14 categories.</p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
+          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-12 pb-20 space-y-10 relative z-10 overflow-y-auto">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 space-y-6 lg:space-y-10 relative z-10 overflow-y-auto">
 
           {/* Aether Core Header */}
-          <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">
+          <div className="flex items-center justify-between glass-card rounded-[32px] p-4 sm:p-6 mb-8">
             <div className="flex items-center gap-6">
               <div className="relative">
                 <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-cyber-yellow">
@@ -93,28 +93,28 @@ export default function QuizzesPage() {
           </div>
 
           {/* Stat Summary */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+            <div className="glass-card p-4 sm:p-6 rounded-[32px] flex flex-col justify-center">
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Total Quizzes</p>
-              <p className="text-3xl font-bold">142</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">142</p>
             </div>
             <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Weekly Comp</p>
-              <p className="text-3xl font-bold">12 <span className="text-cyber-yellow text-xs font-medium">+2</span></p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">12 <span className="text-cyber-yellow text-xs font-medium">+2</span></p>
             </div>
             <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Avg. Score</p>
-              <p className="text-3xl font-bold">88%</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">88%</p>
             </div>
             <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Current Streak</p>
-              <p className="text-3xl font-bold">7 Days</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">7 Days</p>
             </div>
           </div>
 
           {/* Filtering */}
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
+            <div className="flex flex-wrap gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
               <button type="button" className="px-6 py-2 rounded-full bg-cyber-yellow text-black text-xs font-bold cursor-pointer">All Quizzes</button>
               <button type="button" className="px-6 py-2 rounded-full hover:bg-white/5 text-xs font-bold opacity-60 hover:opacity-100 transition-all cursor-pointer">Mathematics</button>
               <button type="button" className="px-6 py-2 rounded-full hover:bg-white/5 text-xs font-bold opacity-60 hover:opacity-100 transition-all cursor-pointer">Physics</button>
@@ -131,21 +131,21 @@ export default function QuizzesPage() {
           </div>
 
           {/* Quiz Recommendation Grid */}
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
 
             {/* Card 1: Easy */}
-            <div className="glass-card p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="glass-card p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-green-500/10 text-green-400 text-[10px] font-black uppercase rounded-full">Easy</span>
-                  <h3 className="text-2xl font-bold tracking-tight">Derivatives Fundamentals</h3>
+                  <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Derivatives Fundamentals</h3>
                 </div>
                 <div className="text-right">
                   <p className="text-cyber-yellow text-xl font-black">+120 XP</p>
                   <p className="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex flex-wrap items-center gap-3 lg:gap-6 mb-8">
                 <div className="flex items-center gap-2 opacity-60">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M12 6v6l4 2" />
@@ -175,18 +175,18 @@ export default function QuizzesPage() {
             </div>
 
             {/* Card 2: Medium (Active) */}
-            <div className="glass-card p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="glass-card p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
-                  <h3 className="text-2xl font-bold tracking-tight">Integration Techniques</h3>
+                  <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Integration Techniques</h3>
                 </div>
                 <div className="text-right">
                   <p className="text-cyber-yellow text-xl font-black">+250 XP</p>
                   <p className="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex flex-wrap items-center gap-3 lg:gap-6 mb-8">
                 <div className="flex items-center gap-2 opacity-60">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M12 6v6l4 2" />
@@ -216,18 +216,18 @@ export default function QuizzesPage() {
             </div>
 
             {/* Card 3: Hard */}
-            <div className="glass-card p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="glass-card p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-red-500/10 text-red-400 text-[10px] font-black uppercase rounded-full">Hard</span>
-                  <h3 className="text-2xl font-bold tracking-tight">Vector Calculus Master</h3>
+                  <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Vector Calculus Master</h3>
                 </div>
                 <div className="text-right">
                   <p className="text-cyber-yellow text-xl font-black">+500 XP</p>
                   <p className="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex flex-wrap items-center gap-3 lg:gap-6 mb-8">
                 <div className="flex items-center gap-2 opacity-60">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M12 6v6l4 2" />
@@ -257,18 +257,18 @@ export default function QuizzesPage() {
             </div>
 
             {/* Card 4: Medium */}
-            <div className="glass-card p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="glass-card p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
-                  <h3 className="text-2xl font-bold tracking-tight">Linear Algebra Basis</h3>
+                  <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Linear Algebra Basis</h3>
                 </div>
                 <div className="text-right">
                   <p className="text-cyber-yellow text-xl font-black">+180 XP</p>
                   <p className="text-[10px] text-white/40 font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex flex-wrap items-center gap-3 lg:gap-6 mb-8">
                 <div className="flex items-center gap-2 opacity-60">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M12 6v6l4 2" />
@@ -300,9 +300,9 @@ export default function QuizzesPage() {
           </div>
 
           {/* Logo Ticker */}
-          <div className="mt-20 py-12 border-t border-white/5 bg-black rounded-t-[100px] flex items-center justify-between opacity-30 grayscale">
-            <span className="text-[10px] font-bold tracking-widest px-12">CHALLENGE SPONSORS</span>
-            <div className="flex gap-16 px-12">
+          <div className="mt-10 lg:mt-20 py-6 sm:py-8 lg:py-12 border-t border-white/5 bg-black rounded-t-[100px] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 opacity-30 grayscale">
+            <span className="text-[10px] font-bold tracking-widest px-4 sm:px-6 lg:px-12">CHALLENGE SPONSORS</span>
+            <div className="flex flex-wrap gap-4 sm:gap-8 lg:gap-16 px-4 sm:px-6 lg:px-12">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <circle cx="12" cy="12" r="10" />
@@ -341,7 +341,7 @@ export default function QuizzesPage() {
       <SidebarRight />
 
       {/* Floating Notification */}
-      <div className="fixed bottom-10 left-10 space-y-3 z-50">
+      <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
         <div className="bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-full flex items-center gap-4 animate-scale-in shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
           <div className="w-3 h-3 bg-cyber-yellow rounded-full shadow-[0_0_10px_#FDE047]" />
           <span className="text-[10px] font-black uppercase tracking-[0.2em]">🎯 New Quiz Generated</span>

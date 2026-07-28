@@ -8,12 +8,12 @@ const badges = [
 
 export default function FeatureBadges() {
   return (
-    <section className="bg-deep-onyx py-48 px-8 -mt-32 relative z-20">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-6">
+    <section className="bg-deep-onyx py-24 md:py-48 px-4 sm:px-8 -mt-32 relative z-20">
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-4 sm:gap-6">
         {badges.map((badge) => (
           <div
             key={badge.label}
-            className={`px-10 py-5 bg-white/5 border border-white/10 rounded-full flex items-center gap-5 ${badge.hoverColor} premium-transition group cursor-default shadow-xl`}
+            className={`px-6 py-4 sm:px-8 sm:py-4 lg:px-10 lg:py-5 bg-white/5 border border-white/10 rounded-full flex items-center gap-3 sm:gap-5 ${badge.hoverColor} premium-transition group cursor-default shadow-xl`}
           >
             <span
               className="text-2xl transition-all duration-500"

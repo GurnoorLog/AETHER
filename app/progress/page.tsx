@@ -79,35 +79,35 @@ export default function ProgressPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className="min-h-[40vh] bg-cyber-yellow text-black p-6 sm:p-8 lg:p-12 liquid-wave relative flex flex-col justify-end">
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">MARCH 10 - 17</div>
           </div>
           <div className="max-w-3xl mb-12">
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Performance Analytics</p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">Your Learning Journey</h1>
-            <p className="text-xl font-medium opacity-80">You&apos;re in the top 5% of learners this week. Your focus peaked on Wednesday.</p>
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4">Your Learning Journey</h1>
+            <p className="text-base sm:text-lg lg:text-xl font-medium opacity-80">You&apos;re in the top 5% of learners this week. Your focus peaked on Wednesday.</p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
+          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-12 pb-20 space-y-8 overflow-y-auto">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 space-y-4 lg:space-y-8 overflow-y-auto">
 
           {/* Main Analytics Grid */}
-          <div className="grid grid-cols-12 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
 
             {/* Daily Mastery Ring */}
-            <div className="col-span-4 glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center">
+            <div className="col-span-12 lg:col-span-4 glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Daily Mastery</h4>
-              <div className="relative w-48 h-48 mx-auto flex items-center justify-center mb-6">
+              <div className="relative w-36 h-36 sm:w-44 sm:h-44 lg:w-48 lg:h-48 mx-auto flex items-center justify-center mb-6">
                 <svg className="w-full h-full -rotate-90">
                   <circle cx="96" cy="96" r="88" fill="transparent" stroke="currentColor" strokeWidth="12" className="text-white/5" />
                   <circle cx="96" cy="96" r="88" fill="transparent" stroke="#FDE047" strokeWidth="12" strokeDasharray="552" strokeDashoffset="55" className="transition-all duration-1000 ease-out" />
                 </svg>
                 <div className="absolute flex flex-col items-center">
-                  <span className="text-5xl font-black">90%</span>
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-black">90%</span>
                   <span className="text-[10px] uppercase tracking-widest text-white/40 mt-1">Mastery</span>
                 </div>
               </div>
@@ -124,11 +124,11 @@ export default function ProgressPage() {
             </div>
 
             {/* Study Hours Bar Chart */}
-            <div className="col-span-8 glass-card rounded-[32px] p-8">
+            <div className="col-span-12 lg:col-span-8 glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <div className="flex justify-between items-end mb-8">
                 <div className="space-y-1">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Study Hours</h4>
-                  <p className="text-3xl font-bold">28.5 hrs <span className="text-xs font-normal opacity-40">this week</span></p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold">28.5 hrs <span className="text-xs font-normal opacity-40">this week</span></p>
                 </div>
                 <div className="flex gap-2">
                   <div className="flex items-center gap-1 text-[10px] font-bold text-cyber-yellow">
@@ -141,7 +141,7 @@ export default function ProgressPage() {
                   </div>
                 </div>
               </div>
-              <div className="h-48 flex items-end justify-between px-4 mb-4 gap-4">
+              <div className="h-32 sm:h-40 lg:h-48 flex items-end justify-between px-4 mb-4 gap-4">
                 {BAR_DATA.map((bar) => (
                   <div key={bar.day} className="flex-1 flex flex-col items-center gap-2">
                     <div
@@ -156,13 +156,13 @@ export default function ProgressPage() {
           </div>
 
           {/* XP and Mastery Trend */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
 
             {/* XP Card */}
-            <div className="glass-card rounded-[32px] p-8">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Experience Points</h4>
               <div className="flex items-end gap-3 mb-6">
-                <span className="text-5xl font-black text-cyber-yellow">+2,450</span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-cyber-yellow">+2,450</span>
                 <span className="text-xl font-bold opacity-40 mb-1">XP</span>
               </div>
               <div className="space-y-4 mb-8">
@@ -192,7 +192,7 @@ export default function ProgressPage() {
             </div>
 
             {/* Mastery Trend Graph */}
-            <div className="glass-card rounded-[32px] p-8 flex flex-col">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Mastery Trend</h4>
               <div className="flex-1 relative mt-4">
                 <svg viewBox="0 0 400 150" className="w-full h-full">
@@ -219,8 +219,8 @@ export default function ProgressPage() {
           {/* Learning Milestones */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-4">Learning Milestones</h4>
-            <div className="grid grid-cols-4 gap-4">
-              <div className="glass-card p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4">
+              <div className="glass-card p-4 sm:p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group">
                 <div className="w-10 h-10 rounded-xl bg-cyber-yellow/10 flex items-center justify-center mb-4 group-hover:bg-cyber-yellow group-hover:text-black transition-colors">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -261,8 +261,8 @@ export default function ProgressPage() {
           </div>
 
           {/* Strengths vs Weaknesses */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="glass-card rounded-[32px] p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-400 mb-6">Focus Areas (Weaknesses)</h4>
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -286,7 +286,7 @@ export default function ProgressPage() {
                 <button className="w-full py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all mt-4 cursor-pointer">Start Targeted Practice</button>
               </div>
             </div>
-            <div className="glass-card rounded-[32px] p-8">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400 mb-6">Your Strengths</h4>
               <div className="space-y-6">
                 <div className="space-y-2">
@@ -315,8 +315,8 @@ export default function ProgressPage() {
           {/* Smart Recommendations */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-4">Smart Recommendations</h4>
-            <div className="grid grid-cols-3 gap-6">
-              <div className="glass-card p-6 rounded-[32px] border-t border-white/10 hover:border-cyber-yellow/50 transition-all group">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+              <div className="glass-card p-4 sm:p-6 rounded-[32px] border-t border-white/10 hover:border-cyber-yellow/50 transition-all group">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -364,7 +364,7 @@ export default function ProgressPage() {
       <SidebarRight />
 
       {/* Floating Trophy Notification */}
-      <div className="fixed bottom-10 left-10 space-y-3 z-50">
+      <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
         <div className="bg-black/80 backdrop-blur-xl border border-cyber-yellow/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl">
           <svg className="w-5 h-5 text-cyber-yellow animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />

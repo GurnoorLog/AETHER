@@ -75,12 +75,12 @@ export default function DashboardPage() {
           <Skeleton className="h-10 rounded-2xl mt-auto" />
         </div>
         <main className="flex-1 flex flex-col">
-          <div className="h-[45vh] bg-cyber-yellow/20 p-12">
+          <div className="h-[45vh] bg-cyber-yellow/20 p-6 sm:p-8 lg:p-12">
             <Skeleton className="h-4 w-48 mb-4" />
             <Skeleton className="h-16 w-3/4 mb-4" />
             <Skeleton className="h-8 w-1/2" />
           </div>
-          <div className="flex-1 px-12 space-y-8">
+          <div className="flex-1 px-4 sm:px-6 lg:px-12 space-y-4 lg:space-y-8">
             <Skeleton className="h-24 rounded-[32px]" />
             <Skeleton className="h-48 rounded-[28px] max-w-4xl mx-auto" />
             <Skeleton className="h-16 rounded-full max-w-4xl mx-auto" />
@@ -104,8 +104,8 @@ export default function DashboardPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative flex flex-col justify-end">
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className="min-h-[40vh] bg-cyber-yellow text-black p-6 sm:p-8 lg:p-12 liquid-wave relative flex flex-col justify-end">
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4 flex-wrap">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{subjects.length} Subjects</div>
           </div>
@@ -113,14 +113,14 @@ export default function DashboardPage() {
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">
               Welcome back, {profile?.full_name?.split(" ")[0] || "Student"}.
             </p>
-            <h1 className="text-7xl font-bold tracking-tighter leading-tight mb-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4">
               {recentConversation
                 ? `Continue "${recentConversation.title}"?`
                 : documents.length > 0
                   ? "I remembered where we stopped yesterday."
                   : "Ready to start your learning journey?"}
             </h1>
-            <p className="text-xl font-medium opacity-80">
+            <p className="text-base sm:text-lg lg:text-xl font-medium opacity-80">
               {recentConversation
                 ? `Last studied ${timeAgo(recentConversation.created_at)}`
                 : subjects.length > 0
@@ -128,11 +128,11 @@ export default function DashboardPage() {
                   : "Upload your first document and start building your knowledge base."}
             </p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
+          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-12 pb-8 overflow-y-auto space-y-8 relative z-10">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-8 overflow-y-auto space-y-4 lg:space-y-8 relative z-10">
 
           {/* Aether Core Status */}
           <div className="flex items-center justify-between glass-card rounded-[32px] p-6 mb-8">
@@ -258,10 +258,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Ticker */}
-        <div className="mt-auto p-12 border-t border-white/5 bg-black">
-          <div className="flex items-center justify-between opacity-30 grayscale">
+        <div className="mt-auto p-6 sm:p-8 lg:p-12 border-t border-white/5 bg-black">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 opacity-30 grayscale">
             <span className="text-[10px] font-bold tracking-widest">TRUSTED BY STUDENTS AT</span>
-            <div className="flex gap-12">
+            <div className="flex flex-wrap gap-4 sm:gap-6 lg:gap-12">
               <span className="font-bold tracking-tighter">OpenAI</span>
               <span className="font-bold tracking-tighter">Notion</span>
               <span className="font-bold tracking-tighter">Figma</span>

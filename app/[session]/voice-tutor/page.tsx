@@ -221,7 +221,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-[#FDE047]/5 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Header */}
-      <header className="p-12 flex justify-between items-center relative z-10">
+      <header className="p-12 max-lg:px-4 max-lg:py-6 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-[#FDE047] rounded-2xl flex items-center justify-center">
             <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -254,10 +254,10 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       </header>
 
       {/* Main Immersion Area */}
-      <main className="flex-1 flex items-center justify-center relative z-10 px-12">
+      <main className="flex-1 flex items-center justify-center relative z-10 px-12 max-lg:px-4">
         {/* User Transcription (Left) */}
         {lastUserMsg && (
-          <section className="absolute left-16 top-1/2 -translate-y-1/2 w-[320px] space-y-4">
+          <section className="absolute left-16 top-1/2 -translate-y-1/2 w-[320px] space-y-4 max-lg:hidden">
             <div className="glass rounded-[32px] p-8 text-stream-fade">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-white/40 border border-white/10 text-xs font-bold">
@@ -273,12 +273,12 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         )}
 
         {/* Center Visualization */}
-        <section className="flex flex-col items-center gap-12">
+        <section className="flex flex-col items-center gap-12 max-lg:gap-6">
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 w-[400px] h-[400px] border border-[#FDE047]/10 rounded-full animate-pulse" />
-            <div className="absolute inset-0 w-[300px] h-[300px] border border-[#FDE047]/5 rounded-full animate-ping" style={{ animationDuration: "3s" }} />
+            <div className="absolute inset-0 w-[400px] h-[400px] max-lg:w-[250px] max-lg:h-[250px] border border-[#FDE047]/10 rounded-full animate-pulse" />
+            <div className="absolute inset-0 w-[300px] h-[300px] max-lg:w-[180px] max-lg:h-[180px] border border-[#FDE047]/5 rounded-full animate-ping" style={{ animationDuration: "3s" }} />
             <div className="relative z-20 floating">
-              <div className={`w-40 h-40 rounded-full bg-black border-4 flex items-center justify-center overflow-hidden shadow-2xl transition-all duration-500 ${
+              <div className={`w-40 h-40 max-lg:w-28 max-lg:h-28 rounded-full bg-black border-4 flex items-center justify-center overflow-hidden shadow-2xl transition-all duration-500 ${
                 state === "connected" ? "border-[#FDE047] glow-pulse" : "border-white/10"
               }`}>
                 <svg className={`w-16 h-16 transition-colors duration-500 ${state === "connected" ? "text-[#FDE047]" : "text-white/20"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -337,7 +337,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
         {/* AI Response (Right) */}
         {lastAgentMsg && (
-          <section className="absolute right-16 top-1/2 -translate-y-1/2 w-[320px] space-y-4">
+          <section className="absolute right-16 top-1/2 -translate-y-1/2 w-[320px] space-y-4 max-lg:hidden">
             <div className="glass rounded-[32px] p-8 border-l-4 border-[#FDE047] text-stream-fade">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-[#FDE047] flex items-center justify-center text-black shadow-lg">
@@ -357,8 +357,8 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       </main>
 
       {/* Footer Controls */}
-      <footer className="p-12 pb-16 flex justify-center relative z-20">
-        <div className="glass rounded-full px-10 py-5 flex items-center gap-10 shadow-2xl border border-white/20">
+      <footer className="p-12 pb-16 max-lg:px-4 max-lg:pb-8 max-lg:pt-6 flex justify-center relative z-20">
+        <div className="glass rounded-full px-10 py-5 max-lg:px-4 max-lg:py-3 flex items-center gap-10 max-lg:gap-3 shadow-2xl border border-white/20">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMicMuted(!micActive)}
@@ -391,7 +391,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
           <button
             onClick={handleEndCall}
-            className="bg-red-500 text-white font-black px-10 py-4 rounded-full flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(239,68,68,0.3)] hover:shadow-[0_0_40px_rgba(239,68,68,0.5)] cursor-pointer"
+            className="bg-red-500 text-white font-black px-10 py-4 max-lg:px-6 max-lg:py-3 rounded-full flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(239,68,68,0.3)] hover:shadow-[0_0_40px_rgba(239,68,68,0.5)] cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 3.75L18 6m0 0l2.25 2.25M18 6l2.25-2.25M18 6l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
@@ -424,8 +424,8 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       </footer>
 
       {/* Background Ticker */}
-      <div className="absolute bottom-8 w-full flex justify-center opacity-10 grayscale px-24 pointer-events-none">
-        <div className="flex gap-16 items-center">
+      <div className="absolute bottom-8 w-full flex justify-center opacity-10 grayscale px-24 max-lg:px-4 pointer-events-none">
+        <div className="flex gap-16 max-lg:gap-4 items-center">
           <div className="flex items-center gap-2">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0014.293 3a5.985 5.985 0 00-4.407 1.957A6.046 6.046 0 003.5 10.46a6.065 6.065 0 00.725 5.176 5.985 5.985 0 00.516 4.91 6.046 6.046 0 006.51 2.9A6.065 6.065 0 009.707 21a5.985 5.985 0 004.407-1.957 6.046 6.046 0 008.369-7.714z" />

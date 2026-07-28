@@ -6,8 +6,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useAutoCollapse } from "@/hooks/useAutoCollapse";
-import SidebarLeft from "@/components/SidebarLeft";
-import SidebarRight from "@/components/SidebarRight";
+
 import type { GeneratedTrack, Playlist } from "@/types/database";
 
 const navItems = [
@@ -291,17 +290,11 @@ export default function SessionMusicPage() {
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex overflow-hidden">
-
-      {/* Left Sidebar */}
-      <SidebarLeft currentPage="music" />
-
-      {/* Center Workspace (flex-1) */}
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
+    <>
 
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">PRO PLAN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
           </div>
@@ -311,7 +304,7 @@ export default function SessionMusicPage() {
                 <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">FOCUS MUSIC</div>
               </div>
             )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Your Focus. Your Sound.</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
@@ -329,11 +322,11 @@ export default function SessionMusicPage() {
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-12 relative z-10">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-24 overflow-y-auto space-y-6 lg:space-y-12 relative z-10">
 
           {/* Currently Playing */}
           {activeTrack && (
-          <section className="glass-card rounded-[32px] p-8 flex items-center gap-8 relative overflow-hidden">
+          <section className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 flex items-end h-full music-waveform opacity-20">
               <div className="wave-bar-active w-1 bg-cyber-yellow rounded-full" style={{ height: "24px", animationDelay: "0.1s" }} />
               <div className="wave-bar-active w-1 bg-cyber-yellow rounded-full" style={{ height: "32px", animationDelay: "0.3s" }} />
@@ -350,14 +343,14 @@ export default function SessionMusicPage() {
             <div className="flex-1 space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight">{activeTrack.title}</h2>
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">{activeTrack.title}</h2>
                   <p className="text-white/40 text-sm">
                     {activeTrack.mood && activeTrack.instrument
                       ? `${activeTrack.mood} \u2022 ${activeTrack.instrument} \u2022 Generated ${timeAgo(activeTrack.created_at)}`
                       : "Aether Original"}
                   </p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 lg:gap-4">
                   <button onClick={prevTrack} className="w-6 h-6 cursor-pointer hover:text-cyber-yellow transition-colors">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path d="M21 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953l7.108-4.062A1.125 1.125 0 0121 8.688v8.123zM11.25 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953L9.567 7.71a1.125 1.125 0 011.683.977v8.123z" />
@@ -419,7 +412,7 @@ export default function SessionMusicPage() {
             </div>
 
             {historyLoading ? (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-[24px]" />)}
               </div>
             ) : (
@@ -504,7 +497,7 @@ export default function SessionMusicPage() {
                   );
                 })}
                 {tracks.length === 0 && !selectedPlaylistId && (
-                  <div className="col-span-3 glass-card rounded-[32px] p-12 text-center">
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 glass-card rounded-[32px] p-6 sm:p-8 lg:p-12 text-center">
                     <svg className="w-12 h-12 mx-auto text-white/20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
                       <path d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
                     </svg>
@@ -512,7 +505,7 @@ export default function SessionMusicPage() {
                   </div>
                 )}
                 {selectedPlaylistId && (playlistTracks[selectedPlaylistId]?.length || 0) === 0 && (
-                  <div className="col-span-3 glass-card rounded-[32px] p-12 text-center">
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 glass-card rounded-[32px] p-6 sm:p-8 lg:p-12 text-center">
                     <p className="text-white/40 text-sm font-medium">This playlist is empty. Add tracks from your history.</p>
                   </div>
                 )}
@@ -526,14 +519,14 @@ export default function SessionMusicPage() {
               <h3 className="text-xl font-bold tracking-tight mb-1">Preset Ambiencies</h3>
               <p className="text-sm text-white/40">Quick-start curated focus environments</p>
             </div>
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
               {[
                 { icon: "trees", label: "Forest", tags: "Birds \u2022 Wind \u2022 Organic" },
                 { icon: "cloud-rain", label: "Midnight Rain", tags: "Thunder \u2022 Lo-fi \u2022 Steady" },
                 { icon: "rocket", label: "Space Void", tags: "Synth \u2022 Drone \u2022 Deep" },
                 { icon: "coffee", label: "Lofi Cafe", tags: "Vinyl \u2022 Chords \u2022 Chill" },
               ].map((amb) => (
-                <div key={amb.label} className="glass-card rounded-[32px] p-6 hover:border-cyber-yellow/40 hover:scale-[1.02] transition-all group cursor-pointer flex flex-col">
+                <div key={amb.label} className="glass-card rounded-[32px] p-4 sm:p-6 hover:border-cyber-yellow/40 hover:scale-[1.02] transition-all group cursor-pointer flex flex-col">
                   <div className="w-12 h-12 rounded-2xl bg-black mb-4 flex items-center justify-center border border-white/5 group-hover:border-cyber-yellow/50">
                     {amb.icon === "trees" && (
                       <svg className="w-6 h-6 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -565,10 +558,10 @@ export default function SessionMusicPage() {
           </section>
 
           {/* AI Studio Generator */}
-          <section className="glass-card rounded-[32px] p-10 grid grid-cols-2 gap-12 relative overflow-hidden">
-            <div className="space-y-8 z-10">
+          <section className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 relative overflow-hidden">
+            <div className="space-y-6 lg:space-y-8 z-10">
               <div>
-                <h3 className="text-2xl font-bold tracking-tight mb-2">AI Studio Generator</h3>
+                <h3 className="text-xl lg:text-2xl font-bold tracking-tight mb-2">AI Studio Generator</h3>
                 <p className="text-sm text-white/40">Define your sonic parameters for precision focus.</p>
               </div>
               <div className="space-y-6">
@@ -654,9 +647,9 @@ export default function SessionMusicPage() {
             </div>
           </section>
 
-          <div className="pt-12 flex items-center justify-between opacity-30 grayscale">
+          <div className="pt-6 lg:pt-12 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 opacity-30 grayscale">
             <span className="text-[10px] font-bold tracking-widest">INTEGRATED WITH</span>
-            <div className="flex gap-12">
+            <div className="flex gap-4 sm:gap-6 lg:gap-12">
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-8.159-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.18-1.14-.6-.12-.48.18-1.02.6-1.14 4.2-1.32 9.54-.66 13.14 1.56.36.24.48.78.301 1.2v.06zm.12-3.36c-3.84-2.28-10.14-2.52-13.8-1.38-.48.12-1.02-.18-1.14-.6-.12-.48.18-1.02.6-1.14 4.2-1.26 11.28-1.02 15.66 1.56.54.3.66 1.02.36 1.56-.24.48-.96.66-1.56.36z" />
@@ -681,24 +674,24 @@ export default function SessionMusicPage() {
         </div>
 
         {/* Composer Bar */}
-      <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-12">
+      <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-4 sm:px-6 lg:px-12">
         <div className="pointer-events-auto">
           <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
-            <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
-              <button className="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <div className="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-1 sm:p-2 flex items-center gap-1 sm:gap-2 pr-2 sm:pr-4 shadow-2xl">
+              <button className="w-10 sm:w-12 h-10 sm:h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40 cursor-pointer shrink-0">
+                <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
               </button>
-              <input type="text" placeholder="Describe the track you want..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleGenerate(); }} className="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40 outline-none" />
-              <div className="flex items-center gap-2">
-                <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+              <input type="text" placeholder="Describe the track you want..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleGenerate(); }} className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-xs sm:text-sm py-2 sm:py-4 text-white placeholder-white/40 outline-none" />
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                <button className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer">
+                  <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
                   </svg>
                 </button>
-                <button onClick={handleGenerate} disabled={generating} className="w-12 h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <button onClick={handleGenerate} disabled={generating} className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-cyber-yellow text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
+                  <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                   </svg>
                 </button>
@@ -708,20 +701,16 @@ export default function SessionMusicPage() {
         </div>
       </div>
 
-    </main>
 
-    {/* Right Sidebar */}
-    <SidebarRight />
 
-    <div className="fixed bottom-10 left-10 space-y-3 z-50 pointer-events-none">
+    <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50 pointer-events-none">
       {generating && (
       <div className="bg-black/80 backdrop-blur-xl border border-cyber-yellow/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl pointer-events-auto">
         <div className="w-2 h-2 bg-cyber-yellow rounded-full animate-pulse" />
         <span className="text-[10px] font-bold uppercase tracking-widest">🎵 AI generating focus track...</span>
       </div>
       )}
-    </div>
-
-    </div>
+      </div>
+    </>
   );
 }

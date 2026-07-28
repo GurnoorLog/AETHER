@@ -10,7 +10,7 @@ export default function HeroSection() {
   const router = useRouter();
 
   return (
-    <section className="liquid-hero pt-12 px-12 md:px-24 pb-64 shadow-[0_50px_120px_rgba(0,0,0,0.4)] relative overflow-hidden">
+    <section className="liquid-hero pt-8 sm:pt-12 px-6 sm:px-12 md:px-24 pb-32 md:pb-64 shadow-[0_50px_120px_rgba(0,0,0,0.4)] relative overflow-hidden">
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(6)].map((_, i) => (
@@ -29,7 +29,7 @@ export default function HeroSection() {
         ))}
       </div>
 
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-24 items-center relative z-10">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 md:gap-16 lg:gap-24 items-center relative z-10">
         <div>
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-black/5 border border-black/10 rounded-full mb-10">
             <svg className="text-black w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -38,7 +38,7 @@ export default function HeroSection() {
             <span className="text-xs font-black uppercase tracking-[0.2em] text-black">The Future of Cognition</span>
           </div>
 
-          <h1 className="text-7xl md:text-[8rem] font-black text-black leading-[0.8] tracking-tighter mb-12">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[8rem] font-black text-black leading-[0.8] tracking-tighter mb-8 md:mb-12">
             Meet Your <br /> AI Tutor That <br />
             <span className="relative">
               Never Forgets.
@@ -48,19 +48,19 @@ export default function HeroSection() {
             </span>
           </h1>
 
-          <p className="text-2xl md:text-3xl text-black/80 font-medium max-w-xl mb-16 leading-tight">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-black/80 font-medium max-w-xl mb-10 md:mb-16 leading-tight">
             Upload anything&mdash;notes, slides, or entire textbooks. Experience a human-like conversational journey that adapts to your learning pace in real-time.
           </p>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-10">
             <button
               onClick={() => (user ? router.push("/dashboard") : open("signup"))}
-              className="px-14 py-8 bg-black text-white rounded-full font-black text-2xl hover:scale-110 active:scale-95 transition-all shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] glow-pulse-yellow cursor-pointer"
+              className="px-8 py-6 sm:px-12 sm:py-7 lg:px-14 lg:py-8 bg-black text-white rounded-full font-black text-lg sm:text-xl lg:text-2xl hover:scale-110 active:scale-95 transition-all shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)] glow-pulse-yellow cursor-pointer"
             >
               {user ? "Go to Dashboard" : "Get Started Free"}
             </button>
-            <button className="flex items-center gap-5 text-2xl font-black text-black hover:opacity-60 premium-transition group cursor-pointer">
-              <span className="w-16 h-16 rounded-full border-2 border-black/10 flex items-center justify-center group-hover:bg-black group-hover:text-white premium-transition">
+            <button className="flex items-center gap-3 sm:gap-5 text-lg sm:text-xl lg:text-2xl font-black text-black hover:opacity-60 premium-transition group cursor-pointer">
+              <span className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full border-2 border-black/10 flex items-center justify-center group-hover:bg-black group-hover:text-white premium-transition">
                 <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
                 </svg>

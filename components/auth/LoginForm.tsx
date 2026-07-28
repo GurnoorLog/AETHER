@@ -68,7 +68,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
       <AuthInput
         id="login-email"
         label="Email"

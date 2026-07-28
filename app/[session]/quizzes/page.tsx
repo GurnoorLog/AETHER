@@ -7,8 +7,6 @@ import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import { useAutoCollapse } from "@/hooks/useAutoCollapse";
-import SidebarRight from "@/components/SidebarRight";
-import SidebarLeft from "@/components/SidebarLeft";
 import type { QuizQuestion, SessionQuiz } from "@/types/database";
 
 interface ModuleInfo {
@@ -187,13 +185,10 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
   }
 
   return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-      <SidebarLeft currentPage="quizzes" />
-
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
+    <>
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{session.title}</div>
           </div>
           <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
@@ -202,7 +197,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">{session.title}</div>
               </div>
             )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">
                 {view === "taking" ? "Quiz in Progress" : view === "results" ? "Quiz Results" : "Quiz Your Knowledge"}
               </span>
@@ -222,32 +217,32 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-12 pb-20 overflow-y-auto relative z-10">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 overflow-y-auto relative z-10">
           {view === "list" && (
             <div className="space-y-8 pt-8">
               {/* Stats */}
-              <div className="grid grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
                 <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Total Quizzes</p>
-                  <p className="text-3xl font-bold">{quizzes.length}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{quizzes.length}</p>
                 </div>
                 <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Completed</p>
-                  <p className="text-3xl font-bold">{completedQuizzes.length}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{completedQuizzes.length}</p>
                 </div>
                 <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Avg. Score</p>
-                  <p className="text-3xl font-bold">{avgScore}%</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{avgScore}%</p>
                 </div>
                 <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
                   <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Modules</p>
-                  <p className="text-3xl font-bold">{modules.length}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{modules.length}</p>
                 </div>
               </div>
 
               {/* Generate New Quiz */}
-              <div className="glass-card rounded-[32px] p-8">
-                <h3 className="text-lg font-bold mb-4">Generate New Quiz</h3>
+              <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
+                <h3 className="text-base sm:text-lg font-bold mb-4">Generate New Quiz</h3>
                 <p className="text-sm text-white/40 mb-4">Select a module or generate a general quiz on the subject.</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   <button
@@ -294,18 +289,18 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                     <p className="text-white/30 text-sm">No quizzes yet. Generate your first one above!</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                     {quizzes.map((quiz) => {
                       const moduleTitle = modules.find((m) => m.id === quiz.module_id)?.title || "General";
                       return (
-                        <div key={quiz.id} className="glass-card p-6 rounded-[32px] group hover:border-cyber-yellow/20 transition-all">
+                        <div key={quiz.id} className="glass-card p-4 sm:p-6 rounded-[32px] group hover:border-cyber-yellow/20 transition-all">
                           <div className="flex justify-between items-start mb-4">
                             <div>
                               <span className="px-3 py-1 bg-white/5 text-white/60 text-[10px] font-black uppercase rounded-full">{moduleTitle}</span>
-                              <h4 className="text-lg font-bold mt-2">{quiz.title}</h4>
+                              <h4 className="text-base sm:text-lg font-bold mt-2">{quiz.title}</h4>
                             </div>
                             {quiz.completed && quiz.score !== null && (
-                              <div className={`text-2xl font-black ${
+                              <div className={`text-xl sm:text-2xl font-black ${
                                 quiz.score >= 80 ? "text-green-400" : quiz.score >= 50 ? "text-yellow-400" : "text-red-400"
                               }`}>
                                 {quiz.score}%
@@ -361,8 +356,8 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
 
               {/* Question */}
               {activeQuiz.questions[currentQuestion] && (
-                <div className="glass-card rounded-[32px] p-8">
-                  <h2 className="text-xl font-bold mb-8">
+              <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
+                  <h2 className="text-base sm:text-lg lg:text-xl font-bold mb-4 lg:mb-8">
                     {activeQuiz.questions[currentQuestion].question}
                   </h2>
                   <div className="space-y-3">
@@ -372,13 +367,13 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                         <button
                           key={i}
                           onClick={() => selectAnswer(currentQuestion, i)}
-                          className={`w-full text-left p-5 rounded-2xl border transition-all cursor-pointer ${
+                          className={`w-full text-left p-3 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
                             isSelected
                               ? "border-cyber-yellow bg-cyber-yellow/10"
                               : "border-white/10 hover:border-white/20 hover:bg-white/5"
                           }`}
                         >
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
                               isSelected ? "bg-cyber-yellow text-black" : "bg-white/5 text-white/40"
                             }`}>
@@ -394,11 +389,11 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
               )}
 
               {/* Navigation */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3">
                 <button
                   onClick={() => setCurrentQuestion((p) => Math.max(0, p - 1))}
                   disabled={currentQuestion === 0}
-                  className="px-6 py-3 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all disabled:opacity-30 cursor-pointer"
+                  className="px-4 sm:px-6 py-3 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all disabled:opacity-30 cursor-pointer"
                 >
                   Previous
                 </button>
@@ -406,14 +401,14 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                   <button
                     onClick={submitQuiz}
                     disabled={selectedAnswers.includes(-1)}
-                    className="bg-cyber-yellow text-black px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                    className="bg-cyber-yellow text-black px-4 sm:px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     Submit Quiz
                   </button>
                 ) : (
                   <button
                     onClick={() => setCurrentQuestion((p) => Math.min(activeQuiz.questions.length - 1, p + 1))}
-                    className="bg-cyber-yellow text-black px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    className="bg-cyber-yellow text-black px-4 sm:px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   >
                     Next
                   </button>
@@ -425,8 +420,8 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
           {view === "results" && activeQuiz && (
             <div className="max-w-3xl mx-auto py-8 space-y-8">
               {/* Score card */}
-              <div className="glass-card rounded-[32px] p-8 text-center">
-                <div className={`text-8xl font-black mb-4 ${
+              <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 text-center">
+                <div className={`text-5xl sm:text-6xl lg:text-8xl font-black mb-4 ${
                   (score || 0) >= 80 ? "text-green-400" : (score || 0) >= 50 ? "text-yellow-400" : "text-red-400"
                 }`}>
                   {score}%
@@ -474,16 +469,16 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                 <button
                   onClick={() => { startQuiz(activeQuiz); setView("taking"); }}
-                  className="flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
+                  className="w-full sm:flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
                 >
                   Retake Quiz
                 </button>
                 <button
                   onClick={goToList}
-                  className="flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  className="w-full sm:flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 >
                   Back to Quizzes
                 </button>
@@ -491,9 +486,6 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
             </div>
           )}
         </div>
-      </main>
-
-      <SidebarRight />
-    </div>
+    </>
   );
 }

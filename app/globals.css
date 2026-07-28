@@ -292,6 +292,32 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* ── Mobile overlay ── */
+.mobile-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Responsive sidebars ── */
+@media (max-width: 1023px) {
+  .sidebar-desktop {
+    display: none !important;
+  }
+  .sidebar-tablet-show {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar-mobile {
+    display: none !important;
+  }
+  .sidebar-tablet-show {
+    display: none !important;
+  }
+}
+
 /* ── Carousel ── */
 .carousel-item {
   scroll-snap-align: start;

@@ -113,7 +113,7 @@ export default function AuthModal() {
         </div>
 
         {/* Form Panel */}
-        <div className="w-full md:w-[440px] glass-card-premium p-8 sm:p-12 overflow-y-auto max-h-[90vh]">
+        <div className="w-full md:w-[440px] glass-card-premium p-6 sm:p-8 lg:p-12 overflow-y-auto max-h-[90vh]">
           <button
             type="button"
             onClick={close}
@@ -132,7 +132,7 @@ export default function AuthModal() {
           </button>
 
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-white mb-2">{heading}</h2>
+            <h2 className="text-2xl lg:text-3xl font-black text-white mb-2">{heading}</h2>
             <p className="text-white/40 text-sm font-medium">{sub}</p>
           </div>
 

@@ -51,7 +51,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
 
   if (sent) {
     return (
-      <div className="text-center space-y-8 py-8">
+      <div className="text-center space-y-6 lg:space-y-8 py-6 lg:py-8">
         <div className="w-20 h-20 rounded-3xl bg-cyber-yellow/20 flex items-center justify-center mx-auto">
           <svg className="w-10 h-10 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -75,7 +75,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
       <p className="text-white/50 text-sm font-medium leading-relaxed">
         Enter the email address associated with your account and we&apos;ll send you a link to reset your password.
       </p>

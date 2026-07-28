@@ -226,7 +226,7 @@ export default function HubPage() {
           <div className="absolute bottom-[-40px] right-[8%] w-56 h-56 bg-black/[0.03] rounded-full blur-2xl" />
 
           <div className="relative z-10">
-            <h1 className="heading-display text-black mb-3">Your Learning Hub</h1>
+            <h1 className="heading-display text-black mb-3 text-2xl sm:text-3xl lg:text-4xl">Your Learning Hub</h1>
             <p className="text-base font-medium text-black/50 mb-8 max-w-md mx-auto">All your sessions, organized and ready.</p>
 
             <div className="flex items-center justify-center gap-3">
@@ -241,7 +241,7 @@ export default function HubPage() {
         </section>
 
         {/* Unified Sessions Section — premium merge of Featured + All */}
-        <section className="-mt-10 px-8 relative z-20 pb-16">
+        <section className="-mt-10 px-4 sm:px-6 lg:px-12 relative z-20 pb-16">
           <div className="flex items-center justify-between mb-6 pl-1">
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-6 bg-cyber-yellow rounded-full" />
@@ -266,12 +266,12 @@ export default function HubPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
             {/* Create Card (always first) */}
             <div
               onClick={() => setShowModal(true)}
-              className="glass-card rounded-[24px] p-7 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-white/[0.06] hover:border-white/[0.12] min-h-[220px]"
+              className="glass-card rounded-[24px] p-5 sm:p-7 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-white/[0.06] hover:border-white/[0.12] min-h-[220px]"
             >
               <div className="w-14 h-14 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-cyber-yellow/15 transition-all group-hover:scale-110">
                 <svg className="w-6 h-6 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -283,7 +283,7 @@ export default function HubPage() {
             </div>
 
             {filteredSessions.length === 0 ? (
-              <div className="glass-card rounded-[24px] p-8 flex flex-col items-center justify-center text-center col-span-3 min-h-[220px]">
+              <div className="glass-card rounded-[24px] p-6 sm:p-8 flex flex-col items-center justify-center text-center lg:col-span-2 min-h-[220px]">
                 <p className="text-white/25 text-sm">
                   {filter === "all" ? "No sessions yet. Create one!" : `No ${filter} sessions.`}
                 </p>
@@ -293,7 +293,7 @@ export default function HubPage() {
                 <div
                   key={session.id}
                   onClick={() => session.slug && handleResume(session.slug)}
-                  className="glass-card rounded-[24px] p-6 group cursor-pointer relative overflow-hidden hover:border-cyber-yellow/20 transition-all"
+                  className="glass-card rounded-[24px] p-4 sm:p-6 group cursor-pointer relative overflow-hidden hover:border-cyber-yellow/20 transition-all"
                 >
                   <div
                     className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -347,7 +347,7 @@ export default function HubPage() {
         </section>
 
         {/* Stats */}
-        <section className="px-8 pb-16">
+        <section className="px-4 sm:px-6 lg:px-12 pb-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25", value: conversations.length, label: "Sessions" },
@@ -358,7 +358,7 @@ export default function HubPage() {
                 return daysSince <= 7;
               }).length, label: "This Week" },
             ].map((stat, i) => (
-              <div key={i} className="glass-card rounded-[20px] p-6 text-center">
+              <div key={i} className="glass-card rounded-[20px] p-4 sm:p-6 text-center">
                 <Icon d={stat.icon} className="w-5 h-5 text-white/20 mx-auto mb-3" />
                 <p className="text-2xl font-bold tracking-tight">{stat.value}</p>
                 <p className="label-micro text-white/20 mt-1">{stat.label}</p>
@@ -368,7 +368,7 @@ export default function HubPage() {
         </section>
 
         {/* Footer */}
-        <div className="px-8 py-8 border-t border-white/[0.04]">
+        <div className="px-4 sm:px-6 lg:px-12 py-8 border-t border-white/[0.04]">
           <div className="flex items-center justify-between opacity-20">
             <span className="text-[9px] font-medium tracking-wider uppercase text-white/50">Powering the future of learning</span>
             <div className="flex gap-8">

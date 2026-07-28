@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSession } from "@/app/[session]/layout";
 import { useAutoCollapse } from "@/hooks/useAutoCollapse";
-import SidebarRight from "@/components/SidebarRight";
-import SidebarLeft from "@/components/SidebarLeft";
 
 interface BarData {
   day: string;
@@ -126,8 +124,7 @@ export default function SessionProgressPage() {
   const formatXP = (n: number) => n.toLocaleString();
 
   return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-      <style>{`
+    <><style>{`
         .chart-bar {
           transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
           transform-origin: bottom;
@@ -149,14 +146,9 @@ export default function SessionProgressPage() {
         }
       `}</style>
 
-      <SidebarLeft currentPage="progress" />
-
-      {/* Center Workspace */}
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
-
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{weekRange}</div>
           </div>
@@ -167,7 +159,7 @@ export default function SessionProgressPage() {
                 <span className="text-[10px] font-bold text-black/40">{weekRange}</span>
               </div>
             )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Your Learning Journey</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
@@ -179,13 +171,13 @@ export default function SessionProgressPage() {
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-12 pb-20 space-y-8 overflow-y-auto">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 space-y-8 overflow-y-auto">
 
           {/* Main Analytics Grid */}
-          <div className="grid grid-cols-12 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">
 
             {/* Daily Mastery Ring */}
-            <div className="col-span-4 glass-card rounded-[32px] p-8 flex flex-col items-center justify-center text-center">
+            <div className="col-span-4 glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Daily Mastery</h4>
               <div className="relative w-48 h-48 mx-auto flex items-center justify-center mb-6">
                 <svg className="w-full h-full -rotate-90">
@@ -193,7 +185,7 @@ export default function SessionProgressPage() {
                   <circle cx="96" cy="96" r="88" fill="transparent" stroke="#FDE047" strokeWidth="12" strokeDasharray="552" strokeDashoffset={masteryDashoffset} className="transition-all duration-1000 ease-out" />
                 </svg>
                 <div className="absolute flex flex-col items-center">
-                  <span className="text-5xl font-black">{avgMastery}%</span>
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-black">{avgMastery}%</span>
                   <span className="text-[10px] uppercase tracking-widest text-white/40 mt-1">Mastery</span>
                 </div>
               </div>
@@ -210,11 +202,11 @@ export default function SessionProgressPage() {
             </div>
 
             {/* Study Hours Bar Chart */}
-            <div className="col-span-8 glass-card rounded-[32px] p-8">
-              <div className="flex justify-between items-end mb-8">
+            <div className="col-span-8 glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-8">
                 <div className="space-y-1">
                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Study Hours</h4>
-                  <p className="text-3xl font-bold">{studyHours} hrs <span className="text-xs font-normal opacity-40">this week</span></p>
+                  <p className="text-2xl sm:text-3xl font-bold">{studyHours} hrs <span className="text-xs font-normal opacity-40">this week</span></p>
                 </div>
                 <div className="flex gap-2">
                   <div className="flex items-center gap-1 text-[10px] font-bold text-cyber-yellow">
@@ -242,13 +234,13 @@ export default function SessionProgressPage() {
           </div>
 
           {/* XP and Mastery Trend */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
 
             {/* XP Card */}
-            <div className="glass-card rounded-[32px] p-8">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Experience Points</h4>
               <div className="flex items-end gap-3 mb-6">
-                <span className="text-5xl font-black text-cyber-yellow">+{formatXP(totalXP)}</span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-cyber-yellow">+{formatXP(totalXP)}</span>
                 <span className="text-xl font-bold opacity-40 mb-1">XP</span>
               </div>
               <div className="space-y-4 mb-8">
@@ -278,7 +270,7 @@ export default function SessionProgressPage() {
             </div>
 
             {/* Mastery Trend Graph */}
-            <div className="glass-card rounded-[32px] p-8 flex flex-col">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Mastery Trend</h4>
               <div className="flex-1 relative mt-4">
                 <svg viewBox="0 0 400 150" className="w-full h-full">
@@ -308,7 +300,7 @@ export default function SessionProgressPage() {
           {/* Learning Milestones */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-4">Learning Milestones</h4>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {milestones.length > 0 ? (
                 milestones.map((m, i) => (
                   <div key={i} className="glass-card p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group">
@@ -338,8 +330,8 @@ export default function SessionProgressPage() {
           </div>
 
           {/* Strengths vs Weaknesses */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="glass-card rounded-[32px] p-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-400 mb-6">Focus Areas (Weaknesses)</h4>
               <div className="space-y-6">
                 {weaknesses.length > 0 ? (
@@ -360,7 +352,7 @@ export default function SessionProgressPage() {
                 <button className="w-full py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all mt-4 cursor-pointer">Start Targeted Practice</button>
               </div>
             </div>
-            <div className="glass-card rounded-[32px] p-8">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400 mb-6">Your Strengths</h4>
               <div className="space-y-6">
                 {strengths.length > 0 ? (
@@ -386,9 +378,9 @@ export default function SessionProgressPage() {
           {/* Smart Recommendations */}
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-4">Smart Recommendations</h4>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               {weaknesses.length > 0 && (
-                <div className="glass-card p-6 rounded-[32px] border-t border-white/10 hover:border-cyber-yellow/50 transition-all group">
+                <div className="glass-card p-4 sm:p-6 rounded-[32px] border-t border-white/10 hover:border-cyber-yellow/50 transition-all group">
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -403,7 +395,7 @@ export default function SessionProgressPage() {
                 </div>
               )}
               {strengths.length > 0 && (
-                <div className="glass-card p-6 rounded-[32px] border-t border-white/10 hover:border-cyber-yellow/50 transition-all group">
+                <div className="glass-card p-4 sm:p-6 rounded-[32px] border-t border-white/10 hover:border-cyber-yellow/50 transition-all group">
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -418,7 +410,7 @@ export default function SessionProgressPage() {
                 </div>
               )}
               {nextModuleName && (
-              <div className="glass-card p-6 rounded-[32px] border-t border-white/10 hover:border-cyan-400/50 transition-all group">
+              <div className="glass-card p-4 sm:p-6 rounded-[32px] border-t border-white/10 hover:border-cyan-400/50 transition-all group">
                 <div className="flex justify-between items-start mb-4">
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -436,13 +428,11 @@ export default function SessionProgressPage() {
           </div>
 
         </div>
-      </main>
 
-      <SidebarRight />
 
       {/* Floating Trophy Notification */}
       {recentHighScore && (
-      <div className="fixed bottom-10 left-10 space-y-3 z-50">
+      <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
         <div className="bg-black/80 backdrop-blur-xl border border-cyber-yellow/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl">
           <svg className="w-5 h-5 text-cyber-yellow animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -452,6 +442,6 @@ export default function SessionProgressPage() {
       </div>
       )}
 
-    </div>
+    </>
   );
 }

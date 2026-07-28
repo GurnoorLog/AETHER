@@ -44,8 +44,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <div className="fixed top-[-15%] right-[-10%] w-[800px] h-[800px] bg-cyber-yellow/10 rounded-full blur-[160px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="fixed top-[-15%] right-[-10%] w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] lg:w-[800px] lg:h-[800px] bg-cyber-yellow/10 rounded-full blur-[160px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] left-[-5%] w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[600px] lg:h-[600px] bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none z-0" />
 
       <Nav />
       <HeroSection />

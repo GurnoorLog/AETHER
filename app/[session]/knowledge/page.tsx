@@ -6,8 +6,6 @@ import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import { useAutoCollapse } from "@/hooks/useAutoCollapse";
-import SidebarRight from "@/components/SidebarRight";
-import SidebarLeft from "@/components/SidebarLeft";
 import type { Document } from "@/types/database";
 
 const ALLOWED_EXTENSIONS = ["pdf", "pptx", "png", "jpg", "jpeg", "webp"];
@@ -251,29 +249,17 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
 
   if (authLoading || !user || !session) {
     return (
-      <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-        <div className="w-[15%] shrink-0 p-6 space-y-4">
-          <div className="animate-pulse bg-white/5 rounded-2xl w-10 h-10" />
-          <div className="animate-pulse bg-white/5 rounded-full h-10" />
-        </div>
-        <main className="flex-1 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
-        </main>
-        <div className="w-[20%] shrink-0 p-6">
-          <div className="animate-pulse bg-white/5 rounded-[32px] h-64" />
-        </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-      <SidebarLeft currentPage="knowledge" />
-
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+    <>
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-10 right-10 flex gap-4">
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+          <div className="absolute top-4 right-4 sm:top-10 sm:right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{stats.total} Files</div>
           </div>
@@ -284,7 +270,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                 <span className="text-[10px] font-bold text-black/40">{stats.total} Files</span>
               </div>
             )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Knowledge Base</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
@@ -296,14 +282,14 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-12 pb-24 overflow-y-auto space-y-10 relative z-10">
-          <div className="grid grid-cols-2 gap-6">
+        <div className="flex-1 px-4 sm:px-6 lg:px-20 pb-24 overflow-y-auto space-y-10 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div
               onDrop={onDrop}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
               onClick={() => fileInputRef.current?.click()}
-              className={`glass-card rounded-[32px] p-8 border-2 border-dashed flex flex-col items-center justify-center text-center group cursor-pointer transition-all ${
+              className={`glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 border-2 border-dashed flex flex-col items-center justify-center text-center group cursor-pointer transition-all ${
                 dragOver ? "border-cyber-yellow/40 bg-cyber-yellow/[0.03]" : "border-white/10 hover:border-cyber-yellow/30"
               }`}
             >
@@ -320,7 +306,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
               </button>
             </div>
 
-            <div className="glass-card rounded-[32px] p-8 flex flex-col justify-between">
+            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col justify-between">
               <div className="space-y-4">
                 <h4 className="text-xs font-bold uppercase tracking-widest text-cyber-yellow mb-4">Indexing Stats</h4>
                 <div className="flex justify-between items-center py-2 border-b border-white/5">
@@ -351,7 +337,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                   pending: "text-white/40", uploading: "text-blue-400", extracting: "text-amber-400", chunking: "text-purple-400", embedding: "text-cyan-400", error: "text-red-400",
                 };
                 return (
-                  <div key={i} className="glass-card rounded-[28px] p-5 flex items-center justify-between">
+                  <div key={i} className="glass-card rounded-[28px] p-4 sm:p-5 flex items-center justify-between">
                     <div className="flex items-center gap-5">
                       <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 border border-blue-500/20">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -393,7 +379,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                 <button
                   key={f.key}
                   onClick={() => setFilter(f.key)}
-                  className={`px-6 py-2 rounded-full text-[10px] font-bold uppercase transition-all cursor-pointer ${
+                  className={`px-3 sm:px-6 py-2 rounded-full text-[10px] font-bold uppercase transition-all cursor-pointer ${
                     filter === f.key ? "bg-cyber-yellow text-black" : "bg-white/5 text-white/60 hover:bg-white/10"
                   }`}
                 >
@@ -406,7 +392,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card rounded-[28px] p-5 flex items-center justify-between animate-pulse">
+                <div key={i} className="glass-card rounded-[28px] p-4 sm:p-5 flex items-center justify-between animate-pulse">
                   <div className="flex items-center gap-5">
                     <div className="w-14 h-14 bg-white/5 rounded-2xl" />
                     <div className="space-y-2">
@@ -429,7 +415,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
               {filteredDocs.map((doc) => {
                 const icon = FILE_ICONS[doc.file_type] || FILE_ICONS.default;
                 return (
-                  <div key={doc.id} onClick={() => setViewingDoc(doc)} className="glass-card rounded-[28px] p-5 flex items-center justify-between group transition-all hover:border-cyber-yellow/20 cursor-pointer">
+                  <div key={doc.id} onClick={() => setViewingDoc(doc)} className="glass-card rounded-[28px] p-4 sm:p-5 flex items-center justify-between group transition-all hover:border-cyber-yellow/20 cursor-pointer">
                     <div className="flex items-center gap-5">
                       <div className={`w-14 h-14 ${icon.bg} rounded-2xl flex items-center justify-center ${icon.text} border ${icon.border}`}>
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -469,9 +455,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
             </div>
           )}
         </div>
-      </main>
 
-      <SidebarRight />
 
       {/* File Viewer Modal */}
       {viewingDoc && (
@@ -515,6 +499,6 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

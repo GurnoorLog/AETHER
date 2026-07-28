@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="bg-deep-onyx py-32 px-12 md:px-24 border-t border-white/5">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-20 items-start">
+    <footer className="bg-deep-onyx py-16 md:py-32 px-6 sm:px-12 md:px-24 border-t border-white/5">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16 lg:gap-20 items-start">
         <div className="space-y-10">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-cyber-yellow rounded-full flex items-center justify-center">
@@ -9,7 +9,7 @@ export default function Footer() {
                 <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
               </svg>
             </div>
-            <span className="text-3xl font-black tracking-tighter">AETHER</span>
+            <span className="text-2xl md:text-3xl font-black tracking-tighter">AETHER</span>
           </div>
           <p className="text-white/40 max-w-xs text-lg font-medium leading-relaxed">
             The world&apos;s first AI tutor that builds a private, hyper-local knowledge graph for every student.
@@ -54,7 +54,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-32 pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
+      <div className="max-w-7xl mx-auto mt-16 md:mt-32 pt-8 md:pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10">
         <p className="text-white/20 text-xs font-bold uppercase tracking-[0.4em]">© 2024 Aether Labs Inc.</p>
         <p className="text-white/20 text-xs font-bold uppercase tracking-[0.4em] italic">Made for the curious.</p>
       </div>

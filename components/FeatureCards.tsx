@@ -2,9 +2,9 @@ import FeatureCard from "./FeatureCard";
 
 export default function FeatureCards() {
   return (
-    <section className="bg-deep-onyx py-48 px-8">
+    <section className="bg-deep-onyx py-24 md:py-48 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           <FeatureCard
             icon={
               <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">

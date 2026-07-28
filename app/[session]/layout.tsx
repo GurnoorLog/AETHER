@@ -1,9 +1,12 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
+import { PanelRightOpen } from "lucide-react";
+import SidebarRight from "@/components/SidebarRight";
+import SidebarLeft from "@/components/SidebarLeft";
 
 interface Session {
   id: string;
@@ -38,8 +41,19 @@ export default function SessionLayout({
   const slug = resolvedParams.session;
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isVoiceTutor = pathname?.includes("/voice-tutor");
+
+  const currentPage = (() => {
+    const segments = pathname?.split("/").filter(Boolean) ?? [];
+    const page = segments[1] || "dashboard";
+    if (page === "dashboard") return "home";
+    if (page === "chat") return "tutor";
+    return page;
+  })();
 
   const fetchSession = useCallback(async () => {
     if (!user) return;
@@ -68,15 +82,15 @@ export default function SessionLayout({
 
   if (authLoading || loading) {
     return (
-      <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-        <div className="w-[15%] shrink-0 p-6 space-y-4">
+      <div className="h-screen bg-deep-onyx text-white flex max-lg:flex-col max-lg:w-full overflow-hidden">
+        <div className="w-[15%] shrink-0 p-6 space-y-4 max-lg:hidden">
           <div className="animate-pulse bg-white/5 rounded-2xl w-10 h-10" />
           <div className="animate-pulse bg-white/5 rounded-full h-10" />
         </div>
-        <main className="flex-1 flex items-center justify-center">
+        <main className="flex-1 flex items-center justify-center max-lg:p-3 md:max-lg:p-4">
           <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
         </main>
-        <div className="w-[20%] shrink-0 p-6">
+        <div className="w-[20%] shrink-0 p-6 max-lg:hidden">
           <div className="animate-pulse bg-white/5 rounded-[32px] h-64" />
         </div>
       </div>
@@ -85,9 +99,31 @@ export default function SessionLayout({
 
   if (!session) return null;
 
+  if (isVoiceTutor) {
+    return (
+      <SessionContext.Provider value={{ session, loading }}>
+        {children}
+      </SessionContext.Provider>
+    );
+  }
+
   return (
     <SessionContext.Provider value={{ session, loading }}>
-      {children}
+      <div className="h-screen bg-deep-onyx text-white flex max-lg:flex-col max-lg:w-full overflow-hidden">
+        <SidebarLeft currentPage={currentPage} />
+        <div className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
+          {children}
+          <button
+            type="button"
+            aria-label="Toggle details panel"
+            className="lg:hidden fixed bottom-20 right-4 z-50 w-10 h-10 bg-surface-elevated border border-white/[0.08] rounded-xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.08] transition-all shadow-lg cursor-pointer"
+            onClick={() => window.dispatchEvent(new CustomEvent("toggle-mobile-sidebar"))}
+          >
+            <PanelRightOpen className="w-4 h-4" />
+          </button>
+        </div>
+        <SidebarRight />
+      </div>
     </SessionContext.Provider>
   );
 }

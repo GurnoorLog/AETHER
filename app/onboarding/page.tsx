@@ -229,7 +229,7 @@ export default function OnboardingPage() {
   return (
     <>
       {phase === "welcome" && (
-        <div className="min-h-screen bg-deep-onyx flex flex-col items-center justify-center px-8 relative overflow-hidden">
+        <div className="min-h-screen bg-deep-onyx flex flex-col items-center justify-center px-4 sm:px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.08)_0%,_transparent_60%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-cyber-yellow/[0.02] via-transparent to-deep-onyx pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,_rgba(253,224,71,0.04)_0%,_transparent_50%)] pointer-events-none" />
@@ -264,9 +264,9 @@ export default function OnboardingPage() {
           </div>
 
           {/* Glow behind avatar */}
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-cyber-yellow/5 blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full bg-cyber-yellow/5 blur-[120px] pointer-events-none" />
 
-          <div className="w-28 h-28 rounded-[36px] bg-cyber-yellow/10 flex items-center justify-center mb-14 ring-1 ring-cyber-yellow/20 shadow-[0_0_80px_rgba(253,224,71,0.08)] relative z-10 avatar-breathing">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-[36px] bg-cyber-yellow/10 flex items-center justify-center mb-10 sm:mb-12 lg:mb-14 ring-1 ring-cyber-yellow/20 shadow-[0_0_80px_rgba(253,224,71,0.08)] relative z-10 avatar-breathing">
             <svg className="w-14 h-14 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
             </svg>
@@ -297,7 +297,7 @@ export default function OnboardingPage() {
             }}
           />
           {/* Header */}
-          <div className="sticky top-0 z-20 px-8 py-6 flex items-center justify-between bg-deep-onyx/80 backdrop-blur-xl border-b border-white/5">
+          <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-deep-onyx/80 backdrop-blur-xl border-b border-white/5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex items-center justify-center shadow-lg shadow-cyber-yellow/10">
                 <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -366,14 +366,14 @@ export default function OnboardingPage() {
                           onChange={(e) => setNameValue(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
                           placeholder="Type your name..."
-                          className="flex-1 glass-card px-6 py-5 rounded-2xl text-white/90 text-lg font-medium
+                          className="flex-1 glass-card px-4 sm:px-6 py-4 sm:py-5 rounded-2xl text-white/90 text-base sm:text-lg font-medium
                             placeholder:text-white/20 border border-white/10 focus:border-cyber-yellow/40
                             outline-none focus:shadow-[0_0_30px_rgba(253,224,71,0.05)] premium-transition"
                         />
                         <button
                           onClick={handleNameSubmit}
                           disabled={!nameValue.trim()}
-                          className="w-14 h-14 rounded-2xl bg-cyber-yellow flex items-center justify-center
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-cyber-yellow flex items-center justify-center
                             hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10
                             disabled:opacity-30 cursor-pointer"
                         >
@@ -388,12 +388,12 @@ export default function OnboardingPage() {
                   {/* Step 2: Subjects */}
                   {stepIndex === 2 && (
                     <div className="space-y-4">
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2 sm:gap-3">
                         {subjects.map((s) => (
                           <button
                             key={s}
                             onClick={() => toggleSubject(s)}
-                            className={`px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
+                            className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
                               selectedSubjects.includes(s)
                                 ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
                                 : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
@@ -410,7 +410,7 @@ export default function OnboardingPage() {
                           onChange={(e) => setCustomSubject(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleSubjectsSubmit()}
                           placeholder="Or type your own..."
-                          className="flex-1 glass-card px-5 py-4 rounded-2xl text-white/70 text-sm font-medium
+                          className="flex-1 glass-card px-4 sm:px-5 py-3 sm:py-4 rounded-2xl text-white/70 text-sm font-medium
                             placeholder:text-white/20 border border-white/10 focus:border-cyber-yellow/40
                             outline-none premium-transition"
                         />
@@ -418,7 +418,7 @@ export default function OnboardingPage() {
                       {(selectedSubjects.length > 0 || customSubject.trim()) && (
                         <button
                           onClick={handleSubjectsSubmit}
-                          className="px-8 py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
+                          className="px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
                             hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
                         >
                           Continue
@@ -434,7 +434,7 @@ export default function OnboardingPage() {
                         <button
                           key={level}
                           onClick={() => setEducationLevel(level)}
-                          className={`w-full text-left px-6 py-4 rounded-2xl text-base font-bold premium-transition cursor-pointer ${
+                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
                             educationLevel === level
                               ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
                               : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
@@ -446,7 +446,7 @@ export default function OnboardingPage() {
                       {educationLevel && (
                         <button
                           onClick={handleEducationSubmit}
-                          className="mt-3 px-8 py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
                             hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
                         >
                           Continue
@@ -462,7 +462,7 @@ export default function OnboardingPage() {
                         <button
                           key={style.id}
                           onClick={() => toggleStyle(style.id)}
-                          className={`w-full text-left px-6 py-4 rounded-2xl text-base font-bold premium-transition cursor-pointer ${
+                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
                             selectedStyles.includes(style.id)
                               ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
                               : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
@@ -474,7 +474,7 @@ export default function OnboardingPage() {
                       {selectedStyles.length > 0 && (
                         <button
                           onClick={handleStylesSubmit}
-                          className="mt-3 px-8 py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
                             hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
                         >
                           Continue
@@ -486,12 +486,12 @@ export default function OnboardingPage() {
                   {/* Step 5: Goals */}
                   {stepIndex === 5 && (
                     <div className="space-y-3">
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2 sm:gap-3">
                         {goals.map((g) => (
                           <button
                             key={g}
                             onClick={() => toggleGoal(g)}
-                            className={`px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
+                            className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
                               selectedGoals.includes(g)
                                 ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
                                 : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
@@ -504,7 +504,7 @@ export default function OnboardingPage() {
                       {selectedGoals.length > 0 && (
                         <button
                           onClick={handleGoalsSubmit}
-                          className="mt-3 px-8 py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
                             hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
                         >
                           Continue
@@ -515,31 +515,31 @@ export default function OnboardingPage() {
 
                   {/* Step 6: Voice */}
                   {stepIndex === 6 && (
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <button
                         onClick={() => handleVoiceSubmit(true)}
-                        className="flex-1 glass-card p-6 rounded-3xl border border-white/10 hover:border-cyber-yellow/40
+                        className="flex-1 glass-card p-4 sm:p-6 rounded-3xl border border-white/10 hover:border-cyber-yellow/40
                           hover:bg-cyber-yellow/5 premium-transition group cursor-pointer text-left"
                       >
-                        <div className="w-12 h-12 rounded-2xl bg-cyber-yellow/20 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
-                          <svg className="w-6 h-6 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cyber-yellow/20 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                           </svg>
                         </div>
-                        <p className="text-lg font-black text-white mb-1">Yes, enable voice</p>
+                        <p className="text-base sm:text-lg font-black text-white mb-1">Yes, enable voice</p>
                         <p className="text-sm text-white/40 font-medium">Natural voice conversations with real-time AI</p>
                       </button>
                       <button
                         onClick={() => handleVoiceSubmit(false)}
-                        className="flex-1 glass-card p-6 rounded-3xl border border-white/10 hover:border-white/20
+                        className="flex-1 glass-card p-4 sm:p-6 rounded-3xl border border-white/10 hover:border-white/20
                           premium-transition group cursor-pointer text-left"
                       >
-                        <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
-                          <svg className="w-6 h-6 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                           </svg>
                         </div>
-                        <p className="text-lg font-black text-white mb-1">Text only</p>
+                        <p className="text-base sm:text-lg font-black text-white mb-1">Text only</p>
                         <p className="text-sm text-white/40 font-medium">I prefer typing my questions</p>
                       </button>
                     </div>
@@ -551,7 +551,7 @@ export default function OnboardingPage() {
 
           {/* Subtle hint */}
           {typingDone && stepIndex === 1 && !nameValue && (
-            <div className="px-6 md:px-12 pb-6 text-center">
+            <div className="px-4 sm:px-6 lg:px-12 pb-6 text-center">
               <p className="text-xs text-white/20 font-bold uppercase tracking-widest">Press Enter to send</p>
             </div>
           )}

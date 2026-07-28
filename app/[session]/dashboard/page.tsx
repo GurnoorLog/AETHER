@@ -6,8 +6,6 @@ import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import { useAutoCollapse } from "@/hooks/useAutoCollapse";
-import SidebarRight from "@/components/SidebarRight";
-import SidebarLeft from "@/components/SidebarLeft";
 import type { Lesson } from "@/types/database";
 
 interface RoadmapModule {
@@ -64,32 +62,20 @@ export default function SessionDashboardPage() {
 
   if (authLoading || !user || !session) {
     return (
-      <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-        <div className="w-[15%] shrink-0 p-6 space-y-4">
-          <div className="animate-pulse bg-white/[0.03] rounded-2xl w-10 h-10" />
-          <div className="animate-pulse bg-white/[0.03] rounded-full h-10" />
-        </div>
-        <main className="flex-1 flex items-center justify-center">
-          <div className="w-5 h-5 border-2 border-cyber-yellow/40 border-t-cyber-yellow rounded-full animate-spin" />
-        </main>
-        <div className="w-[20%] shrink-0 p-6">
-          <div className="animate-pulse bg-white/[0.03] rounded-[24px] h-64" />
-        </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="w-5 h-5 border-2 border-cyber-yellow/40 border-t-cyber-yellow rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-deep-onyx text-white flex overflow-hidden">
-      <SidebarLeft currentPage="home" />
-
-      <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
+    <>
         {/* Hero */}
-        <div className={`${expanded ? "min-h-[40vh] p-12" : "h-[16vh] px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 lg:py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute inset-0 noise-texture" />
-          <div className="absolute top-8 right-8 flex gap-3">
-            <div className="bg-black text-white px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>
-            <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider text-black/60">{modules.length} Modules</div>
+          <div className="absolute top-4 right-4 lg:top-8 lg:right-8 flex gap-2 lg:gap-3">
+            <div className="bg-black text-white px-2 lg:px-3.5 py-0.5 lg:py-1 rounded-full text-[8px] lg:text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>
+            <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-2 lg:px-3.5 py-0.5 lg:py-1 rounded-full text-[8px] lg:text-[9px] font-semibold uppercase tracking-wider text-black/60">{modules.length} Modules</div>
           </div>
           <div className={`relative z-10 transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
             {!expanded && (
@@ -99,7 +85,7 @@ export default function SessionDashboardPage() {
               </div>
             )}
             {expanded && <p className="label-micro text-black/50 mb-4">Session Dashboard</p>}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "heading-display mb-5" : "text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "heading-display mb-5" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">{currentModule
                 ? `Continue "${currentModule.title}"`
                 : completedCount === modules.length && modules.length > 0
@@ -117,10 +103,10 @@ export default function SessionDashboardPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-12 pb-8 overflow-y-auto space-y-8 relative z-10 pt-8">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-8 overflow-y-auto space-y-8 relative z-10 pt-8">
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-3 gap-4 mb-8 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 stagger-children">
             {currentModule && (
               <button
                 onClick={() => startModule(currentModule.id)}
@@ -234,9 +220,6 @@ export default function SessionDashboardPage() {
             )}
           </section>
         </div>
-      </main>
-
-      <SidebarRight />
-    </div>
+    </>
   );
 }
