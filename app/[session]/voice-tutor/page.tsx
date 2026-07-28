@@ -178,12 +178,13 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       const mr = new MediaRecorder(stream);
       mediaRecorderRef.current = mr;
 
-      mr.ondataavailable = async (event) => {
+          mr.ondataavailable = async (event) => {
         if (event.data.size > 0 && !processingRef.current) {
           processingRef.current = true;
           try {
             const res = await fetch("/api/stt", {
               method: "POST",
+              headers: { "Content-Type": event.data.type || "audio/webm" },
               body: event.data,
             });
             const data = await res.json();

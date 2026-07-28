@@ -5,14 +5,15 @@ export async function POST(req: NextRequest) {
   if (!key) return Response.json({ error: "Not configured" }, { status: 500 });
 
   const audio = await req.arrayBuffer();
-  const url = "https://api.deepgram.com/v1/listen?model=nova-2&language=en&encoding=linear16&sample_rate=48000&interim_results=false&endpointing=500&utterance_end_ms=1000";
+  const contentType = req.headers.get("content-type") || "audio/webm";
+  const url = "https://api.deepgram.com/v1/listen?model=nova-2&language=en&interim_results=false&endpointing=500&utterance_end_ms=1000";
 
   try {
     const dgRes = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: `Token ${key}`,
-        "Content-Type": "audio/l16;rate=48000",
+        "Content-Type": contentType,
       },
       body: audio,
     });
