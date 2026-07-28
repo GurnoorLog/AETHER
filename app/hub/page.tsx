@@ -221,7 +221,7 @@ export default function HubPage() {
       <main className="flex-1 mt-16 overflow-y-auto">
 
         {/* Hero */}
-        <section className="relative h-[34vh] liquid-wave flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        <section className="relative min-h-[34vh] liquid-wave flex flex-col items-center justify-center text-center px-6">
           {/* Subtle dot pattern */}
           <div className="absolute inset-0 noise-texture" />
           <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-black/[0.03] rounded-full blur-3xl" />
