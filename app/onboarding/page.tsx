@@ -57,12 +57,24 @@ export default function OnboardingPage() {
   // typing completion tracking
   const [typingDone, setTypingDone] = useState(false);
 
-  // scroll to bottom when conversation updates
+  // scroll to bottom when conversation updates — smooth scroll
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      requestAnimationFrame(() => {
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      });
     }
   }, [conversation, aiReady]);
+
+  // also scroll as the latest AI message types out (polled)
+  useEffect(() => {
+    if (!typingDone && scrollRef.current) {
+      const id = setInterval(() => {
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      }, 400);
+      return () => clearInterval(id);
+    }
+  }, [typingDone, conversation.length]);
 
   useEffect(() => {
     if (!authLoading && !user) {

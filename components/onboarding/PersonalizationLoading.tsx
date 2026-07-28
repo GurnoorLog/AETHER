@@ -14,12 +14,14 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [displayedText, setDisplayedText] = useState("");
+  const [isPaused, setIsPaused] = useState(false);
   const charIndexRef = useRef(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
+        if (isPaused) return prev; // stall progress during pause
         const next = prev + Math.random() * 2.5 + 0.5;
         return next >= 100 ? 100 : next;
       });
@@ -27,7 +29,7 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
     intervalRef.current = progressInterval;
 
     return () => clearInterval(progressInterval);
-  }, []);
+  }, [isPaused]);
 
   useEffect(() => {
     if (currentIndex >= messages.length) return;
@@ -41,15 +43,18 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
         charIndexRef.current++;
       } else {
         clearInterval(interval);
+        setIsPaused(true); // stall progress while user reads
+        // Stall: give user time to read before next phrase
         setTimeout(() => {
+          setIsPaused(false);
           if (currentIndex < messages.length - 1) {
             setCurrentIndex((prev) => prev + 1);
           } else {
             setDisplayedText(messages[currentIndex]);
             if (intervalRef.current) clearInterval(intervalRef.current);
-            setTimeout(onComplete, 800);
+            setTimeout(onComplete, 1000);
           }
-        }, 600);
+        }, 800);
       }
     }, 25);
 
