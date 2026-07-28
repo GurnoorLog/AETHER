@@ -321,3 +321,61 @@
 .stagger-children > *:nth-child(6) { animation-delay: 300ms; }
 .stagger-children > *:nth-child(7) { animation-delay: 360ms; }
 .stagger-children > *:nth-child(8) { animation-delay: 420ms; }
+
+/* ── Music Waveform ── */
+.music-waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 40px;
+}
+
+.wave-bar-active {
+  width: 4px;
+  background: #FDE047;
+  border-radius: 2px;
+  animation: musicWave 1.2s ease-in-out infinite;
+}
+
+@keyframes musicWave {
+  0%, 100% { height: 10%; }
+  50% { height: 100%; }
+}
+
+/* ── Voice Tutor ── */
+@keyframes floating {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(1deg); }
+}
+
+@keyframes wave-animation {
+  0%, 100% { height: 15%; opacity: 0.4; }
+  50% { height: 100%; opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 40px rgba(253, 224, 71, 0.4); }
+  50% { box-shadow: 0 0 70px rgba(253, 224, 71, 0.6); }
+}
+
+.text-stream-fade {
+  mask-image: linear-gradient(to top, white 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, white 80%, transparent 100%);
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #FDE047;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(253, 224, 71, 0.5);
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
