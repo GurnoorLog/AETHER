@@ -148,7 +148,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
 
     setCreating(true);
     const supabase = createClient();
-    const slug = slugify(subject);
+    const slug = `${slugify(subject)}-${Date.now()}`;
 
     try {
       // 1. Create session

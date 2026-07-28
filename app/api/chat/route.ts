@@ -62,13 +62,12 @@ export async function POST(request: Request) {
 
         send("status", { text: "Generating response..." });
 
-        // 4. Get recent conversation history
-        const { data: historyMessages } = await supabase
+        // 4. Get ALL conversation history (no limit — full context)
+        const { data: allMessages } = await supabase
           .from("chat_messages")
-          .select("role, content")
+          .select("role, content, created_at")
           .eq("conversation_id", conversation_id)
-          .order("created_at", { ascending: true })
-          .limit(20);
+          .order("created_at", { ascending: true });
 
         // 5. Get AI memories
         const { data: memories } = await supabase
@@ -95,10 +94,6 @@ export async function POST(request: Request) {
 
         const memoryBlock = memories?.length
           ? "\n\n## AI Memories\n" + memories.map((m) => `- ${m.content} (${m.context})`).join("\n")
-          : "";
-
-        const historyBlock = historyMessages?.length
-          ? historyMessages.map((m) => `${m.role === "user" ? userName : tutorName}: ${m.content}`).join("\n")
           : "";
 
         // Module-aware system prompt
@@ -140,6 +135,66 @@ ${lessonsBlock}
 `;
         }
 
+        // Build the Gemini contents array with proper role alternation
+        // Map DB messages → Gemini roles: user -> "user", assistant -> "model"
+        let historyMessages = allMessages || [];
+        let summaryNote = "";
+
+        // If history is very long (>100k chars total), summarize older messages
+        const totalChars = historyMessages.reduce((sum, m) => sum + m.content.length, 0);
+        const SUMMARY_THRESHOLD = 100_000;
+
+        if (totalChars > SUMMARY_THRESHOLD && historyMessages.length > 6) {
+          // Keep the last 6 messages (3 turns), summarize the rest
+          const keepCount = 6;
+          const toSummarize = historyMessages.slice(0, -keepCount);
+          const toKeep = historyMessages.slice(-keepCount);
+
+          // Generate a summary via Gemini
+          try {
+            const summarizeText = toSummarize.map((m) =>
+              `${m.role === "user" ? userName : tutorName}: ${m.content}`
+            ).join("\n\n");
+
+            const summaryRes = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contents: [{
+                    parts: [{
+                      text: `Summarize the following conversation between a student (${userName}) and a tutor (${tutorName}) in 3-4 sentences. Focus on: what topics were discussed, what the student learned or struggled with, any key questions asked, and what the current learning state/objective is.\n\nConversation:\n${summarizeText}`
+                    }]
+                  }],
+                  generationConfig: { temperature: 0.3, maxOutputTokens: 512 },
+                }),
+              }
+            );
+
+            const summaryData = await summaryRes.json();
+            const summaryText = summaryData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (summaryText) {
+              summaryNote = `\n\n## Previous Conversation Summary (older messages summarized for context)\n${summaryText}`;
+              historyMessages = toKeep;
+            }
+          } catch {
+            // Summarization failed — use all messages as-is
+          }
+        }
+
+        // Build contents array for Gemini
+        const geminiContents: { role: string; parts: { text: string }[] }[] = [];
+
+        // Add history as proper alternating user/model messages
+        for (const msg of historyMessages) {
+          const geminiRole = msg.role === "assistant" ? "model" : "user";
+          geminiContents.push({ role: geminiRole, parts: [{ text: msg.content }] });
+        }
+
+        // Add the current user message
+        geminiContents.push({ role: "user", parts: [{ text: message }] });
+
         const systemPrompt = `You are ${tutorName}, an expert AI tutor helping ${userName} learn.
 
 ## Your Role
@@ -152,10 +207,7 @@ ${moduleSection}
 ## Retrieved Document Context
 ${chunks.length > 0 ? contextBlocks.join("\n\n") : "No relevant documents found for this query."}
 ${memoryBlock}
-
-## Recent Conversation
-${historyBlock || "No previous messages."}
-
+${summaryNote}
 ## Instructions
 Answer the student's question using the retrieved context when relevant.
 ${moduleSection ? "Always relate answers back to the active module content when possible." : "If the documents don't contain relevant information, answer from general knowledge."}
@@ -166,7 +218,8 @@ Always be helpful and educational. Keep responses focused and clear.`;
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: systemPrompt + "\n\nStudent: " + message }] }],
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: geminiContents,
             generationConfig: {
               temperature: 0.7,
               topP: 0.95,
