@@ -83,7 +83,7 @@ export default function SessionDashboardPage() {
 
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
         {/* Hero */}
-        <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
+        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute inset-0 noise-texture" />
           <div className="absolute top-8 right-8 flex gap-3">
             <div className="bg-black text-white px-3.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>

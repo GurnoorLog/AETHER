@@ -298,7 +298,7 @@ export default function MusicPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
         {/* Hero Section */}
-        <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
+        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">PRO PLAN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>

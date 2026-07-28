@@ -270,7 +270,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
 
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Hero Section */}
-        <div className="h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
+        <div className="min-h-[40vh] bg-cyber-yellow text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end">
           <div className="absolute top-10 right-10 flex gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
             <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{stats.total} Files</div>
