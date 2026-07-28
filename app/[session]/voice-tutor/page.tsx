@@ -7,7 +7,7 @@ import { useSession } from "../layout";
 import { createClient } from "@/lib/supabase/client";
 
 const DG_KEY = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "";
-const STT_WS = "wss://api.deepgram.com/v1/listen?model=nova-2&language=en&encoding=linear16&sample_rate=48000&interim_results=false&endpointing=500&vad_turnoff=500&utterance_end_ms=1000";
+const STT_WS = (key: string) => `wss://api.deepgram.com/v1/listen?model=nova-2&language=en&encoding=linear16&sample_rate=48000&interim_results=false&endpointing=500&vad_turnoff=500&utterance_end_ms=1000&api_key=${key}`;
 const TTS_URL = "https://api.deepgram.com/v1/speak?model=aura-2-odysseus-en";
 
 function formatDuration(seconds: number) {
@@ -188,7 +188,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       streamRef.current = stream;
       setMicActive(true);
 
-      const ws = new WebSocket(STT_WS, ["token", DG_KEY]);
+      const ws = new WebSocket(STT_WS(DG_KEY));
       wsRef.current = ws;
 
       ws.onopen = () => {
