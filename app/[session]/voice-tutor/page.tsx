@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { useSession } from "../layout";
 import { createClient } from "@/lib/supabase/client";
-import { useDeepgramAgent } from "@deepgram/react";
+import { useVoiceTutor } from "@/hooks/useVoiceTutor";
 
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -38,6 +38,7 @@ const WAVE_BARS = [
 ];
 
 export default function VoiceTutorPage({ params }: { params: Promise<{ session: string }> }) {
+  const startedRef = useRef(false);
   const resolvedParams = use(params);
   const slug = resolvedParams.session;
   const { user, loading: authLoading } = useAuth();
@@ -55,19 +56,26 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const savedIdsRef = useRef<Set<string>>(new Set());
   const prevConvLenRef = useRef(0);
 
-  // --- Deepgram voice agent ---
-  const { state, conversation, micActive, outputMuted, start, stop, setMicMuted, setOutputMuted } = useDeepgramAgent({
-    config: {
-      auth: { apiKey: process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY || "" },
-      agent: {
-        listen: { provider: { type: "deepgram" }, model: "flux-general-en" },
-        think: { provider: { type: "google" }, model: "gemini-2.0-flash" },
-        speak: { provider: { type: "deepgram" }, model: "aura-2-odysseus-en" },
-      },
-    },
-    micOptions: { vad: true },
-    playerSampleRate: 24_000,
-  });
+  // --- Voice tutor hook (Deepgram STT + chat API + Web Speech TTS) ---
+  const voice = useVoiceTutor({ sessionId: slug });
+
+  const createConversation = useCallback(async () => {
+    if (!user || !session) return null;
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("conversations")
+      .insert({ user_id: user.id, session_id: session.id, title: "Voice Session" })
+      .select("id")
+      .single();
+    if (data && !error) {
+      localStorage.setItem(STORAGE_KEY, data.id);
+      setActiveConversation(data.id);
+      return data.id;
+    }
+    return null;
+  }, [user, session, STORAGE_KEY]);
+
+  const { state, conversation, micActive, outputMuted, start, stop, setMicMuted, setOutputMuted } = voice;
 
   // --- Load active conversation from localStorage ---
   useEffect(() => {
@@ -75,6 +83,24 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) setActiveConversation(saved);
   }, [STORAGE_KEY]);
+
+  // --- Auto-start voice session ---
+  useEffect(() => {
+    if (startedRef.current || authLoading || !user || !session) return;
+    const doStart = async () => {
+      startedRef.current = true;
+      let convId = activeConversation;
+      if (!convId) {
+        convId = await createConversation();
+      }
+      if (convId && state === "idle") {
+        start(convId);
+      }
+    };
+    if (activeConversation || state === "idle") {
+      doStart();
+    }
+  }, [activeConversation, authLoading, user, session, state, start, createConversation]);
 
   // --- Fetch existing messages from Supabase ---
   const fetchDbMessages = useCallback(async (convId: string) => {
@@ -285,17 +311,9 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
           {/* Status */}
           <div className="text-center">
-            {state === "idle" && (
-              <button
-                onClick={start}
-                className="bg-[#FDE047] text-black font-black px-10 py-4 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
-              >
-                Start Voice Session
-              </button>
-            )}
-            {state === "connecting" && (
+            {(state === "idle" || state === "connecting") && (
               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#FDE047] animate-pulse">
-                Connecting to Aether...
+                {state === "idle" ? "Initializing..." : "Connecting to Aether..."}
               </p>
             )}
             {state === "connected" && (
@@ -307,7 +325,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
               <div className="space-y-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Session Ended</p>
                 <button
-                  onClick={start}
+                  onClick={() => { if (activeConversation) start(activeConversation); }}
                   className="bg-[#FDE047] text-black font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(253,224,71,0.3)] cursor-pointer"
                 >
                   Reconnect
@@ -347,7 +365,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
                 micActive
                   ? "bg-[#FDE047] text-black shadow-[0_0_15px_rgba(253,224,71,0.3)]"
-                  : "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
+                  : "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]"
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
