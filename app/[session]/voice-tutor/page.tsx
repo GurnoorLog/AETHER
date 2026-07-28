@@ -65,7 +65,17 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
       },
       agent: {
         listen: { provider: { type: "deepgram", version: "v2", model: "flux-general-en" } },
-        think: { provider: { type: "google", model: "gemini-2.5-flash" } },
+        think: {
+          provider: { type: "google", model: "gemini-2.5-flash" },
+          instructions: `You are Aether, an expert AI voice tutor. Your student is studying "${session?.subject || "a subject"}".
+
+IMPORTANT RULES:
+- Never ask what subject or topic the student is studying. You already know it.
+- Never use asterisks (*), markdown, or any special formatting. You are speaking, not writing.
+- Keep responses concise and conversational since this is voice.
+- Always pick up right where the conversation left off — remember the full context.
+- Be encouraging and clear. Use analogies and examples when helpful.`,
+        },
         speak: { provider: { type: "deepgram", model: "aura-2-odysseus-en" } },
       },
       reconnect: { enabled: false },
