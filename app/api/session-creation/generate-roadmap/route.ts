@@ -2,8 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
+function extractSubject(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return "";
+  // Extract topic from "i want to learn about X", "learn X", "study X" etc.
+  const patterns = [
+    /^i'?m?\s+(?:trying\s+to\s+)?(?:want\s+to\s+)?(?:learn|study|understand|master|know)\s+(?:about\s+|how\s+)?(.+)$/i,
+    /^i\s+(?:want\s+to\s+)?(?:learn|study)\s+(.+)$/i,
+  ];
+  for (const p of patterns) {
+    const m = trimmed.match(p);
+    if (m) return m[1].trim();
+  }
+  return trimmed;
+}
+
 export async function POST(req: NextRequest) {
-  const { subject, mode, difficulty, duration, objectives } = await req.json();
+  const { subject: rawSubject, mode, difficulty, duration, objectives: rawObjectives } = await req.json();
 
   if (!GEMINI_API_KEY) {
     return NextResponse.json(
@@ -12,32 +27,31 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const prompt = `You are an AI learning path designer. Generate a structured learning roadmap for the subject "${subject}".
+  // Clean subject for prompt — extract real topic from sentence input
+  const cleanSubj = extractSubject(rawSubject || "");
+  const subject = cleanSubj || rawSubject || "this topic";
+  const objectives = [rawObjectives, rawSubject !== subject ? rawSubject : ""].filter(Boolean).join(". ") || "General mastery";
+
+  const prompt = `You are an AI learning path designer. Generate a structured learning roadmap for "${subject}".
 
 Configuration:
-- Learning Mode: ${mode}
-- Difficulty: ${difficulty}
-- Session Duration: ${duration}
-- Objectives: ${objectives || "General mastery of the subject"}
+- Objectives: ${objectives}
 
-CRITICAL: The roadmap MUST be SPECIFIC to the subject and objectives above. Do NOT use generic module names like "${subject} Fundamentals" or "Intermediate ${subject}". Instead, create modules that directly address the specific topic or objectives.
-
-For example, if the subject is "Literature" and objectives mention "Dante", modules should be like "Dante's Life and Historical Context", "The Divine Comedy: Inferno", etc. — not "Literature Fundamentals".
+CRITICAL: Create modules that are SPECIFIC to "${subject}" and the objectives above. Module names MUST be concrete and directly about the topic — NOT generic like "Fundamentals of X" or "Intermediate X".
 
 Return a JSON array of 4-6 modules. Each module must have:
-- "title": short, SPECIFIC module name
+- "title": short, SPECIFIC module name directly about ${subject}
 - "status": one of "completed", "current", or "locked". The first 1-2 should be "completed", the next "current", the rest "locked"
-- "description": 1 short sentence describing what this module covers
-- "learning_objectives": a string listing 3-5 specific learning objectives separated by newlines
-- "key_concepts": a string listing the key concepts/theorems/terms separated by commas
-- "lessons": an array of 2-4 lessons, each with:
+- "description": 1 short sentence
+- "learning_objectives": string of 3-5 objectives separated by newlines
+- "key_concepts": string of key terms separated by commas
+- "lessons": array of 2-4 lessons, each with:
   - "title": lesson name
-  - "description": 1 sentence about what this lesson teaches
-  - "duration_minutes": estimated minutes (10-30)
-  - "key_topics": array of 2-4 specific topics covered in this lesson
+  - "description": 1 sentence
+  - "duration_minutes": 10-30
+  - "key_topics": array of 2-4 specific topics
 
-Return ONLY the JSON array, no markdown, no explanation. Example format:
-[{"title":"Module 1","status":"completed","description":"Week 1 content","learning_objectives":"- Objective 1\n- Objective 2","key_concepts":"concept1, concept2","lessons":[{"title":"Lesson 1","description":"Intro","duration_minutes":15,"key_topics":["topic1","topic2"]}]}]`;
+Return ONLY the JSON array, no markdown, no explanation.`;
 
   try {
     const res = await fetch(
@@ -55,11 +69,10 @@ Return ONLY the JSON array, no markdown, no explanation. Example format:
     const data = await res.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // Strip markdown code fences before parsing
     const cleaned = text.replace(/```(?:json)?\s*/g, "").trim();
     const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      console.error("Roadmap: no JSON found in Gemini response:", text.slice(0, 500));
+      console.error("Roadmap: no JSON in Gemini response:", text.slice(0, 500));
       return NextResponse.json({ modules: getDefaultModules(subject, objectives) });
     }
 
@@ -71,50 +84,49 @@ Return ONLY the JSON array, no markdown, no explanation. Example format:
   }
 }
 
-function getDefaultModules(subject: string, objectives?: string) {
-  const focus = objectives || subject;
+function getDefaultModules(subject: string, _objectives?: string) {
   return [
     {
-      title: `Foundations of ${focus}`,
+      title: `Introduction to ${subject}`,
       status: "completed",
-      description: `Core concepts and foundational principles of ${focus}.`,
-      learning_objectives: `- Understand the fundamental concepts of ${focus}\n- Identify key terminology and principles`,
+      description: `Core concepts and foundational principles of ${subject}.`,
+      learning_objectives: `- Understand the fundamental concepts\n- Identify key terminology and principles`,
       key_concepts: `fundamentals, core principles, terminology`,
       lessons: [
-        { title: "Introduction to Core Ideas", description: "Learn the essential concepts and vocabulary.", duration_minutes: 15, key_topics: ["definitions", "basic concepts"] },
+        { title: "Core Concepts", description: "Learn the essential concepts and vocabulary.", duration_minutes: 15, key_topics: ["definitions", "basic concepts"] },
         { title: "Foundational Principles", description: "Understand the building blocks.", duration_minutes: 20, key_topics: ["principles", "framework"] },
       ],
     },
     {
-      title: `Key Topics in ${focus}`,
-      status: "completed",
-      description: `Exploring the major topics and themes within ${focus}.`,
-      learning_objectives: `- Explore major themes and topics\n- Connect concepts to broader context`,
-      key_concepts: `major themes, key topics, context`,
-      lessons: [
-        { title: "Major Themes", description: "Survey the key themes and topics.", duration_minutes: 20, key_topics: ["themes", "overview"] },
-        { title: "Context and Connections", description: "Understand how topics relate to each other.", duration_minutes: 25, key_topics: ["connections", "context"] },
-      ],
-    },
-    {
-      title: `Advanced Study of ${focus}`,
+      title: `${subject} in Practice`,
       status: "current",
-      description: `Diving deeper into advanced aspects of ${focus}.`,
-      learning_objectives: `- Master advanced concepts\n- Apply knowledge to complex scenarios`,
-      key_concepts: `advanced concepts, deep analysis, synthesis`,
+      description: `Applying ${subject} concepts to real-world scenarios.`,
+      learning_objectives: `- Apply concepts to practical problems\n- Develop analytical skills`,
+      key_concepts: `application, analysis, practical methods`,
       lessons: [
-        { title: "Advanced Concepts", description: "Explore complex and nuanced topics.", duration_minutes: 25, key_topics: ["advanced theory", "deep analysis"] },
-        { title: "Practical Application", description: "Apply what you've learned to real scenarios.", duration_minutes: 30, key_topics: ["application", "problem-solving"] },
+        { title: "Practical Applications", description: "Putting theory into practice.", duration_minutes: 20, key_topics: ["applications", "practice"] },
+        { title: "Case Studies", description: "Analyze real-world examples.", duration_minutes: 25, key_topics: ["case studies", "analysis"] },
       ],
     },
     {
-      title: `Mastery of ${focus}`,
+      title: `Advanced ${subject}`,
       status: "locked",
-      description: `Achieving expert-level understanding of ${focus}.`,
+      description: `Diving deeper into complex aspects of ${subject}.`,
+      learning_objectives: `- Master advanced concepts\n- Solve complex problems`,
+      key_concepts: `advanced theory, complex problem-solving, synthesis`,
+      lessons: [
+        { title: "Advanced Concepts", description: "Explore complex theoretical frameworks.", duration_minutes: 25, key_topics: ["theory", "advanced concepts"] },
+        { title: "Expert Workshop", description: "Tackle challenging problems.", duration_minutes: 30, key_topics: ["workshop", "advanced problems"] },
+      ],
+    },
+    {
+      title: `${subject} Mastery`,
+      status: "locked",
+      description: `Achieving expert-level understanding of ${subject}.`,
       learning_objectives: `- Demonstrate expert-level understanding\n- Synthesize and evaluate knowledge`,
       key_concepts: `expertise, synthesis, evaluation`,
       lessons: [
-        { title: "Expert Synthesis", description: "Synthesize all knowledge into comprehensive understanding.", duration_minutes: 20, key_topics: ["synthesis", "mastery"] },
+        { title: "Expert Synthesis", description: "Synthesize all knowledge comprehensively.", duration_minutes: 20, key_topics: ["synthesis", "mastery"] },
       ],
     },
   ];

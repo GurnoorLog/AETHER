@@ -133,9 +133,6 @@ export default function HubPage() {
     return matchesFilter && matchesSearch;
   });
 
-  const featuredSessions = filteredSessions.slice(0, 3);
-  const recentSessions = filteredSessions.slice(3, 10);
-
   const totalMastery =
     subjects.length > 0
       ? Math.round(subjects.reduce((acc, s) => acc + s.mastery_level, 0) / subjects.length)
@@ -207,21 +204,7 @@ export default function HubPage() {
             />
           </div>
 
-          <div className="hidden md:flex items-center gap-1 bg-white/[0.02] rounded-full p-1">
-            {(["all", "active", "completed"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-4 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 ${
-                  filter === f
-                    ? "bg-white/[0.08] text-white"
-                    : "text-white/30 hover:text-white/60"
-                }`}
-              >
-                {f === "all" ? "All" : f === "active" ? "In Progress" : "Done"}
-              </button>
-            ))}
-          </div>
+
 
           <button
             onClick={() => setShowModal(true)}
@@ -257,149 +240,92 @@ export default function HubPage() {
           </div>
         </section>
 
-        {/* Featured Carousel */}
-        <section className="-mt-10 px-8 relative z-20">
-          <p className="label-micro text-white/25 mb-4 pl-1">Featured</p>
-          <div className="flex overflow-x-auto gap-6 no-scrollbar scroll-smooth pb-8 px-1" style={{ scrollSnapType: "x mandatory" }}>
-            {featuredSessions.length === 0 ? (
-              <div
-                onClick={() => setShowModal(true)}
-                className="carousel-item w-full h-[280px] glass-card rounded-[28px] overflow-hidden flex items-center justify-center cursor-pointer hover:bg-white/[0.06] border-dashed border-white/[0.08]"
-              >
-                <div className="text-center">
-                  <div className="w-14 h-14 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-6 h-6 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                  </div>
-                  <p className="text-white/40 text-sm font-medium">Create your first session</p>
-                </div>
+        {/* Unified Sessions Section — premium merge of Featured + All */}
+        <section className="-mt-10 px-8 relative z-20 pb-16">
+          <div className="flex items-center justify-between mb-6 pl-1">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-cyber-yellow rounded-full" />
+              <h2 className="text-lg font-black tracking-tight">Your Sessions</h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-white/[0.03] rounded-full p-0.5 flex">
+                {(["all", "active", "completed"] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
+                      filter === f
+                        ? "bg-cyber-yellow text-black"
+                        : "text-white/30 hover:text-white/60"
+                    }`}
+                  >
+                    {f === "all" ? "All" : f === "active" ? "Active" : "Done"}
+                  </button>
+                ))}
               </div>
-            ) : (
-              featuredSessions.map((session) => (
-                <div
-                  key={session.id}
-                  onClick={() => session.slug && handleResume(session.slug)}
-                  className="carousel-item w-[520px] h-[280px] glass-card rounded-[28px] overflow-hidden relative group cursor-pointer"
-                >
-                  <div
-                    className="absolute inset-0 opacity-[0.04]"
-                    style={{ background: `radial-gradient(circle at 30% 30%, ${extractSubjectColor(session.subject)}, transparent 70%)` }}
-                  />
-                  <div className="absolute top-5 left-5 z-10 flex items-center gap-2">
-                    <span className="text-xl">{getSubjectEmoji(session.subject)}</span>
-                    <span className="px-2.5 py-1 bg-white/[0.06] backdrop-blur-sm rounded-full text-[9px] font-semibold text-white/70 uppercase tracking-wider border border-white/[0.06]">
-                      {session.subject}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-5 left-6 right-6 z-10">
-                    <h2 className="text-2xl font-bold tracking-tight mb-1.5">{session.title}</h2>
-                    <p className="text-white/40 text-xs mb-5">{timeAgo(session.updated_at || session.created_at)}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[9px] font-medium text-white/30 uppercase tracking-wider">
-                          {session.progress}%
-                        </span>
-                        <div className="w-24 h-1 bg-white/[0.06] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${session.progress}%`,
-                              backgroundColor: extractSubjectColor(session.subject),
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-medium text-white/40">Resume</span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+            </div>
           </div>
-        </section>
 
-        {/* All Sessions Grid */}
-        <section className="px-8 py-12">
-          <p className="label-micro text-white/25 mb-6 pl-1">All Sessions</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger-children">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-            {/* Create Card */}
+            {/* Create Card (always first) */}
             <div
               onClick={() => setShowModal(true)}
-              className="glass-card rounded-[24px] p-7 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-white/[0.06] hover:border-white/[0.12]"
+              className="glass-card rounded-[24px] p-7 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-white/[0.06] hover:border-white/[0.12] min-h-[220px]"
             >
-              <div className="w-12 h-12 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-cyber-yellow/15 transition-colors">
-                <svg className="w-5 h-5 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+              <div className="w-14 h-14 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-cyber-yellow/15 transition-all group-hover:scale-110">
+                <svg className="w-6 h-6 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
               </div>
-              <h3 className="text-sm font-semibold mb-1">New Session</h3>
-              <p className="text-[10px] text-white/25 uppercase tracking-wider">Start learning</p>
+              <h3 className="text-sm font-bold mb-1">New Session</h3>
+              <p className="text-[10px] text-white/30 uppercase tracking-widest">Start learning</p>
             </div>
 
-            {recentSessions.length === 0 && filter === "all" ? (
-              <>
-                <div className="glass-card rounded-[24px] p-6 animate-float relative" style={{ animationDelay: "-1s" }}>
-                  <div className="flex justify-between items-start mb-5">
-                    <span className="text-2xl">🧠</span>
-                    <span className="px-2 py-0.5 bg-white/[0.04] rounded-full text-[8px] font-semibold uppercase tracking-wider text-white/30">Soon</span>
-                  </div>
-                  <h3 className="text-sm font-semibold mb-1">AI / Machine Learning</h3>
-                  <p className="text-xs text-white/30 mb-5">Neural networks and deep learning.</p>
-                  <div className="pt-3 border-t border-white/[0.04]">
-                    <span className="text-[9px] text-white/20 uppercase tracking-wider">Coming Soon</span>
-                  </div>
-                </div>
-
-                <div className="glass-card rounded-[24px] p-6 animate-float relative" style={{ animationDelay: "-2s" }}>
-                  <div className="flex justify-between items-start mb-5">
-                    <span className="text-2xl">📝</span>
-                    <span className="px-2 py-0.5 bg-white/[0.04] rounded-full text-[8px] font-semibold uppercase tracking-wider text-white/30">Soon</span>
-                  </div>
-                  <h3 className="text-sm font-semibold mb-1">SAT Prep</h3>
-                  <p className="text-xs text-white/30 mb-5">Practice tests and strategies.</p>
-                  <div className="pt-3 border-t border-white/[0.04]">
-                    <span className="text-[9px] text-white/20 uppercase tracking-wider">Coming Soon</span>
-                  </div>
-                </div>
-              </>
-            ) : recentSessions.length === 0 ? (
-              <div className="glass-card rounded-[24px] p-8 flex flex-col items-center justify-center text-center col-span-3">
+            {filteredSessions.length === 0 ? (
+              <div className="glass-card rounded-[24px] p-8 flex flex-col items-center justify-center text-center col-span-3 min-h-[220px]">
                 <p className="text-white/25 text-sm">
-                  {filter === "all" ? "No sessions yet." : `No ${filter} sessions.`}
+                  {filter === "all" ? "No sessions yet. Create one!" : `No ${filter} sessions.`}
                 </p>
               </div>
             ) : (
-              recentSessions.map((session, idx) => (
-                <div key={session.id} onClick={() => session.slug && handleResume(session.slug)} className="glass-card rounded-[24px] p-6 group cursor-pointer relative">
+              filteredSessions.map((session) => (
+                <div
+                  key={session.id}
+                  onClick={() => session.slug && handleResume(session.slug)}
+                  className="glass-card rounded-[24px] p-6 group cursor-pointer relative overflow-hidden hover:border-cyber-yellow/20 transition-all"
+                >
+                  <div
+                    className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                    style={{ background: `radial-gradient(circle at 30% 30%, ${extractSubjectColor(session.subject)}, transparent 70%)` }}
+                  />
                   <button
                     onClick={(e) => handleDeleteSession(session.id, e)}
-                    className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg bg-white/[0.04] flex items-center justify-center hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer z-10"
+                    className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer z-10"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
                   </button>
 
-                  <div className="flex justify-between items-start mb-5">
+                  <div className="flex items-center gap-3 mb-5">
                     <span className="text-2xl">{getSubjectEmoji(session.subject)}</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider ${
+                    <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider ${
                       session.progress >= 100
-                        ? "bg-green-500/10 text-green-400"
-                        : "bg-white/[0.04] text-white/30"
+                        ? "bg-green-500/15 text-green-400"
+                        : "bg-white/[0.05] text-white/40"
                     }`}>
                       {session.progress >= 100 ? "Done" : "Active"}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold mb-1">{session.title}</h3>
-                  <p className="text-xs text-white/30 mb-5">{timeAgo(session.updated_at || session.created_at)}</p>
-                  <div className="space-y-2 mb-5">
-                    <div className="flex justify-between text-[9px] font-medium text-white/25 uppercase tracking-wider">
+                  <h3 className="text-sm font-bold mb-1 leading-tight">{session.title}</h3>
+                  <p className="text-[11px] text-white/30 mb-5">{timeAgo(session.updated_at || session.created_at)}</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-[10px] font-medium text-white/25 uppercase tracking-wider">
                       <span>Progress</span>
-                      <span className="text-white/40">{session.progress}%</span>
+                      <span className="text-white/40 font-bold">{session.progress}%</span>
                     </div>
-                    <div className="w-full h-1 bg-white/[0.04] rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-700"
                         style={{
@@ -409,13 +335,10 @@ export default function HubPage() {
                       />
                     </div>
                   </div>
-                  <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); session.slug && handleResume(session.slug); }}
-                      className="bg-cyber-yellow text-black px-5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
-                    >
-                      Resume
-                    </button>
+                  <div className="pt-4 mt-4 border-t border-white/[0.04] flex items-center justify-between">
+                    <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest group-hover:text-cyber-yellow/60 transition-colors">
+                      Resume →
+                    </span>
                   </div>
                 </div>
               ))
