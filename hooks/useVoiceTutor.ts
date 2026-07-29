@@ -75,25 +75,27 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   );
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const speakText = useCallback(async (text: string) => {
-    if (outputMutedRef.current || !text) return;
-    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-    try {
-      const res = await fetch("/api/tts", {
+  const speakText = useCallback((text: string): Promise<void> => {
+    return new Promise((resolve) => {
+      if (outputMutedRef.current || !text) { resolve(); return; }
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+      fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) throw new Error(`TTS failed: ${res.status}`);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audioRef.current = audio;
-      audio.onended = () => { URL.revokeObjectURL(url); audioRef.current = null; };
-      audio.play().catch(() => { URL.revokeObjectURL(url); audioRef.current = null; });
-    } catch (err) {
-      console.error("Deepgram TTS error:", err);
-    }
+        body: JSON.stringify({ text: text.replace(/[*_~`#>|]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") }),
+      })
+        .then((res) => { if (!res.ok) { resolve(); return; } return res.blob(); })
+        .then((blob) => {
+          if (!blob) { resolve(); return; }
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audioRef.current = audio;
+          const done = () => { URL.revokeObjectURL(url); audioRef.current = null; resolve(); };
+          audio.onended = done;
+          audio.play().catch(done);
+        })
+        .catch(() => resolve());
+    });
   }, []);
 
   const stopRecognition = useCallback(() => {
@@ -180,7 +182,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
 
           if (fullResponse) {
             addTurn("assistant", fullResponse);
-            speakText(fullResponse);
+            await speakText(fullResponse);
           }
         } catch (err) {
           console.error("Chat API error:", err);
