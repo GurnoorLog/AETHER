@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -18,6 +19,10 @@ function extractSubject(input: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { subject: rawSubject, mode, difficulty, duration, objectives: rawObjectives } = await req.json();
 
   if (!GEMINI_API_KEY) {

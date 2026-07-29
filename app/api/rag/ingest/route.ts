@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { extractText } from "@/lib/rag/extractor";
 import { chunkPages } from "@/lib/rag/chunker";
@@ -6,23 +7,13 @@ import { generateEmbeddings } from "@/lib/rag/embeddings";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 
-/**
- * POST /api/rag/ingest
- *
- * Background worker: processes a single document through the RAG pipeline.
- * Called after upload completes. Runs server-side only.
- *
- * Flow:
- * 1. Fetch document record + download from Storage
- * 2. Extract text (PDF/PPTX)
- * 3. Chunk into semantic segments
- * 4. Generate embeddings via Gemini
- * 5. Store chunks in pgvector
- * 6. Update document status
- */
 export async function POST(request: Request) {
   let document_id: string | undefined;
   try {
+    const client = await createServerSupabaseClient();
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const body = await request.json();
     document_id = body.document_id;
     const { user_id } = body;
@@ -32,6 +23,10 @@ export async function POST(request: Request) {
         { error: "document_id and user_id are required" },
         { status: 400 }
       );
+    }
+
+    if (user_id !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const supabase = createAdminClient();

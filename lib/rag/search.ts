@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { generateQueryEmbedding } from "./embeddings";
 
 export interface SearchResult {
@@ -22,7 +22,7 @@ export async function searchChunks(
   sessionId?: string | null
 ): Promise<SearchResult[]> {
   const embedding = await generateQueryEmbedding(query);
-  const supabase = createAdminClient();
+  const supabase = await createServerSupabaseClient();
 
   const { data, error } = await supabase.rpc("match_document_chunks", {
     query_embedding: embedding,
