@@ -1,37 +1,55 @@
-const badges = [
-  { icon: '⚡', label: 'Real-Time Voice', hoverColor: 'hover:border-cyber-yellow/60 hover:bg-cyber-yellow/5', textColor: 'group-hover:text-cyber-yellow', glowColor: 'rgba(253,224,71,0.5)' },
-  { icon: '🧠', label: 'Personal Memory', hoverColor: 'hover:border-cyan-400/60 hover:bg-cyan-400/5', textColor: 'group-hover:text-cyan-accent', glowColor: 'rgba(34,211,238,0.5)' },
-  { icon: '📄', label: 'Private RAG Base', hoverColor: 'hover:border-blue-400/60 hover:bg-blue-400/5', textColor: 'group-hover:text-blue-400', glowColor: 'rgba(96,165,250,0.5)' },
-  { icon: '🎯', label: 'Adaptive Mastery', hoverColor: 'hover:border-green-400/60 hover:bg-green-400/5', textColor: 'group-hover:text-green-400', glowColor: 'rgba(74,222,128,0.5)' },
-  { icon: '🎧', label: 'Focus Music', hoverColor: 'hover:border-purple-400/60 hover:bg-purple-400/5', textColor: 'group-hover:text-purple-400', glowColor: 'rgba(192,132,252,0.5)' },
-];
-
 export default function FeatureBadges() {
+  const badges = [
+    { label: "Neural Learning", icon: "🧠" },
+    { label: "Voice Conversational", icon: "🎤" },
+    { label: "Infinite Context Memory", icon: "∞" },
+    { label: "Personalized Pathways", icon: "✨" },
+    { label: "Multi-Format Upload", icon: "📄" },
+    { label: "Real-Time Analytics", icon: "📊" },
+    { label: "Socratic Tutoring", icon: "⚡" },
+    { label: "Global Community", icon: "🌍" },
+  ];
+
+  const doubled = [...badges, ...badges];
+
   return (
-    <section className="bg-deep-onyx py-24 md:py-48 px-4 sm:px-8 -mt-32 relative z-20">
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-4 sm:gap-6">
-        {badges.map((badge) => (
-          <div
-            key={badge.label}
-            className={`px-6 py-4 sm:px-8 sm:py-4 lg:px-10 lg:py-5 bg-white/5 border border-white/10 rounded-full flex items-center gap-3 sm:gap-5 ${badge.hoverColor} premium-transition group cursor-default shadow-xl`}
-          >
-            <span
-              className="text-2xl transition-all duration-500"
-              style={{ filter: 'none' }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.filter = `drop-shadow(0 0 8px ${badge.glowColor})`;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.filter = 'none';
-              }}
+    <section className="relative py-24 overflow-hidden">
+      <div className="mx-auto">
+        {/* Row 1 — left to right */}
+        <div className="flex gap-6 mb-8 animate-scroll-left">
+          {doubled.map((badge, i) => (
+            <div
+              key={`r1-${i}`}
+              className="flex items-center gap-6 px-10 py-6 bg-black/50 border border-white/10 rounded-full shrink-0 hover:bg-black/70 hover:border-cyber-yellow/40 premium-transition group"
             >
-              {badge.icon}
-            </span>
-            <span className={`text-sm font-black uppercase tracking-[0.2em] text-white/60 ${badge.textColor} premium-transition`}>
-              {badge.label}
-            </span>
-          </div>
-        ))}
+              <span className="text-3xl">{badge.icon}</span>
+              <span className="text-sm font-black text-white/80 tracking-wider uppercase group-hover:text-cyber-yellow premium-transition">
+                {badge.label}
+              </span>
+              <svg className="w-5 h-5 text-cyber-yellow/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+            </div>
+          ))}
+        </div>
+
+        {/* Row 2 — right to left */}
+        <div className="flex gap-6 animate-scroll-right">
+          {doubled.map((badge, i) => (
+            <div
+              key={`r2-${i}`}
+              className="flex items-center gap-6 px-10 py-6 bg-white/5 border border-white/10 rounded-full shrink-0 hover:bg-black/50 hover:border-cyber-yellow/40 premium-transition group"
+            >
+              <span className="text-3xl">{badge.icon}</span>
+              <span className="text-sm font-black text-white/80 tracking-wider uppercase group-hover:text-cyber-yellow premium-transition">
+                {badge.label}
+              </span>
+              <svg className="w-5 h-5 text-cyber-yellow/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

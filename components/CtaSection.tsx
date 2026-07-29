@@ -1,44 +1,70 @@
+"use client";
+
+import { useAuthModal } from "@/hooks/useAuthModal";
+import { useAuth } from "@/providers/AuthProvider";
+import { useRouter } from "next/navigation";
+
 export default function CtaSection() {
+  const { open } = useAuthModal();
+  const { user } = useAuth();
+  const router = useRouter();
+
   return (
-    <section className="bg-white py-32 md:py-64 px-6 sm:px-12 flex justify-center text-center relative overflow-hidden">
-      <div className="absolute top-24 left-1/2 -translate-x-1/2 animate-float z-10">
-        <div className="bg-deep-onyx p-10 rounded-[48px] shadow-[0_80px_150px_-20px_rgba(0,0,0,0.8)] border border-white/15 w-[450px] text-left overflow-hidden">
-          <div className="absolute top-0 left-0 w-2 h-full bg-cyber-yellow" />
-          <div className="flex items-center gap-5 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-cyber-yellow flex items-center justify-center shadow-xl">
-              <svg className="text-black w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-black text-white uppercase tracking-widest">Aether Memory</p>
-              <p className="text-xs font-bold text-cyber-yellow uppercase tracking-tight">System Online</p>
-            </div>
-          </div>
-          <p className="text-lg text-white/90 font-medium leading-relaxed italic mb-4">
-            &ldquo;Welcome back, Sarah. Last session you struggled with calculus concepts on derivatives.&rdquo;
-          </p>
-          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
-            <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Ready to continue?</span>
-            <svg className="w-5 h-5 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    <section className="relative px-12 md:px-24 py-48 overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyber-yellow/5 rounded-full blur-[200px] pointer-events-none" />
+
+      <div className="relative max-w-4xl mx-auto text-center z-10 flex flex-col items-center">
+        <div className="inline-flex items-center gap-4 px-8 py-5 bg-white/5 border border-white/10 rounded-full mb-16">
+          <div className="w-3 h-3 rounded-full bg-cyber-yellow animate-pulse" />
+          <span className="text-sm font-bold text-cyber-yellow uppercase tracking-[0.15em]">
+            Limited Early Access — Join 2,847+ Learners
+          </span>
+        </div>
+
+        <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tight mb-12">
+          Ready to <span className="text-cyber-yellow radical-glow">Supercharge</span> Your Learning?
+        </h2>
+
+        <p className="text-2xl text-white/30 font-bold max-w-2xl mb-16 leading-relaxed">
+          Join thousands of students who have transformed the way they learn. One conversation with Aether and you&apos;ll never study the same way again.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-8 items-center">
+          <button
+            onClick={() => (user ? router.push("/dashboard") : open("signup"))}
+            className="px-16 py-8 bg-cyber-yellow text-black rounded-full font-black text-2xl hover:scale-110 active:scale-95 transition-all shadow-[0_30px_80px_-12px_rgba(253,224,71,0.4)] glitter-button cursor-pointer"
+          >
+            {user ? "Go to Dashboard" : "Start Learning Free"}
+          </button>
+          <button
+            onClick={() => open("login")}
+            className="px-16 py-8 text-white/40 border border-white/10 rounded-full font-black text-2xl hover:text-white hover:border-white/30 premium-transition cursor-pointer"
+          >
+            Sign In
+          </button>
+        </div>
+
+        <div className="mt-20 flex items-center gap-8 text-white/20 font-bold text-sm">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
+            No credit card required
+          </div>
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Cancel anytime
+          </div>
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Free updates forever
           </div>
         </div>
-      </div>
-
-      <div className="max-w-5xl relative pt-52">
-        <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-[9rem] font-black text-black leading-[0.8] tracking-tighter mb-10 md:mb-16">
-          Stop Searching. <br />
-          <span className="text-cyber-yellow drop-shadow-sm">Start Knowing.</span>
-        </h2>
-        <p className="text-black/60 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-12 md:mb-20 max-w-3xl mx-auto">
-          I&apos;ve prepared 3 new practice questions based on yesterday&apos;s lesson. Ready to ace them?
-        </p>
-        <button className="px-10 py-6 sm:px-14 sm:py-8 lg:px-20 lg:py-10 bg-black text-white rounded-full font-black text-xl sm:text-2xl lg:text-3xl hover:scale-110 active:scale-95 transition-all shadow-[0_40px_100px_-15px_rgba(0,0,0,0.5)] glow-pulse-yellow mb-12 cursor-pointer">
-          Create Your Account
-        </button>
-        <p className="text-black/40 font-black uppercase tracking-[0.3em] text-xs">Join 12,500+ students reimagining education</p>
       </div>
     </section>
   );

@@ -1,25 +1,42 @@
-import type { ReactNode } from "react";
-
 interface FeatureCardProps {
-  icon: ReactNode;
+  icon: React.ReactNode;
   title: string;
   description: string;
-  children?: ReactNode;
+  accentColor: string;
+  gradientFrom: string;
+  gradientTo: string;
 }
 
-export default function FeatureCard({ icon, title, description, children }: FeatureCardProps) {
+export default function FeatureCard({ icon, title, description, accentColor, gradientFrom, gradientTo }: FeatureCardProps) {
   return (
-    <div className="glass-card p-6 sm:p-8 md:p-12 lg:p-14 rounded-[32px] md:rounded-[56px] border-white/5 flex flex-col group hover:-translate-y-4 lg:hover:-translate-y-8 transition-all duration-1000 overflow-hidden shadow-2xl">
-      <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-2xl sm:rounded-3xl bg-cyber-yellow flex items-center justify-center text-black mb-6 sm:mb-8 lg:mb-12 shadow-[0_20px_40px_rgba(253,224,71,0.2)] group-hover:rotate-[15deg] premium-transition">
-        {icon}
-      </div>
-      <h4 className="text-2xl sm:text-3xl lg:text-4xl font-black mb-4 sm:mb-6">{title}</h4>
-      <p className="text-white/50 text-sm sm:text-base lg:text-lg leading-relaxed mb-8 sm:mb-10 lg:mb-14">{description}</p>
-      {children && (
-        <div className="mt-auto bg-black/60 rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 lg:p-8 border border-white/10">
-          {children}
+    <div
+      className="group relative p-10 rounded-3xl border border-white/10 glass-card-darker hover:border-white/20 premium-transition cursor-default overflow-hidden"
+    >
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 premium-transition"
+        style={{
+          background: `radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${gradientFrom}, transparent 40%)`,
+        }}
+      />
+      <div className="relative z-10">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 text-3xl"
+          style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
+        >
+          {icon}
         </div>
-      )}
+        <h3 className="text-2xl font-black text-white mb-5">{title}</h3>
+        <p className="text-white/50 font-bold text-md leading-relaxed">{description}</p>
+
+        <div
+          className="mt-10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 premium-transition"
+          style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

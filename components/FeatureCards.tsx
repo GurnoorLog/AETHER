@@ -1,132 +1,72 @@
 import FeatureCard from "./FeatureCard";
 
+const features = [
+  {
+    icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg>,
+    title: "Multi-Format Upload",
+    description: "Upload PDFs, slides, textbooks, code, or even web links. Aether instantly ingests and indexes everything into your personal knowledge graph, ready for adaptive learning.",
+    accentColor: "#60A5FA",
+    gradientFrom: "rgba(96, 165, 250, 0.3)",
+    gradientTo: "transparent",
+  },
+  {
+    icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" /></svg>,
+    title: "Voice Conversational",
+    description: "Speak naturally to your AI tutor. Real-time voice interaction for questions, clarifications, and discussions. Fine-tune pronunciation and speaking skills simultaneously.",
+    accentColor: "#F472B6",
+    gradientFrom: "rgba(244, 114, 182, 0.3)",
+    gradientTo: "transparent",
+  },
+  {
+    icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>,
+    title: "Visual Mind Palace",
+    description: "Watch your knowledge grow as an interactive concept map. Aether dynamically builds connections between topics, showing how everything fits together in real-time.",
+    accentColor: "#34D399",
+    gradientFrom: "rgba(52, 211, 153, 0.3)",
+    gradientTo: "transparent",
+  },
+  {
+    icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" /></svg>,
+    title: "Infinite Context Memory",
+    description: "Aether never forgets. Every concept you've learned, every question you've asked, every connection you've made stays accessible. Pick up exactly where you left off.",
+    accentColor: "#FBBF24",
+    gradientFrom: "rgba(251, 191, 36, 0.3)",
+    gradientTo: "transparent",
+  },
+  {
+    icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>,
+    title: "Global Community",
+    description: "Compare mastery scores, share insights, and compete on leaderboards. Learn together with a global community of students using Aether to accelerate their growth.",
+    accentColor: "#A78BFA",
+    gradientFrom: "rgba(167, 139, 250, 0.3)",
+    gradientTo: "transparent",
+  },
+  {
+    icon: <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
+    title: "Adaptive Learning Engine",
+    description: "Real-time curriculum adjustment based on your mastery. Aether identifies weak spots, reinforces concepts, and accelerates through areas you've already mastered.",
+    accentColor: "#F97316",
+    gradientFrom: "rgba(249, 115, 22, 0.3)",
+    gradientTo: "transparent",
+  },
+];
+
 export default function FeatureCards() {
   return (
-    <section className="bg-deep-onyx py-24 md:py-48 px-4 sm:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          <FeatureCard
-            icon={
-              <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-              </svg>
-            }
-            title="Personalized RAG"
-            description="Aether maps every sentence into a connected knowledge graph that lives exclusively in your browser."
-          >
-            <div className="aspect-video relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-cyber-yellow/[0.03] to-transparent">
-              <svg className="w-full h-full relative z-10" viewBox="0 0 200 120">
-                <circle cx="100" cy="60" r="10" fill="#FDE047" className="animate-pulse" opacity="0.9" />
-                <circle cx="45" cy="25" r="5" fill="white" fillOpacity="0.5" />
-                <circle cx="155" cy="25" r="5" fill="white" fillOpacity="0.5" />
-                <circle cx="45" cy="95" r="5" fill="white" fillOpacity="0.5" />
-                <circle cx="155" cy="95" r="5" fill="white" fillOpacity="0.5" />
-                <circle cx="70" cy="60" r="3" fill="#60A5FA" fillOpacity="0.6" />
-                <circle cx="130" cy="60" r="3" fill="#60A5FA" fillOpacity="0.6" />
-                <g stroke="white" strokeOpacity="0.15" strokeWidth="1.5">
-                  <line x1="100" y1="60" x2="45" y2="25" />
-                  <line x1="100" y1="60" x2="155" y2="25" />
-                  <line x1="100" y1="60" x2="45" y2="95" />
-                  <line x1="100" y1="60" x2="155" y2="95" />
-                  <line x1="45" y1="25" x2="155" y2="95" strokeDasharray="3 3" />
-                  <line x1="155" y1="25" x2="45" y2="95" strokeDasharray="3 3" />
-                  <line x1="70" y1="60" x2="130" y2="60" />
-                </g>
-              </svg>
-              <div className="absolute bottom-3 left-4 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyber-yellow animate-pulse" />
-                <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">24 Nodes Connected</span>
-              </div>
-            </div>
-          </FeatureCard>
+    <section id="features" className="px-12 md:px-24 py-48 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center mb-28 text-center">
+        <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tight max-w-4xl">
+          Everything You Need to <span className="text-cyber-yellow">Learn Faster</span>
+        </h2>
+        <p className="text-xl md:text-2xl text-white/30 font-bold mt-10 max-w-2xl leading-relaxed">
+          Neural language models adapt to your unique learning style, creating a personalized educational experience that evolves with you.
+        </p>
+      </div>
 
-          <FeatureCard
-            icon={
-              <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-              </svg>
-            }
-            title="Voice First"
-            description="No more cold chats. Learn through low-latency, professor-grade natural dialogue."
-          >
-            <div className="aspect-video flex flex-col items-center justify-center gap-6 bg-gradient-to-t from-cyber-yellow/[0.03] to-transparent">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-green-400/60 uppercase tracking-widest">Voice Active</span>
-              </div>
-              <div className="flex items-end gap-1.5 h-14">
-                <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.5s' }} />
-                <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.8s' }} />
-                <div className="waveform-bar bg-cyan-400 w-1.5 rounded-full" style={{ animationDuration: '0.6s' }} />
-                <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '1.1s' }} />
-                <div className="waveform-bar bg-white w-1.5 rounded-full" style={{ animationDuration: '0.7s' }} />
-                <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.9s' }} />
-                <div className="waveform-bar bg-cyan-400 w-1.5 rounded-full" style={{ animationDuration: '1.3s' }} />
-                <div className="waveform-bar bg-cyber-yellow w-1.5 rounded-full" style={{ animationDuration: '0.4s' }} />
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <p className="text-[11px] font-bold text-cyber-yellow/60 tracking-widest italic">&ldquo;Let me explain that differently...&rdquo;</p>
-                <div className="flex gap-2 text-[9px] font-bold text-white/30 uppercase tracking-widest">
-                  <span>Real-time</span>
-                  <span>·</span>
-                  <span>Latency 240ms</span>
-                </div>
-              </div>
-            </div>
-          </FeatureCard>
-
-          <FeatureCard
-            icon={
-              <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.896m0 0a6.022 6.022 0 01-2.77-.896" />
-              </svg>
-            }
-            title="Adaptive Mastery"
-            description="Custom quizzes built around your session history to lock in concepts for the long term."
-          >
-            <div className="aspect-video flex flex-col justify-end gap-6 bg-gradient-to-t from-cyan-accent/[0.03] to-transparent">
-              <div className="flex justify-between items-end gap-2 h-28 px-2">
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] font-bold text-white/30 uppercase">Mon</span>
-                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '35%' }}>
-                    <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow/30 h-full" />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] font-bold text-white/30 uppercase">Tue</span>
-                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '50%' }}>
-                    <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow/60 h-full" />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] font-bold text-white/30 uppercase">Wed</span>
-                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '85%' }}>
-                    <div className="absolute bottom-0 left-0 right-0 bg-cyber-yellow h-full shadow-[0_0_20px_rgba(253,224,71,0.4)]" />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] font-bold text-white/30 uppercase">Thu</span>
-                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '65%' }}>
-                    <div className="absolute bottom-0 left-0 right-0 bg-cyan-accent/60 h-full" />
-                  </div>
-                </div>
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[8px] font-bold text-white/30 uppercase">Fri</span>
-                  <div className="w-full bg-white/5 rounded-lg relative overflow-hidden" style={{ height: '40%' }}>
-                    <div className="absolute bottom-0 left-0 right-0 bg-white/10 h-full" />
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-between items-center px-1">
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Learning velocity</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-white/30">+24%</span>
-                  <span className="text-[10px] font-bold text-cyber-yellow">this week</span>
-                </div>
-              </div>
-            </div>
-          </FeatureCard>
-        </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {features.map((feature, index) => (
+          <FeatureCard key={index} {...feature} />
+        ))}
       </div>
     </section>
   );
