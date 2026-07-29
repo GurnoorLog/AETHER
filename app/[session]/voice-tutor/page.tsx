@@ -57,14 +57,14 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const prevConvLenRef = useRef(0);
 
   // --- Voice tutor hook (Deepgram STT + chat API + Web Speech TTS) ---
-  const voice = useVoiceTutor({ sessionId: slug });
+  const voice = useVoiceTutor({ sessionId: session?.id || slug });
 
   const createConversation = useCallback(async () => {
     if (!user || !session) return null;
     const supabase = createClient();
     const { data, error } = await supabase
       .from("conversations")
-      .insert({ user_id: user.id, session_id: session.id, title: "Voice Session" })
+      .insert({ user_id: user.id, session_id: session.id, title: session.title || "Voice Session" })
       .select("id")
       .single();
     if (data && !error) {

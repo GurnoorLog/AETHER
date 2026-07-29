@@ -159,7 +159,9 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
                 if (!line.startsWith("data: ")) continue;
                 try {
                   const parsed = JSON.parse(line.slice(6));
-                  if (parsed.type === "chunk" && parsed.text) {
+                  if (parsed.type === "error" && parsed.text) {
+                    speakText(parsed.text);
+                  } else if (parsed.type === "chunk" && parsed.text) {
                     fullResponse += parsed.text;
                     speakText(parsed.text);
                   }

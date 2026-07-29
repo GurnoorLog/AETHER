@@ -32,7 +32,8 @@ export async function searchChunks(
   });
 
   if (error) {
-    throw new Error(`Semantic search failed: ${error.message}`);
+    console.error("Semantic search failed (proceeding without context):", error.message);
+    return [];
   }
 
   return (data as SearchResult[]) || [];
