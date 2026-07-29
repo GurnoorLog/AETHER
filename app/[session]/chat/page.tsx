@@ -7,6 +7,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import type { Lesson } from "@/types/database";
+import MermaidBlock from "@/components/MermaidBlock";
 
 interface ChatMessage {
   id: string;
@@ -84,22 +85,25 @@ function inlineMarkdown(text: string): string {
 }
 
 function parseStructuredBlocks(content: string) {
-  const blocks: { type: "text" | "visual" | "interactive" | "stepbystep" | "code"; text: string }[] = [];
+  const blocks: { type: "text" | "visual" | "interactive" | "stepbystep" | "code" | "mermaid"; text: string }[] = [];
   const lines = content.split("\n");
-  let currentType: "text" | "visual" | "interactive" | "stepbystep" | "code" = "text";
+  let currentType: "text" | "visual" | "interactive" | "stepbystep" | "code" | "mermaid" = "text";
   let buffer: string[] = [];
   let inCodeBlock = false;
+  let codeFenceLang = "";
 
   for (const line of lines) {
     if (line.startsWith("```")) {
       if (inCodeBlock) {
-        blocks.push({ type: "code", text: buffer.join("\n") });
+        blocks.push({ type: codeFenceLang === "mermaid" ? "mermaid" : "code", text: buffer.join("\n") });
         buffer = [];
         inCodeBlock = false;
+        codeFenceLang = "";
       } else {
         if (buffer.length > 0) blocks.push({ type: currentType, text: buffer.join("\n") });
         buffer = [];
         inCodeBlock = true;
+        codeFenceLang = line.slice(3).trim();
       }
       continue;
     }
@@ -775,6 +779,9 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                         </div>
                       ) : (
                         parseStructuredBlocks(msg.content).map((block, bi) => {
+                          if (block.type === "mermaid") {
+                            return <MermaidBlock key={bi} chart={block.text} />;
+                          }
                           if (block.type === "code") {
                             return (
                               <div key={bi} className="glass-card rounded-[28px] p-5">
