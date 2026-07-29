@@ -15,29 +15,37 @@ async function loadPyodide() {
   return pyodideInstance;
 }
 
-function wrapPython(code: string) {
-  return `
-import sys, io as _io
+const WRAPPER = `
+import ast, sys, io as _io
 _stdout = _io.StringIO()
 _stderr = _io.StringIO()
 sys.stdout = _stdout
 sys.stderr = _stderr
 try:
-${code.split("\n").map((l) => "  " + l).join("\n")}
+  _tree = ast.parse(_code_str)
+  if _tree.body and isinstance(_tree.body[-1], ast.Expr):
+    _tree.body[-1] = ast.Expr(
+      value=ast.Call(
+        func=ast.Name(id='print', ctx=ast.Load()),
+        args=[_tree.body[-1].value],
+        keywords=[],
+      )
+    )
+  exec(compile(_tree, '<cell>', 'exec'))
 except BaseException as _e:
   import traceback as _tb
-  print(_tb.format_exc(), file=sys.stderr)
+  _stderr.write(_tb.format_exc())
 finally:
   sys.stdout = sys.__stdout__
   sys.stderr = sys.__stderr__
 _stdout.getvalue() + ("STDERR:" + _stderr.getvalue() if _stderr.tell() else "")
 `;
-}
 
 async function runPython(code: string): Promise<{ output: string; error?: string }> {
   const py = await loadPyodide();
   await py.loadPackagesFromImports(code);
-  const result = py.runPython(wrapPython(code));
+  py.globals.set("_code_str", code);
+  const result = py.runPython(WRAPPER);
   const parts = result.split("STDERR:");
   const output = parts[0].trim();
   const error = parts[1]?.trim();

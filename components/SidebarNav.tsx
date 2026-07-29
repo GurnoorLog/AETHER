@@ -1,6 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useSession } from "@/app/[session]/layout";
+
+const SHOW_CHALLENGES = /computer|program|software|code|web|data|engineering|developer|python|javascript|java|typescript|c(\+\+)?#?|react|node|machine|algorithm|database|sql|rust|go|swift|kotlin|ruby|php|html|css|\.net|ai|ml|deep|data struct|dsa|oop|math|algebra|calculus|geometry|trig|statistics|arithmetic|equation|derivative|integral/i;
 
 const navItems = [
   { href: "/hub", icon: "hub", label: "Sessions Hub", key: "hub" },
@@ -10,7 +13,7 @@ const navItems = [
   { segment: "roadmap", icon: "route", label: "Roadmap", key: "roadmap" },
   { segment: "quizzes", icon: "pencil-line", label: "Quizzes", key: "quizzes" },
   { segment: "progress", icon: "bar-chart-3", label: "Progress", key: "progress" },
-  { segment: "challenges", icon: "code", label: "Challenges", key: "challenges" },
+  { segment: "challenges", icon: "code", label: "Challenges", key: "challenges", challenges: true },
   { segment: "music", icon: "music", label: "Focus Music", key: "music" },
 ];
 
@@ -28,30 +31,34 @@ const navIcons: Record<string, React.ReactNode> = {
 
 export default function SidebarNav({ collapsed }: { collapsed: boolean }) {
   const pathname = usePathname();
+  const { session } = useSession();
   const pathParts = pathname.split("/").filter(Boolean);
   const sessionSlug = pathParts.length >= 2 ? pathParts[0] : null;
+  const hasChallenges = session && SHOW_CHALLENGES.test(session.subject || "");
 
   return (
     <nav className="space-y-1 overflow-y-auto flex-1">
-      {navItems.map((item) => {
-        const href = item.href || (sessionSlug ? `/${sessionSlug}/${item.segment}` : `/hub`);
-        const isActive = item.href
-          ? pathname === item.href
-          : pathname.includes(`/${sessionSlug}/${item.segment}`);
-        return (
-          <a
-            key={item.key}
-            href={href}
-            className={`nav-item ${collapsed ? "justify-center px-0" : ""} ${isActive ? "active" : ""}`}
-            title={collapsed ? item.label : undefined}
-          >
-            <svg className="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              {navIcons[item.icon]}
-            </svg>
-            {!collapsed && <span>{item.label}</span>}
-          </a>
-        );
-      })}
+      {navItems
+        .filter((item) => !("challenges" in item) || !(item as any).challenges || hasChallenges)
+        .map((item) => {
+          const href = item.href || (sessionSlug ? `/${sessionSlug}/${item.segment}` : `/hub`);
+          const isActive = item.href
+            ? pathname === item.href
+            : pathname.includes(`/${sessionSlug}/${item.segment}`);
+          return (
+            <a
+              key={item.key}
+              href={href}
+              className={`nav-item ${collapsed ? "justify-center px-0" : ""} ${isActive ? "active" : ""}`}
+              title={collapsed ? item.label : undefined}
+            >
+              <svg className="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                {navIcons[item.icon]}
+              </svg>
+              {!collapsed && <span>{item.label}</span>}
+            </a>
+          );
+        })}
     </nav>
   );
 }
