@@ -167,12 +167,14 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
       if (sessionError || !session) throw new Error(sessionError?.message || "Failed to create session");
 
       // 2. Create progress tracking
-      await supabase.from("progress_tracking").upsert({
-        user_id: user.id,
-        subject,
-        mastery_level: 0,
-        session_id: session.id,
-      });
+      try {
+        await supabase.from("progress_tracking").upsert({
+          user_id: user.id,
+          subject,
+          mastery_level: 0,
+          session_id: session.id,
+        });
+      } catch {} // ponytail: 409 = row already exists, no action needed
 
       // 3. Generate roadmap via Gemini
       const res = await fetch("/api/session-creation/generate-roadmap", {
