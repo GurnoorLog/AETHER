@@ -57,24 +57,14 @@ export default function OnboardingPage() {
   // typing completion tracking
   const [typingDone, setTypingDone] = useState(false);
 
-  // scroll to bottom when conversation updates — smooth
+  // scroll to bottom continuously during conversation
   useEffect(() => {
-    if (scrollRef.current) {
-      requestAnimationFrame(() => {
-        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-      });
-    }
-  }, [conversation, aiReady]);
-
-  // also scroll as the latest AI message types out
-  useEffect(() => {
-    if (!typingDone && phase === "conversation" && scrollRef.current) {
-      const id = setInterval(() => {
-        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-      }, 400);
-      return () => clearInterval(id);
-    }
-  }, [typingDone, conversation.length, phase]);
+    if (phase !== "conversation" || !scrollRef.current) return;
+    const id = setInterval(() => {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    }, 150);
+    return () => clearInterval(id);
+  }, [phase, conversation.length, typingDone]);
 
   useEffect(() => {
     if (!authLoading && !user) {
