@@ -61,7 +61,7 @@ export default function OnboardingPage() {
   // scroll to latest message whenever content changes
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [phase, conversation, typingDone, stepIndex]);
+  }, [phase, conversation, typingDone, stepIndex, selectedSubjects.length, educationLevel, selectedStyles.length, selectedGoals.length]);
 
   useEffect(() => {
     if (!authLoading && !user) {
