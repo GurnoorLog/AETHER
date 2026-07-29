@@ -57,14 +57,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const prevConvLenRef = useRef(0);
 
   // --- Voice tutor hook (Deepgram STT + chat API + Web Speech TTS) ---
-  const voice = useVoiceTutor({
-    sessionId: session?.id || slug,
-    moduleContext: session ? {
-      title: session.title,
-      subject: session.subject,
-      learning_objectives: session.objectives,
-    } : undefined,
-  });
+  const voice = useVoiceTutor({ sessionId: session?.id || slug });
 
   const createConversation = useCallback(async () => {
     if (!user || !session) return null;

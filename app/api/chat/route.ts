@@ -103,8 +103,28 @@ export async function POST(request: Request) {
 
         // Module-aware system prompt
         let moduleSection = "";
-        if (module_context) {
-          const mc = module_context as {
+        let resolvedContext = module_context;
+        if (!resolvedContext && session_id) {
+          const { data: firstModule } = await supabase
+            .from("session_roadmap_modules")
+            .select("title, description, lessons, learning_objectives, key_concepts")
+            .eq("session_id", session_id)
+            .eq("user_id", user.id)
+            .order("module_index", { ascending: true })
+            .limit(1)
+            .single();
+          if (firstModule) {
+            resolvedContext = {
+              title: firstModule.title,
+              description: firstModule.description || "",
+              lessons: typeof firstModule.lessons === "string" ? JSON.parse(firstModule.lessons) : (firstModule.lessons || []),
+              learning_objectives: firstModule.learning_objectives || "",
+              key_concepts: firstModule.key_concepts || "",
+            };
+          }
+        }
+        if (resolvedContext) {
+          const mc = resolvedContext as {
             title: string;
             description: string;
             lessons: { title: string; description: string; key_topics: string[] }[];

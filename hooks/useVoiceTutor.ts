@@ -43,7 +43,7 @@ interface SRInstance extends EventTarget {
 declare var SpeechRecognition: { new (): SRInstance; prototype: SRInstance };
 declare var webkitSpeechRecognition: { new (): SRInstance; prototype: SRInstance };
 
-export function useVoiceTutor({ sessionId, moduleContext }: { sessionId: string; moduleContext?: Record<string, unknown> }) {
+export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   const [state, setState] = useState<
     "idle" | "connecting" | "connected" | "disconnected"
   >("idle");
@@ -147,7 +147,6 @@ export function useVoiceTutor({ sessionId, moduleContext }: { sessionId: string;
               message: transcript,
               conversation_id: conversationIdRef.current,
               session_id: sessionId,
-              module_context: moduleContext,
             }),
           });
 
@@ -226,7 +225,7 @@ export function useVoiceTutor({ sessionId, moduleContext }: { sessionId: string;
     setState("connected");
     setMicActive(true);
     micActiveRef.current = true;
-  }, [sessionId, addTurn, speakText, moduleContext]);
+  }, [sessionId, addTurn, speakText]);
 
   const start = useCallback(
     async (conversationId: string) => {
