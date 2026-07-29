@@ -183,7 +183,12 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
 
       const data = await res.json();
       if (data.modules && data.modules.length > 0) {
-        // 4. Save roadmap modules to DB with lesson structure
+        // 4. Update session title with AI-generated name
+        if (data.title) {
+          await supabase.from("sessions").update({ title: data.title }).eq("id", session.id);
+        }
+
+        // 5. Save roadmap modules to DB with lesson structure
         const modulesToInsert = data.modules.map((mod: {
           title: string;
           description: string;

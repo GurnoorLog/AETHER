@@ -39,7 +39,9 @@ Configuration:
 
 CRITICAL: Create modules that are SPECIFIC to "${subject}" and the objectives above. Module names MUST be concrete and directly about the topic — NOT generic like "Fundamentals of X" or "Intermediate X".
 
-Return a JSON array of 4-6 modules. Each module must have:
+Return a JSON object with:
+- "title": a concise, specific session name (e.g. "Python Fundamentals for Data Science" or "Mastering Calculus: Derivatives & Integrals") — NOT generic like "Physics Study Session"
+- "modules": a JSON array of 4-6 modules. Each module must have:
 - "title": short, SPECIFIC module name directly about ${subject}
 - "status": one of "completed", "current", or "locked". The first 1-2 should be "completed", the next "current", the rest "locked"
 - "description": 1 short sentence
@@ -51,7 +53,7 @@ Return a JSON array of 4-6 modules. Each module must have:
   - "duration_minutes": 10-30
   - "key_topics": array of 2-4 specific topics
 
-Return ONLY the JSON array, no markdown, no explanation.`;
+Return ONLY the JSON object, no markdown, no explanation.`;
 
   try {
     const res = await fetch(
@@ -70,14 +72,17 @@ Return ONLY the JSON array, no markdown, no explanation.`;
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     const cleaned = text.replace(/```(?:json)?\s*/g, "").trim();
-    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       console.error("Roadmap: no JSON in Gemini response:", text.slice(0, 500));
-      return NextResponse.json({ modules: getDefaultModules(subject, objectives) });
+      const modules = getDefaultModules(subject, objectives);
+      return NextResponse.json({ title: `${subject} Roadmap`, modules });
     }
 
-    const modules = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ modules });
+    const parsed = JSON.parse(jsonMatch[0]);
+    const modules = parsed.modules || parsed;
+    const title = parsed.title || `${subject} Roadmap`;
+    return NextResponse.json({ title, modules });
   } catch (err) {
     console.error("Roadmap generation failed:", err);
     return NextResponse.json({ modules: getDefaultModules(subject, objectives) });

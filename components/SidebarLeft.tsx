@@ -20,7 +20,7 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
   const userName = user?.user_metadata?.full_name?.split(" ")[0] || "Student";
   const pathParts = pathname.split("/").filter(Boolean);
   const sessionSlug = pathParts.length >= 2 ? pathParts[0] : null;
-  const isCS = !!sessionData?.subject && /computer|program|software|code|web|data|engineering|developer/i.test(sessionData.subject);
+  const isCS = !!sessionData?.subject && /computer|program|software|code|web|data|engineering|developer|python|javascript|java|typescript|c(\+\+)?#?|react|node|machine|algorithm|database|sql|rust|go|swift|kotlin|ruby|php|html|css|\.net|ai|ml|deep|data struct|dsa|oop/i.test(sessionData.subject);
 
   return (
     <>
