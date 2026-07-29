@@ -62,8 +62,8 @@ export default function OnboardingPage() {
     if (phase !== "conversation" || !scrollRef.current) return;
     const el = scrollRef.current;
     const id = setInterval(() => {
-      el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-    }, 100);
+      el.scrollTop = el.scrollHeight;
+    }, 50);
     return () => clearInterval(id);
   }, [phase]);
 

@@ -88,7 +88,12 @@ export default function LearningJourney() {
       <div className="flex flex-col items-center mb-32 text-center">
         <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tight max-w-4xl">
           Your Learning Journey in{" "}
-            <span className="text-cyber-yellow underline decoration-cyber-yellow decoration-4 underline-offset-8">5 Steps</span>
+            <span className="relative">
+              <span className="text-cyber-yellow">5 Steps</span>
+              <svg className="absolute -bottom-4 left-0 w-full" height="10" viewBox="0 0 300 10" fill="none">
+                <path d="M4 6C75 2 225 2 296 6" stroke="#FBBF24" strokeWidth="6" strokeLinecap="round" />
+              </svg>
+            </span>
         </h2>
         <p className="text-xl md:text-2xl text-white/30 font-bold mt-10 max-w-2xl leading-relaxed">
           From your first upload to mastery, Aether guides you through a proven learning loop.
