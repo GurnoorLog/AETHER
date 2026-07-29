@@ -36,12 +36,13 @@ export async function POST(request: Request) {
         }
 
         // 2. Save user message
-        await supabase.from("chat_messages").insert({
+        const { error: userMsgErr } = await supabase.from("chat_messages").insert({
           conversation_id,
           user_id: user.id,
           role: "user",
           content: message,
         });
+        if (userMsgErr) console.error("Failed to save user message:", userMsgErr);
 
         // 3. Retrieve relevant chunks — show file checking status
         send("status", { text: "Searching your documents..." });
@@ -63,27 +64,30 @@ export async function POST(request: Request) {
         send("status", { text: "Generating response..." });
 
         // 4. Get recent conversation history
-        const { data: historyMessages } = await supabase
+        const { data: historyMessages, error: histErr } = await supabase
           .from("chat_messages")
           .select("role, content")
           .eq("conversation_id", conversation_id)
           .order("created_at", { ascending: true })
           .limit(20);
+        if (histErr) console.error("Failed to fetch history:", histErr);
 
         // 5. Get AI memories
-        const { data: memories } = await supabase
+        const { data: memories, error: memErr } = await supabase
           .from("ai_memories")
           .select("content, context")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(5);
+        if (memErr) console.error("Failed to fetch memories:", memErr);
 
         // 6. Get learning profile
-        const { data: profile } = await supabase
+        const { data: profile, error: profileErr } = await supabase
           .from("user_profiles")
           .select("full_name, preferences, ai_tutor_name")
           .eq("user_id", user.id)
           .single();
+        if (profileErr && profileErr.code !== "PGRST116") console.error("Failed to fetch profile:", profileErr);
 
         // 7. Build system prompt
         const tutorName = profile?.ai_tutor_name || "Aether";
@@ -114,10 +118,14 @@ export async function POST(request: Request) {
             .limit(1)
             .single();
           if (firstModule) {
+            let parsedLessons = firstModule.lessons;
+            if (typeof parsedLessons === "string") {
+              try { parsedLessons = JSON.parse(parsedLessons); } catch { parsedLessons = []; }
+            }
             resolvedContext = {
               title: firstModule.title,
               description: firstModule.description || "",
-              lessons: typeof firstModule.lessons === "string" ? JSON.parse(firstModule.lessons) : (firstModule.lessons || []),
+              lessons: Array.isArray(parsedLessons) ? parsedLessons : [],
               learning_objectives: firstModule.learning_objectives || "",
               key_concepts: firstModule.key_concepts || "",
             };
@@ -167,6 +175,7 @@ ${lessonsBlock}
 - Be encouraging but honest about areas needing improvement
 - Adapt to the student's level based on context
 - Use markdown formatting for clarity (headers, code blocks, bullet points)
+- Use Mermaid.js diagrams for concept maps, flowcharts, timelines, and relationships. Enclose them in triple-backtick blocks with the \`mermaid\` language tag. Example: \`\`\`mermaid\nflowchart LR\n  A-->B\n\`\`\`
 - When referencing the student's documents, cite the source number
 ${moduleSection}
 ## Retrieved Document Context
@@ -258,7 +267,7 @@ Always be helpful and educational. Keep responses focused and clear.`;
         }
 
         // 9. Save assistant response
-        await supabase.from("chat_messages").insert({
+        const { error: saveErr } = await supabase.from("chat_messages").insert({
           conversation_id,
           user_id: user.id,
           role: "assistant",
@@ -266,8 +275,9 @@ Always be helpful and educational. Keep responses focused and clear.`;
           retrieved_chunk_ids: chunks.map((c) => c.id),
           similarity_scores: chunks.map((c) => c.similarity),
         });
+        if (saveErr) console.error("Failed to save assistant message:", saveErr);
 
-        const savedMsg = await supabase
+        const { data: savedMsg } = await supabase
           .from("chat_messages")
           .select("id")
           .eq("conversation_id", conversation_id)
@@ -276,7 +286,7 @@ Always be helpful and educational. Keep responses focused and clear.`;
           .limit(1)
           .single();
 
-        send("done", { message_id: savedMsg.data?.id || null, chunks_used: chunks.length });
+        send("done", { message_id: savedMsg?.id || null, chunks_used: chunks.length });
         controller.close();
       } catch (error) {
         const send = (type: string, data: unknown) => {

@@ -21,8 +21,11 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
  * 6. Update document status
  */
 export async function POST(request: Request) {
+  let document_id: string | undefined;
   try {
-    const { document_id, user_id } = await request.json();
+    const body = await request.json();
+    document_id = body.document_id;
+    const { user_id } = body;
 
     if (!document_id || !user_id) {
       return NextResponse.json(
@@ -170,17 +173,13 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Ingest pipeline error:", error);
 
-    // Try to mark document as failed
-    try {
-      const { document_id } = await request.json().catch(() => ({}));
-      if (document_id) {
-        const supabase = createAdminClient();
-        await supabase
-          .from("documents")
-          .update({ status: "FAILED" })
-          .eq("id", document_id);
-      }
-    } catch {}
+    if (document_id) {
+      const supabase = createAdminClient();
+      await supabase
+        .from("documents")
+        .update({ status: "FAILED" })
+        .eq("id", document_id);
+    }
 
     return NextResponse.json(
       { error: `Ingest failed: ${(error as Error).message}` },

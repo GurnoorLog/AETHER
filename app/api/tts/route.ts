@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const { text } = await req.json();
+  if (!text || typeof text !== "string" || !text.trim()) {
+    return NextResponse.json({ error: "text is required" }, { status: 400 });
+  }
   const key = process.env.DEEPGRAM_API_KEY;
   if (!key) return NextResponse.json({ error: "no key" }, { status: 500 });
 

@@ -16,13 +16,7 @@ export async function GET(request: NextRequest) {
   const userId = user.id;
   const sessionId = request.nextUrl.searchParams.get("session_id");
 
-  const [
-    progressData,
-    quizzesData,
-    modulesData,
-    messagesData,
-    documentsData,
-  ] = await Promise.all([
+  const results = await Promise.allSettled([
     supabase
       .from("progress_tracking")
       .select("subject, mastery_level, last_studied, session_id")
@@ -51,6 +45,12 @@ export async function GET(request: NextRequest) {
       .select("id, created_at:uploaded_at, session_id")
       .eq("user_id", userId),
   ]);
+
+  const progressData = results[0].status === "fulfilled" ? results[0].value : { data: [], error: results[0].reason };
+  const quizzesData = results[1].status === "fulfilled" ? results[1].value : { data: [], error: results[1].reason };
+  const modulesData = results[2].status === "fulfilled" ? results[2].value : { data: [], error: results[2].reason };
+  const messagesData = results[3].status === "fulfilled" ? results[3].value : { data: [], error: results[3].reason };
+  const documentsData = results[4].status === "fulfilled" ? results[4].value : { data: [], error: results[4].reason };
 
   // If session_id provided, fetch conversation IDs for that session to filter messages
   let sessionConversationIds: string[] = [];

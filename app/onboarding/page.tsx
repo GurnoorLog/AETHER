@@ -42,7 +42,6 @@ export default function OnboardingPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<"welcome" | "conversation" | "loading" | "done">("welcome");
   const [stepIndex, setStepIndex] = useState(0);
-  const [aiReady, setAiReady] = useState(false);
   const [conversation, setConversation] = useState<ConversationEntry[]>([]);
   const [userInputs, setUserInputs] = useState<Record<string, unknown>>({});
 
@@ -61,7 +60,7 @@ export default function OnboardingPage() {
   // scroll to latest message whenever content changes
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [phase, conversation, typingDone, stepIndex, selectedSubjects.length, educationLevel, selectedStyles.length, selectedGoals.length]);
+  }, [phase, conversation, typingDone, stepIndex]);
 
   useEffect(() => {
     if (!authLoading && !user) {

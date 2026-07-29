@@ -44,6 +44,11 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({ document_id: doc.id, user_id: user.id, session_id }),
     });
 
+    if (!ingestRes.ok) {
+      const errBody = await ingestRes.json().catch(() => ({}));
+      throw new Error(errBody.error || `Ingest failed with status ${ingestRes.status}`);
+    }
+
     return NextResponse.json({ success: true, doc_id: doc.id, title: `Google Drive - ${fileId}` });
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });

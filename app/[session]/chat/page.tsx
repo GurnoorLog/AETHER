@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, use } from "react";
+import { Suspense, useEffect, useState, useCallback, useRef, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
@@ -56,11 +56,11 @@ function renderMarkdown(text: string): string {
     } else if (/^>\s/.test(trimmed)) {
       const quoteContent = trimmed.replace(/^>\s/gm, "").trim();
       blockParts.push(`<blockquote class="border-l-2 border-cyber-yellow/40 pl-4 italic text-white/60 my-4">${inlineMarkdown(quoteContent)}</blockquote>`);
-    } else if (/^- /.test(trimmed) || /^\d+\.\s/.test(trimmed)) {
+    } else if (/^[-*] /.test(trimmed) || /^\d+\.\s/.test(trimmed)) {
       const isOrdered = /^\d+\.\s/.test(trimmed);
       const tag = isOrdered ? "ol" : "ul";
-      const items = trimmed.split("\n").map((line) => {
-        const content = line.replace(/^(\d+\.|\-)\s/, "");
+      const items = trimmed.split("\n").filter(Boolean).map((line) => {
+        const content = line.replace(/^(\d+\.|[-*])\s/, "");
         return `<li class="text-white/70 text-sm mb-1 flex items-start gap-2"><span class="text-cyber-yellow mt-1 shrink-0">${isOrdered ? "" : "▸"}</span><span>${inlineMarkdown(content)}</span></li>`;
       }).join("");
       blockParts.push(`<${tag} class="list-inside my-4 space-y-1">${items}</${tag}>`);
@@ -78,9 +78,9 @@ function renderMarkdown(text: string): string {
 function inlineMarkdown(text: string): string {
   return text
     .replace(/~~(.*?)~~/g, "<del class='text-white/40'>$1</del>")
-    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white font-bold'>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em class='italic text-white/80'>$1</em>")
     .replace(/`(.*?)`/g, '<code class="text-cyber-yellow bg-black/30 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
+    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white font-bold'>$1</strong>")
+    .replace(/(?:^|(?<=\s))\*(?=\S)(.+?)\*/g, "<em class='italic text-white/80'>$1</em>")
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyber-yellow underline underline-offset-2 hover:brightness-110">$1</a>');
 }
 
@@ -137,6 +137,14 @@ function parseStructuredBlocks(content: string) {
 }
 
 export default function SessionChatPage({ params }: { params: Promise<{ session: string }> }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" /></div>}>
+      <SessionChatInner params={params} />
+    </Suspense>
+  );
+}
+
+function SessionChatInner({ params }: { params: Promise<{ session: string }> }) {
   const resolvedParams = use(params);
   const slug = resolvedParams.session;
   const searchParams = useSearchParams();
@@ -205,6 +213,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
   // Load module context from DB
   useEffect(() => {
     if (!moduleId || !user || !session) return;
+    let cancelled = false;
     const supabase = createClient();
     supabase
       .from("session_roadmap_modules")
@@ -213,17 +222,21 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
-        if (data) {
-          setModuleContext({
-            id: data.id,
-            title: data.title,
-            description: data.description || "",
-            lessons: typeof data.lessons === "string" ? JSON.parse(data.lessons) : (data.lessons || []),
-            learning_objectives: data.learning_objectives || "",
-            key_concepts: data.key_concepts || "",
-          });
+        if (cancelled || !data) return;
+        let parsedLessons = data.lessons;
+        if (typeof parsedLessons === "string") {
+          try { parsedLessons = JSON.parse(parsedLessons); } catch { parsedLessons = []; }
         }
+        setModuleContext({
+          id: data.id,
+          title: data.title,
+          description: data.description || "",
+          lessons: Array.isArray(parsedLessons) ? parsedLessons : [],
+          learning_objectives: data.learning_objectives || "",
+          key_concepts: data.key_concepts || "",
+        });
       });
+    return () => { cancelled = true; };
   }, [moduleId, user, session]);
 
   useEffect(() => {
@@ -268,13 +281,20 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
     if (user) fetchConversations();
   }, [user, fetchConversations]);
 
+  const fetchMessagesRef = useRef(fetchMessages);
+  fetchMessagesRef.current = fetchMessages;
+
   useEffect(() => {
     if (activeConversation) {
-      fetchMessages(activeConversation);
+      let cancelled = false;
+      fetchMessagesRef.current(activeConversation).then(() => {
+        if (cancelled) setMessages([]);
+      });
+      return () => { cancelled = true; };
     } else {
       setMessages([]);
     }
-  }, [activeConversation, fetchMessages]);
+  }, [activeConversation]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -290,6 +310,7 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
   useEffect(() => {
     if (moduleContext && !activeConversation && !autoCreatedRef.current && user && session) {
       autoCreatedRef.current = true;
+      let cancelled = false;
       const title = `Module: ${moduleContext.title}`;
       const supabase = createClient();
       supabase
@@ -298,12 +319,12 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
         .select("id, title, created_at")
         .single()
         .then(({ data }) => {
-          if (data) {
-            setConversations((prev) => [data as Conversation, ...prev]);
-            setActiveConversation(data.id);
-            setMessages([]);
-          }
+          if (cancelled || !data) return;
+          setConversations((prev) => [data as Conversation, ...prev]);
+          setActiveConversation(data.id);
+          setMessages([]);
         });
+      return () => { cancelled = true; };
     }
   }, [moduleContext, activeConversation, user, session]);
 
@@ -528,10 +549,8 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
               } else if (event.type === "error") {
                 throw new Error(event.error);
               }
-            } catch (parseErr) {
-              if (parseErr instanceof Error && parseErr.message !== "Unexpected end of JSON input") {
-                throw parseErr;
-              }
+            } catch {
+              // skip malformed events
             }
           }
         }

@@ -98,7 +98,10 @@ Return ONLY a JSON array. No markdown, no explanation. Format:
       return NextResponse.json({ error: "Failed to generate quiz questions" }, { status: 500 });
     }
 
-    const questions = JSON.parse(jsonMatch[0]);
+    let questions = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(questions)) {
+      return NextResponse.json({ error: "Generated questions are not an array" }, { status: 500 });
+    }
 
     // Save quiz to DB
     const { data: quiz, error: quizError } = await supabase
