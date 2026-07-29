@@ -78,15 +78,17 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const { state, conversation, micActive, outputMuted, start, stop, setMicMuted, setOutputMuted } = voice;
 
   // --- Load active conversation from localStorage ---
+  const [localStorageReady, setLocalStorageReady] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) setActiveConversation(saved);
+    setLocalStorageReady(true);
   }, [STORAGE_KEY]);
 
-  // --- Auto-start voice session ---
+  // --- Auto-start voice session (only after localStorage is checked) ---
   useEffect(() => {
-    if (startedRef.current || authLoading || !user || !session) return;
+    if (startedRef.current || authLoading || !user || !session || !localStorageReady) return;
     const doStart = async () => {
       startedRef.current = true;
       let convId = activeConversation;
@@ -100,7 +102,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
     if (activeConversation || state === "idle") {
       doStart();
     }
-  }, [activeConversation, authLoading, user, session, state, start, createConversation]);
+  }, [localStorageReady, activeConversation, authLoading, user, session, state, start, createConversation]);
 
   // --- Fetch existing messages from Supabase ---
   const fetchDbMessages = useCallback(async (convId: string) => {
