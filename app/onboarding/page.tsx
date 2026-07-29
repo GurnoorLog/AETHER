@@ -39,6 +39,7 @@ export default function OnboardingPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<"welcome" | "conversation" | "loading" | "done">("welcome");
   const [stepIndex, setStepIndex] = useState(0);
   const [aiReady, setAiReady] = useState(false);
@@ -57,23 +58,10 @@ export default function OnboardingPage() {
   // typing completion tracking
   const [typingDone, setTypingDone] = useState(false);
 
-  // continuously scroll to bottom during conversation
+  // scroll to latest message whenever content changes
   useEffect(() => {
-    if (phase !== "conversation" || !scrollRef.current) return;
-    const el = scrollRef.current;
-    const id = setInterval(() => {
-      el.scrollTop = el.scrollHeight;
-    }, 50);
-    return () => clearInterval(id);
-  }, [phase]);
-
-  // force scroll when typing completes or options appear
-  useEffect(() => {
-    if (phase !== "conversation" || !scrollRef.current) return;
-    const el = scrollRef.current;
-    const scroll = () => requestAnimationFrame(() => requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; }));
-    scroll();
-  }, [phase, conversation.length, typingDone, stepIndex]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [phase, conversation, typingDone, stepIndex]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -545,6 +533,7 @@ export default function OnboardingPage() {
                   )}
                 </div>
               )}
+              <div ref={bottomRef} />
             </div>
           </div>
 
