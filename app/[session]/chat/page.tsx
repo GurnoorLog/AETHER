@@ -36,6 +36,53 @@ function generateTitle(text: string): string {
   return cleaned.slice(0, 50).trim() + "...";
 }
 
+function renderMarkdown(text: string): string {
+  let html = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  const blockParts: string[] = [];
+  const blocks = html.split(/\n\n+/);
+  for (const block of blocks) {
+    const trimmed = block.trim();
+    if (!trimmed) continue;
+
+    if (/^#{1,6}\s/.test(trimmed)) {
+      const level = trimmed.match(/^#{1,6}/)![0].length;
+      const content = trimmed.replace(/^#{1,6}\s/, "");
+      blockParts.push(`<h${level} class="font-black text-white text-lg mt-6 mb-3">${inlineMarkdown(content)}</h${level}>`);
+    } else if (/^>\s/.test(trimmed)) {
+      const quoteContent = trimmed.replace(/^>\s/gm, "").trim();
+      blockParts.push(`<blockquote class="border-l-2 border-cyber-yellow/40 pl-4 italic text-white/60 my-4">${inlineMarkdown(quoteContent)}</blockquote>`);
+    } else if (/^- /.test(trimmed) || /^\d+\.\s/.test(trimmed)) {
+      const isOrdered = /^\d+\.\s/.test(trimmed);
+      const tag = isOrdered ? "ol" : "ul";
+      const items = trimmed.split("\n").map((line) => {
+        const content = line.replace(/^(\d+\.|\-)\s/, "");
+        return `<li class="text-white/70 text-sm mb-1 flex items-start gap-2"><span class="text-cyber-yellow mt-1 shrink-0">${isOrdered ? "" : "▸"}</span><span>${inlineMarkdown(content)}</span></li>`;
+      }).join("");
+      blockParts.push(`<${tag} class="list-inside my-4 space-y-1">${items}</${tag}>`);
+    } else if (/^---$/.test(trimmed)) {
+      blockParts.push(`<hr class="border-white/10 my-8" />`);
+    } else {
+      const lines = trimmed.split("\n").filter(Boolean);
+      const formatted = lines.map((l) => `<p class="mb-2 last:mb-0">${inlineMarkdown(l)}</p>`).join("");
+      blockParts.push(formatted);
+    }
+  }
+  return blockParts.join("\n");
+}
+
+function inlineMarkdown(text: string): string {
+  return text
+    .replace(/~~(.*?)~~/g, "<del class='text-white/40'>$1</del>")
+    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white font-bold'>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em class='italic text-white/80'>$1</em>")
+    .replace(/`(.*?)`/g, '<code class="text-cyber-yellow bg-black/30 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyber-yellow underline underline-offset-2 hover:brightness-110">$1</a>');
+}
+
 function parseStructuredBlocks(content: string) {
   const blocks: { type: "text" | "visual" | "interactive" | "stepbystep" | "code"; text: string }[] = [];
   const lines = content.split("\n");
@@ -779,10 +826,8 @@ export default function SessionChatPage({ params }: { params: Promise<{ session:
                           }
                           return (
                             <div key={bi} className="glass-card rounded-[28px] rounded-tl-lg p-6">
-                              <div className="text-sm leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{
-                                __html: block.text
-                                  .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                                  .replace(/`(.*?)`/g, '<code class="text-cyber-yellow bg-black/30 px-1.5 py-0.5 rounded text-xs">$1</code>')
+                              <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{
+                                __html: renderMarkdown(block.text)
                               }} />
                             </div>
                           );

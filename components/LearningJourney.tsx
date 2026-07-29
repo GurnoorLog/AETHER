@@ -84,7 +84,7 @@ export default function LearningJourney() {
   }, []);
 
   return (
-    <section id="methodology" className="px-12 md:px-24 py-48 max-w-7xl mx-auto">
+    <section id="methodology" className="px-4 md:px-24 py-48 max-w-5xl mx-auto">
       <div className="flex flex-col items-center mb-32 text-center">
         <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tight max-w-4xl">
           Your Learning Journey in{" "}
@@ -101,58 +101,47 @@ export default function LearningJourney() {
       </div>
 
       <div ref={timelineRef} className="relative">
-        {/* Timeline line */}
-        <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-cyber-yellow/40 via-white/20 to-transparent" />
+        {/* Timeline line — left-aligned on desktop */}
+        <div className="hidden lg:block absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-cyber-yellow/40 via-white/20 to-transparent" />
 
-        {steps.map((step, index) => {
-          const isLeft = index % 2 === 0;
-          return (
-            <div
-              key={index}
-              className="relative flex items-center mb-24 last:mb-0 flex-col lg:flex-row"
-            >
-              {/* Content */}
+        {steps.map((step, index) => (
+          <div key={index} className="relative pl-0 lg:pl-24 mb-24 last:mb-0">
+            {/* Timeline node */}
+            <div className="hidden lg:flex absolute left-8 -translate-x-1/2 w-8 h-8 rounded-full border-2 border-white/20 bg-black z-10 items-center justify-center">
               <div
-                className={`w-full lg:w-[calc(50%-3rem)] step-card ${
-                  isLeft ? "lg:mr-auto lg:pr-8" : "lg:ml-auto lg:pl-8"
-                } ${isLeft ? "lg:text-right" : "lg:text-left"}`}
-                data-index={index}
-                style={{
-                  opacity: activeStep >= index ? 1 : 0,
-                  transform: activeStep >= index ? "translateY(0)" : "translateY(40px)",
-                  transition: `all 0.6s ease ${index * 0.1}s`,
-                }}
-              >
-                <div className={`glass-card-darker p-10 rounded-[32px] border border-white/10 ${isLeft ? "lg:mr-8" : "lg:ml-8"}`}>
-                  <div className={`flex items-center gap-6 mb-6 ${isLeft ? "lg:flex-row-reverse" : ""}`}>
-                    <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: `${step.accent}20`, color: step.accent }}
-                    >
-                      {step.icon}
-                    </div>
-                    <h3 className="text-2xl font-black text-white">{step.title}</h3>
-                  </div>
-                  <p className={`text-white/40 font-bold leading-relaxed ${isLeft ? "lg:text-right" : ""}`}>
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Timeline node */}
-              <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-2 border-white/20 bg-black z-10 items-center justify-center">
-                <div
-                  className={`w-3 h-3 rounded-full transition-all duration-500 ${
-                    activeStep >= index ? "bg-cyber-yellow" : "bg-white/10"
-                  }`}
-                />
-              </div>
-
-              {/* Empty space for the other side */}
-              <div className="hidden lg:block w-[calc(50%-3rem)]" />
+                className={`w-3 h-3 rounded-full transition-all duration-500 ${
+                  activeStep >= index ? "bg-cyber-yellow" : "bg-white/10"
+                }`}
+              />
             </div>
-          );
-        })}
+
+            {/* Card */}
+            <div
+              className="step-card ml-0 lg:ml-16"
+              data-index={index}
+              style={{
+                opacity: activeStep >= index ? 1 : 0,
+                transform: activeStep >= index ? "translateY(0)" : "translateY(40px)",
+                transition: `all 0.6s ease ${index * 0.1}s`,
+              }}
+            >
+              <div className="glass-card-darker p-8 md:p-10 rounded-[32px] border border-white/10">
+                <div className="flex items-center gap-6 mb-6">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: `${step.accent}20`, color: step.accent }}
+                  >
+                    {step.icon}
+                  </div>
+                  <h3 className="text-2xl font-black text-white">{step.title}</h3>
+                </div>
+                <p className="text-white/40 font-bold leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
