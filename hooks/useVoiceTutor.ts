@@ -52,7 +52,6 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   const [outputMuted, setOutputMuted] = useState(false);
 
   const recognitionRef = useRef<SRInstance | null>(null);
-  const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
   const conversationIdRef = useRef<string>("");
   const turnIdRef = useRef(0);
   const processingRef = useRef(false);
@@ -75,16 +74,26 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
     []
   );
 
-  const speakText = useCallback((text: string) => {
-    if (outputMutedRef.current) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.1;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-    utterance.lang = "en-US";
-    synthRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const speakText = useCallback(async (text: string) => {
+    if (outputMutedRef.current || !text) return;
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error(`TTS failed: ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => { URL.revokeObjectURL(url); audioRef.current = null; };
+      audio.play().catch(() => { URL.revokeObjectURL(url); audioRef.current = null; });
+    } catch (err) {
+      console.error("Deepgram TTS error:", err);
+    }
   }, []);
 
   const stopRecognition = useCallback(() => {
@@ -163,7 +172,6 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
                     speakText(parsed.text);
                   } else if (parsed.type === "chunk" && parsed.text) {
                     fullResponse += parsed.text;
-                    speakText(parsed.text);
                   }
                 } catch {}
               }
@@ -172,6 +180,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
 
           if (fullResponse) {
             addTurn("assistant", fullResponse);
+            speakText(fullResponse);
           }
         } catch (err) {
           console.error("Chat API error:", err);
@@ -240,7 +249,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
   const stop = useCallback(() => {
     restartRecognitionRef.current = false;
     stopRecognition();
-    window.speechSynthesis.cancel();
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
     setMicActive(false);
     setState("disconnected");
   }, [stopRecognition]);
@@ -262,7 +271,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
     (muted: boolean) => {
       outputMutedRef.current = muted;
       setOutputMuted(muted);
-      if (muted) window.speechSynthesis.cancel();
+      if (muted && audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
     },
     []
   );
@@ -271,7 +280,7 @@ export function useVoiceTutor({ sessionId }: { sessionId: string }) {
     return () => {
       restartRecognitionRef.current = false;
       stopRecognition();
-      window.speechSynthesis.cancel();
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
     };
   }, [stopRecognition]);
 
