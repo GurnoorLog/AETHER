@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import type { Lesson } from "@/types/database";
 import MermaidBlock from "@/components/MermaidBlock";
+import CodeEditor from "@/components/CodeEditor";
 
 interface ChatMessage {
   id: string;
@@ -175,6 +176,20 @@ function SessionChatInner({ params }: { params: Promise<{ session: string }> }) 
   const [gDriveUrl, setGDriveUrl] = useState("");
   const [attaching, setAttaching] = useState(false);
   const [attachStatus, setAttachStatus] = useState<string | null>(null);
+
+  // Code editor state
+  const isCodingSubject = !!session?.subject && /computer|program|software|code|web|data|engineering|developer/i.test(session.subject);
+  const [codeEditorOpen, setCodeEditorOpen] = useState(false);
+  const [codeContent, setCodeContent] = useState("");
+
+  // Extract latest code block from AI messages into editor
+  useEffect(() => {
+    if (!codeEditorOpen) return;
+    const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+    if (!lastAssistant) return;
+    const codeMatch = lastAssistant.content.match(/```(?:\w+)?\n([\s\S]*?)```/);
+    if (codeMatch) setCodeContent(codeMatch[1]);
+  }, [messages, codeEditorOpen]);
 
   // Voice input state
   const [isRecording, setIsRecording] = useState(false);
@@ -641,6 +656,17 @@ function SessionChatInner({ params }: { params: Promise<{ session: string }> }) 
               </div>
             </div>
             <div className="flex items-center gap-2 lg:gap-3 flex-wrap justify-end">
+              {activeConversation && isCodingSubject && (
+                <button
+                  onClick={() => setCodeEditorOpen(!codeEditorOpen)}
+                  className={`flex items-center gap-2 text-xs font-bold px-2 lg:px-4 py-1.5 lg:py-2.5 rounded-full transition-all cursor-pointer ${codeEditorOpen ? "bg-cyber-yellow text-black" : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyber-yellow/30"}`}
+                >
+                  <svg className={`w-4 h-4 ${codeEditorOpen ? "text-black" : "text-cyber-yellow"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+                  </svg>
+                  <span className="hidden lg:inline">{codeEditorOpen ? "Close Editor" : "Code"}</span>
+                </button>
+              )}
               <Link
                 href={`/${slug}/voice-tutor`}
                 className="flex items-center gap-2 bg-white/5 border border-white/10 text-xs font-bold px-2 lg:px-4 py-1.5 lg:py-2.5 rounded-full hover:bg-white/10 hover:border-cyber-yellow/30 transition-all cursor-pointer"
@@ -743,7 +769,8 @@ function SessionChatInner({ params }: { params: Promise<{ session: string }> }) 
             </div>
           </div>
         ) : (
-          <>
+          <div className={`flex flex-1 min-h-0 ${codeEditorOpen ? "flex-col lg:flex-row" : ""}`}>
+          <div className={`flex flex-col flex-1 min-w-0 ${codeEditorOpen ? "lg:w-3/5" : ""}`}>
             <div className="flex-1 overflow-y-auto px-3 sm:px-4 lg:px-8 pb-28 lg:pb-32">
               <div className="max-w-4xl mx-auto space-y-8 py-6">
                 {messages.length === 0 && moduleContext && (
@@ -1099,7 +1126,16 @@ function SessionChatInner({ params }: { params: Promise<{ session: string }> }) 
                 </div>
               </div>
             )}
-          </>
+          </div>
+          {codeEditorOpen && (
+            <div className="lg:w-2/5 h-64 lg:h-full border-t lg:border-t-0">
+              <CodeEditor
+                value={codeContent}
+                onChange={setCodeContent}
+              />
+            </div>
+          )}
+        </div>
         )}
     </>
   );
