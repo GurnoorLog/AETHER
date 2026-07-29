@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
+import { useSession } from "@/app/[session]/layout";
 import SettingsPanel from "./SettingsPanel";
 import SidebarNav from "./SidebarNav";
+import ChallengesPanel from "./ChallengesPanel";
 
 export default function SidebarLeft({ currentPage }: { currentPage: string }) {
   const { user, signOut } = useAuth();
@@ -14,9 +16,11 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const { session: sessionData } = useSession();
   const userName = user?.user_metadata?.full_name?.split(" ")[0] || "Student";
   const pathParts = pathname.split("/").filter(Boolean);
   const sessionSlug = pathParts.length >= 2 ? pathParts[0] : null;
+  const isCS = !!sessionData?.subject && /computer|program|software|code|web|data|engineering|developer/i.test(sessionData.subject);
 
   return (
     <>
@@ -47,6 +51,14 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
 
           {/* Navigation */}
           <SidebarNav collapsed={collapsed} />
+
+          {/* Challenges (CS only) */}
+          {isCS && sessionData && (
+            <ChallengesPanel
+              objectives={sessionData.objectives || ""}
+              collapsed={collapsed}
+            />
+          )}
 
           {/* User */}
           <div className="relative">

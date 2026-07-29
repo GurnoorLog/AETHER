@@ -6,7 +6,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useSession } from "../layout";
 import { createClient } from "@/lib/supabase/client";
 import { useVoiceTutor } from "@/hooks/useVoiceTutor";
-import CodeEditor from "@/components/CodeEditor";
+
 
 function formatDuration(seconds: number) {
   const m = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -49,10 +49,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [volume, setVolume] = useState(65);
-
-  const isCodingSubject = !!session?.subject && /computer|program|software|code|web|data|engineering|developer/i.test(session.subject);
-  const [codeEditorOpen, setCodeEditorOpen] = useState(false);
-  const [codeContent, setCodeContent] = useState("");
 
   // --- Shared conversation state ---
   const STORAGE_KEY = `aether_active_conversation_${slug}`;
@@ -214,14 +210,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
   const lastUserMsg = [...allMessages].reverse().find((m) => m.role === "user");
   const lastAgentMsg = [...allMessages].reverse().find((m) => m.role === "assistant");
 
-  useEffect(() => {
-    if (!codeEditorOpen) return;
-    const lastAgent = [...dbMessages, ...conversation].reverse().find((m) => m.role === "assistant");
-    if (!lastAgent) return;
-    const codeMatch = lastAgent.content.match(/```(?:\w+)?\n([\s\S]*?)```/);
-    if (codeMatch) setCodeContent(codeMatch[1]);
-  }, [dbMessages, conversation, codeEditorOpen]);
-
   if (authLoading || !user || !session) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
@@ -372,12 +360,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         )}
       </main>
 
-      {codeEditorOpen && (
-        <div className="relative z-20 h-48 lg:h-64 border-t border-white/5">
-          <CodeEditor value={codeContent} onChange={setCodeContent} />
-        </div>
-      )}
-
       {/* Footer Controls */}
       <footer className="p-12 pb-16 max-lg:px-4 max-lg:pb-8 max-lg:pt-6 flex justify-center relative z-20">
         <div className="glass rounded-full px-10 py-5 max-lg:px-4 max-lg:py-3 flex items-center gap-10 max-lg:gap-3 shadow-2xl border border-white/20">
@@ -424,16 +406,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
           <div className="w-px h-8 bg-white/10" />
 
           <div className="flex items-center gap-4">
-            {isCodingSubject && (
-              <button
-                onClick={() => setCodeEditorOpen(!codeEditorOpen)}
-                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${codeEditorOpen ? "bg-[#FDE047] text-black" : "bg-white/5 border border-white/10 text-white/40 hover:bg-white/10"}`}
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
-                </svg>
-              </button>
-            )}
             <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 cursor-pointer">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
