@@ -45,7 +45,7 @@ export default function SessionLayout({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isVoiceTutor = pathname?.includes("/voice-tutor") || pathname?.includes("/challenges") || pathname?.includes("/challenge-code");
+  const isVoiceTutor = pathname?.includes("/voice-tutor") || pathname?.includes("/challenges") || pathname?.includes("/challenge-code") || pathname?.includes("/challenge-math");
 
   const currentPage = (() => {
     const segments = pathname?.split("/").filter(Boolean) ?? [];

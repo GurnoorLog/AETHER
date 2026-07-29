@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "../layout";
 import { createClient } from "@/lib/supabase/client";
 
-interface Challenge {
+interface CodeChallenge {
+  type: "code";
   id: string;
   title: string;
   description: string;
@@ -15,6 +16,19 @@ interface Challenge {
   solution?: string;
   testCases?: { input: string; expected: string }[];
 }
+
+interface MathChallenge {
+  type: "math";
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  latex: string;
+  answer: string;
+  hint?: string;
+}
+
+type Challenge = CodeChallenge | MathChallenge;
 
 const STORAGE_KEY = (sid: string) => `aether_challenges_${sid}`;
 
@@ -32,6 +46,8 @@ function saveChallenges(sid: string, challenges: Challenge[]) {
   sessionStorage.setItem(STORAGE_KEY(sid), JSON.stringify(challenges));
 }
 
+const isMath = (s: string) => /math|algebra|calculus|geometry|trig|statistics|arithmetic|equation|derivative|integral/i.test(s);
+
 export default function ChallengesHub() {
   const { session } = useSession();
   const params = useParams();
@@ -41,21 +57,27 @@ export default function ChallengesHub() {
 
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [topic, setTopic] = useState("");
-  const [language, setLanguage] = useState("python");
+  const [challengeType, setChallengeType] = useState<"code" | "math">("code");
   const [generating, setGenerating] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  const subject = session?.subject || "";
+  const isMathSession = isMath(subject);
+
   useEffect(() => {
-    if (!sid || loaded) return;
+    setChallengeType(isMathSession ? "math" : "code");
+  }, [isMathSession]);
+
+  useEffect(() => {
+    if (!sid || loaded || !session?.id) return;
     const stored = loadChallenges(sid);
     if (stored.length > 0) {
       setChallenges(stored);
     } else {
-      // Check DB for any saved challenges for this session
       supabase
         .from("ai_memories")
         .select("content")
-        .eq("session_id", sid)
+        .eq("session_id", session.id)
         .eq("context", "challenge")
         .order("created_at", { ascending: false })
         .then(({ data }) => {
@@ -75,7 +97,7 @@ export default function ChallengesHub() {
         });
     }
     setLoaded(true);
-  }, [sid, loaded]);
+  }, [sid, loaded, session?.id]);
 
   const persistChallenge = async (c: Challenge) => {
     const updated = [...challenges, c];
@@ -85,7 +107,7 @@ export default function ChallengesHub() {
       const uid = session?.user_id || (await supabase.auth.getUser()).data.user?.id;
       await supabase.from("ai_memories").insert({
         user_id: uid,
-        session_id: sid,
+        session_id: session?.id,
         context: "challenge",
         content: JSON.stringify(c),
       });
@@ -100,9 +122,9 @@ export default function ChallengesHub() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          subject: session?.subject || sid,
+          subject,
           topic: topic.trim(),
-          language,
+          type: challengeType,
         }),
       });
       const data = await res.json();
@@ -117,11 +139,17 @@ export default function ChallengesHub() {
   };
 
   const startChallenge = (c: Challenge) => {
-    router.push(`/${sid}/challenge-code/${encodeURIComponent(c.id)}`);
+    const page = c.type === "math" ? "challenge-math" : "challenge-code";
+    router.push(`/${sid}/${page}/${encodeURIComponent(c.id)}`);
   };
 
   const difficultyColor = (d: string) =>
     d === "easy" ? "text-green-400" : d === "medium" ? "text-cyber-yellow" : "text-red-400";
+
+  const challengeIcon = (c: Challenge) =>
+    c.type === "math"
+      ? <path d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zm2.25 0v3.75m3-3.75v3.75m-3 5.25c0-.621.504-1.125 1.125-1.125h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zm2.25 0v3.75m3-3.75v3.75m3.75-9.75c0-.621.504-1.125 1.125-1.125h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zm2.25 0v3.75m3-3.75v3.75" />
+      : <path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />;
 
   return (
     <div className="min-h-screen bg-deep-onyx text-white p-6">
@@ -133,7 +161,7 @@ export default function ChallengesHub() {
           </button>
           <div>
             <h1 className="text-lg font-black">Challenges</h1>
-            <p className="text-xs text-white/40">Practice coding with AI-generated challenges</p>
+            <p className="text-xs text-white/40">Practice with AI-generated {isMathSession ? "math" : "coding"} challenges</p>
           </div>
         </div>
 
@@ -145,18 +173,9 @@ export default function ChallengesHub() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && generateChallenge()}
-              placeholder='e.g. "for loops with lists", "recursive functions"...'
+              placeholder={isMathSession ? 'e.g. "derivatives of trig functions", "integrals"...' : 'e.g. "for loops with lists", "recursive functions"...'}
               className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-cyber-yellow/50"
             />
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-full px-3 py-2 text-xs text-white/70 outline-none focus:border-cyber-yellow/50"
-            >
-              <option value="python">Python</option>
-              <option value="javascript">JavaScript</option>
-              <option value="rust">Rust</option>
-            </select>
             <button
               onClick={generateChallenge}
               disabled={generating || !topic.trim()}
@@ -165,6 +184,19 @@ export default function ChallengesHub() {
               {generating ? "Generating..." : "Generate"}
             </button>
           </div>
+          {!isMathSession && (
+            <div className="flex gap-2">
+              {(["code", "math"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setChallengeType(t)}
+                  className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full transition-all cursor-pointer ${challengeType === t ? "bg-cyber-yellow/20 text-cyber-yellow" : "text-white/30 hover:text-white/60"}`}
+                >
+                  {t === "code" ? "Coding" : "Math"}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Challenge list */}
@@ -187,7 +219,7 @@ export default function ChallengesHub() {
               >
                 <div className="w-10 h-10 rounded-xl bg-cyber-yellow/10 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                    {challengeIcon(c)}
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -198,7 +230,7 @@ export default function ChallengesHub() {
                   <p className="text-xs text-white/40 line-clamp-2">{c.description}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[10px] font-bold uppercase text-white/20 px-2 py-1 rounded-full bg-white/5">{c.language}</span>
+                  <span className="text-[10px] font-bold uppercase text-white/20 px-2 py-1 rounded-full bg-white/5">{c.type === "math" ? "Math" : (c as CodeChallenge).language}</span>
                   <svg className="w-4 h-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M9 5l7 7-7 7" /></svg>
                 </div>
               </button>
