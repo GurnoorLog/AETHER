@@ -15,12 +15,7 @@ export default function CtaSection() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyber-yellow/5 rounded-full blur-[200px] pointer-events-none" />
 
       <div className="relative max-w-4xl mx-auto text-center z-10 flex flex-col items-center">
-        <div className="inline-flex items-center gap-4 px-8 py-5 bg-white/5 border border-white/10 rounded-full mb-16">
-          <div className="w-3 h-3 rounded-full bg-cyber-yellow animate-pulse" />
-          <span className="text-sm font-bold text-cyber-yellow uppercase tracking-[0.15em]">
-            Limited Early Access — Join 2,847+ Learners
-          </span>
-        </div>
+
 
         <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tight mb-12">
           Ready to <span className="text-cyber-yellow radical-glow">Supercharge</span> Your Learning?

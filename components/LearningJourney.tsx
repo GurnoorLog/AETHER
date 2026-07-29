@@ -88,10 +88,10 @@ export default function LearningJourney() {
       <div className="flex flex-col items-center mb-32 text-center">
         <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tight max-w-4xl">
           Your Learning Journey in{" "}
-            <span className="relative">
-              <span className="text-cyber-yellow">5 Steps</span>
-              <svg className="absolute -bottom-4 left-0 w-full" height="10" viewBox="0 0 300 10" fill="none">
-                <path d="M4 6C75 2 225 2 296 6" stroke="#FBBF24" strokeWidth="6" strokeLinecap="round" />
+            <span className="inline-block relative text-cyber-yellow">
+              5 Steps
+              <svg className="absolute left-0 top-full mt-1 w-full" height="8" viewBox="0 0 300 8" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 5C75 1 225 1 298 5" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" />
               </svg>
             </span>
         </h2>
