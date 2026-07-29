@@ -67,6 +67,14 @@ export default function OnboardingPage() {
     return () => clearInterval(id);
   }, [phase]);
 
+  // force scroll when typing completes or options appear
+  useEffect(() => {
+    if (phase !== "conversation" || !scrollRef.current) return;
+    const el = scrollRef.current;
+    const scroll = () => requestAnimationFrame(() => requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; }));
+    scroll();
+  }, [phase, conversation.length, typingDone, stepIndex]);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace("/");
