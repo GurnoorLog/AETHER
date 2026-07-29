@@ -57,14 +57,17 @@ export default function OnboardingPage() {
   // typing completion tracking
   const [typingDone, setTypingDone] = useState(false);
 
-  // scroll to bottom continuously during conversation
+  // scroll down whenever there's blank space below
   useEffect(() => {
     if (phase !== "conversation" || !scrollRef.current) return;
+    const el = scrollRef.current;
     const id = setInterval(() => {
-      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-    }, 150);
+      if (el.scrollHeight - el.scrollTop - el.clientHeight > 4) {
+        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      }
+    }, 100);
     return () => clearInterval(id);
-  }, [phase, conversation.length, typingDone]);
+  }, [phase]);
 
   useEffect(() => {
     if (!authLoading && !user) {
