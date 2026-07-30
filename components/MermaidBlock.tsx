@@ -19,9 +19,7 @@ export default function MermaidBlock({ chart }: { chart: string }) {
     .catch(() => {});
   }, [chart]);
 
-  if (!showSvg) return null;
-
   return (
-    <div ref={ref} className="mermaid glass-card rounded-[28px] p-4 overflow-x-auto" />
+    <div ref={ref} className={`mermaid glass-card rounded-[28px] p-4 overflow-x-auto ${showSvg ? "" : "hidden"}`} />
   );
 }

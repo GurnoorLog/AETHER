@@ -186,6 +186,7 @@ ${lessonsBlock}
 - Be encouraging but honest about areas needing improvement
 - Adapt to the student's level based on context
 - Use markdown formatting for clarity (headers, code blocks, bullet points)
+- Use Mermaid.js diagrams for concept maps, flowcharts, timelines, and relationships. Enclose them in \`\`\`mermaid blocks.
 - When referencing the student's documents, cite the source number
 ${moduleSection}
 ## Retrieved Document Context
