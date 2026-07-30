@@ -6,6 +6,7 @@ import HeroSection from "@/components/HeroSection";
 import FeatureBadges from "@/components/FeatureBadges";
 import FeatureCards from "@/components/FeatureCards";
 import LearningJourney from "@/components/LearningJourney";
+import PricingSection from "@/components/PricingSection";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
 
@@ -55,6 +56,9 @@ export default function Home() {
       </section>
       <section ref={addToRefs} className="reveal-on-scroll">
         <LearningJourney />
+      </section>
+      <section ref={addToRefs} className="reveal-on-scroll">
+        <PricingSection />
       </section>
       <section ref={addToRefs} className="reveal-on-scroll">
         <CtaSection />
