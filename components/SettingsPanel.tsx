@@ -107,7 +107,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-3">About</h3>
               <div className="space-y-2 text-xs text-white/50">
                 <p>Aether v0.1.0</p>
-                <p>Powered by Gemini & Deepgram</p>
+
               </div>
             </section>
           </div>
