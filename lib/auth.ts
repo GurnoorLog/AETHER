@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { initializeUserData } from "@/lib/db";
 
 export async function signUp(formData: {
@@ -9,6 +10,17 @@ export async function signUp(formData: {
   fullName: string;
 }) {
   const supabase = await createServerSupabaseClient();
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("user_profiles")
+    .select("email")
+    .eq("email", formData.email.toLowerCase().trim())
+    .maybeSingle();
+
+  if (existing) {
+    return { error: "An account with this email already exists." };
+  }
 
   const { data: authData, error: signUpError } = await supabase.auth.signUp({
     email: formData.email,
@@ -19,6 +31,10 @@ export async function signUp(formData: {
   });
 
   if (signUpError) {
+    const msg = signUpError.message.toLowerCase();
+    if (msg.includes("already") || msg.includes("exists") || msg.includes("registered")) {
+      return { error: "An account with this email already exists." };
+    }
     return { error: signUpError.message };
   }
 

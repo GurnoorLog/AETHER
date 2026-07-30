@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { searchChunks } from "@/lib/rag/search";
+import { checkUsage, incrementUsage } from "@/lib/usage";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 const GEMINI_CHAT_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent";
@@ -35,7 +36,15 @@ export async function POST(request: Request) {
           return;
         }
 
-        // 2. Save user message
+        // 2. Check chat usage limit
+        const usage = await checkUsage(user.id, "chat");
+        if (!usage.allowed) {
+          send("error", { error: "Chat limit reached. You have used all 10 messages. Contact support to increase your limit." });
+          controller.close();
+          return;
+        }
+
+        // 3. Save user message
         const { error: userMsgErr } = await supabase.from("chat_messages").insert({
           conversation_id,
           user_id: user.id,
@@ -44,7 +53,9 @@ export async function POST(request: Request) {
         });
         if (userMsgErr) console.error("Failed to save user message:", userMsgErr);
 
-        // 3. Retrieve relevant chunks — show file checking status
+        await incrementUsage(user.id, "chat");
+
+        // 4. Retrieve relevant chunks — show file checking status
         send("status", { text: "Searching your documents..." });
         const chunks = await searchChunks(message, user.id, 8, session_id);
 

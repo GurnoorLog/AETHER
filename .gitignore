@@ -43,6 +43,7 @@ next-env.d.ts
 .vercel
 
 # project extras
+aether-video/
 aether-backup/
 aether/
 .claude/

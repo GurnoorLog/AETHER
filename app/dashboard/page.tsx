@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Document } from "@/types/database";
 import SidebarRight from "@/components/SidebarRight";
 import SidebarLeft from "@/components/SidebarLeft";
+import { UsageIndicator } from "@/components/UsageIndicator";
 
 interface RecentConversation {
   title: string;
@@ -155,6 +156,7 @@ export default function DashboardPage() {
                   <span>•</span>
                   <span>{documents.length > 0 ? "Reviewing your notes" : "Ready to learn"}</span>
                 </div>
+                <UsageIndicator />
               </div>
             </div>
             <div className="flex items-center gap-4">

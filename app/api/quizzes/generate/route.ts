@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { checkUsage, incrementUsage } from "@/lib/usage";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -12,6 +13,11 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const usage = await checkUsage(user.id, "quiz");
+  if (!usage.allowed) {
+    return NextResponse.json({ error: "Quiz limit reached. You have used all 10 quizzes. Contact support to increase your limit." }, { status: 429 });
   }
 
   const { module_id, session_id, subject, title, num_questions } = await req.json();
@@ -102,6 +108,8 @@ Return ONLY a JSON array. No markdown, no explanation. Format:
     if (!Array.isArray(questions)) {
       return NextResponse.json({ error: "Generated questions are not an array" }, { status: 500 });
     }
+
+    await incrementUsage(user.id, "quiz");
 
     // Save quiz to DB
     const { data: quiz, error: quizError } = await supabase
