@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { createAdminClient } from "./admin";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -37,6 +38,19 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
+    const admin = createAdminClient();
+    const { data: approved } = await admin
+      .from("beta_requests")
+      .select("id")
+      .eq("email", user.email)
+      .eq("approved", true)
+      .maybeSingle();
+
+    if (!approved && !request.nextUrl.pathname.startsWith("/auth")) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("onboarding_completed")
