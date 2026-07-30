@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -8,9 +8,9 @@ export async function POST(req: Request) {
   }
 
   const email = raw.toLowerCase().trim();
-  const admin = createAdminClient();
+  const supabase = await createServerSupabaseClient();
 
-  const { data: existing } = await admin
+  const { data: existing } = await supabase
     .from("beta_requests")
     .select("approved")
     .eq("email", email)
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "already_requested" });
   }
 
-  const { error } = await admin.from("beta_requests").insert({ email });
+  const { error } = await supabase.from("beta_requests").insert({ email });
   if (error) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }

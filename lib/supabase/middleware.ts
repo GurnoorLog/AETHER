@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { createAdminClient } from "./admin";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -38,8 +37,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user) {
-    const admin = createAdminClient();
-    const { data: approved } = await admin
+    const { data: approved } = await supabase
       .from("beta_requests")
       .select("id")
       .eq("email", user.email)
