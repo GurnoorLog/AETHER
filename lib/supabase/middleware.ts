@@ -48,7 +48,13 @@ export async function updateSession(request: NextRequest) {
 
     if (!approved && !request.nextUrl.pathname.startsWith("/auth")) {
       await supabase.auth.signOut();
-      return NextResponse.redirect(new URL("/", request.url));
+      const url = new URL("/", request.url);
+      url.searchParams.set("beta", "unapproved");
+      const redirect = NextResponse.redirect(url);
+      for (const { name, value, ...options } of response.cookies.getAll()) {
+        redirect.cookies.set(name, value, options);
+      }
+      return redirect;
     }
 
     const { data: profile } = await supabase
