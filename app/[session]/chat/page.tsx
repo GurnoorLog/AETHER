@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, useCallback, useRef, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import katex from "katex";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
@@ -82,7 +83,9 @@ function inlineMarkdown(text: string): string {
     .replace(/`(.*?)`/g, '<code class="text-cyber-yellow bg-black/30 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
     .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white font-bold'>$1</strong>")
     .replace(/(?:^|(?<=\s))\*(?=\S)(.+?)\*/g, "<em class='italic text-white/80'>$1</em>")
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyber-yellow underline underline-offset-2 hover:brightness-110">$1</a>');
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-cyber-yellow underline underline-offset-2 hover:brightness-110">$1</a>')
+    .replace(/\$\$(.+?)\$\$/gs, (_, m) => { try { return katex.renderToString(m, { displayMode: true, throwOnError: false }); } catch { return `$$${m}$$`; } })
+    .replace(/\$(.+?)\$/g, (_, m) => { try { return katex.renderToString(m, { displayMode: false, throwOnError: false }); } catch { return `$${m}$`; } });
 }
 
 function parseStructuredBlocks(content: string) {
