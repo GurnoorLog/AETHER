@@ -16,15 +16,9 @@ export default function Footer() {
             The AI tutor that truly understands you. Upload anything, learn everything.
           </p>
           <div className="flex gap-6">
-            {["Twitter", "GitHub", "Discord"].map((social) => (
-              <a
-                key={social}
-                href="#"
-                className="text-white/20 text-sm font-bold hover:text-cyber-yellow premium-transition"
-              >
-                {social}
-              </a>
-            ))}
+              <a href="#" className="text-white/20 text-sm font-bold hover:text-cyber-yellow premium-transition">Twitter</a>
+              <a href="https://github.com/GurnoorLog/AETHER" className="text-white/20 text-sm font-bold hover:text-cyber-yellow premium-transition">GitHub</a>
+              <a href="#" className="text-white/20 text-sm font-bold hover:text-cyber-yellow premium-transition">Discord</a>
           </div>
         </div>
 
@@ -60,7 +54,7 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto mt-24 pt-10 border-t border-white/5 flex items-center justify-between">
         <p className="text-white/10 text-sm font-bold">
-          &copy; 2024 AETHER. All rights reserved.
+          &copy; 2026 AETHER. All rights reserved.
         </p>
         <p className="text-white/5 text-sm font-bold">
           Made with ❤️ for lifelong learners.
