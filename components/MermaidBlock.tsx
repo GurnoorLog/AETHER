@@ -1,25 +1,28 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+let initialized = false;
 
 export default function MermaidBlock({ chart }: { chart: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [showSvg, setShowSvg] = useState(false);
+  const [svg, setSvg] = useState("");
 
   useEffect(() => {
     if (!chart.trim()) return;
-    setShowSvg(false);
-    const el = ref.current;
-    if (!el) return;
-    el.textContent = chart;
-    import("mermaid").then((m) => {
-      m.default.initialize({ startOnLoad: false, theme: "dark", themeVariables: { background: "transparent" } });
-      return m.default.run({ nodes: [el] });
-    }).then(() => setShowSvg(true))
-    .catch(() => {});
+    (async () => {
+      try {
+        const mermaid = (await import("mermaid")).default;
+        if (!initialized) {
+          mermaid.initialize({ startOnLoad: false, theme: "dark" });
+          initialized = true;
+        }
+        const { svg: rendered } = await mermaid.render("md-" + Date.now(), chart);
+        setSvg(rendered);
+      } catch {}
+    })();
   }, [chart]);
 
-  return (
-    <div ref={ref} className={`mermaid glass-card rounded-[28px] p-4 overflow-x-auto ${showSvg ? "" : "hidden"}`} />
-  );
+  if (!svg) return null;
+
+  return <div className="glass-card rounded-[28px] p-4 overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;
 }
