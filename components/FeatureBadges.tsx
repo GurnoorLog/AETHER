@@ -39,11 +39,11 @@ export default function FeatureBadges() {
   return (
     <section className="relative py-16 overflow-hidden">
       {/* Row 1 — left to right */}
-      <div className="flex gap-6 mb-8 animate-scroll-left hover:[animation-play-state:paused]">
+      <div className="flex mb-8 animate-scroll-left hover:[animation-play-state:paused]">
         {doubled.map((badge, i) => (
           <div
             key={`r1-${i}`}
-            className="flex items-center gap-5 px-8 py-5 bg-black/50 border border-white/10 rounded-full shrink-0 hover:bg-black/70 hover:border-cyber-yellow/40 group cursor-default"
+            className="flex items-center gap-5 px-8 py-5 mr-6 bg-black/50 border border-white/10 rounded-full shrink-0 hover:bg-black/70 hover:border-cyber-yellow/40 group cursor-default"
           >
             {badge.icon}
             <span className="text-xs font-black text-white/80 tracking-wider uppercase whitespace-nowrap group-hover:text-cyber-yellow transition-colors">
@@ -57,11 +57,11 @@ export default function FeatureBadges() {
       </div>
 
       {/* Row 2 — right to left */}
-      <div className="flex gap-6 animate-scroll-right hover:[animation-play-state:paused]">
+      <div className="flex animate-scroll-right hover:[animation-play-state:paused]">
         {doubled.map((badge, i) => (
           <div
             key={`r2-${i}`}
-            className="flex items-center gap-5 px-8 py-5 bg-white/5 border border-white/10 rounded-full shrink-0 hover:bg-black/50 hover:border-cyber-yellow/40 group cursor-default"
+            className="flex items-center gap-5 px-8 py-5 mr-6 bg-white/5 border border-white/10 rounded-full shrink-0 hover:bg-black/50 hover:border-cyber-yellow/40 group cursor-default"
           >
             {badge.icon}
             <span className="text-xs font-black text-white/80 tracking-wider uppercase whitespace-nowrap group-hover:text-cyber-yellow transition-colors">
