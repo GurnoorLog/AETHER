@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const LIMITS = { chat: 10, quiz: 10, voice: 10 } as const;
+const LIMITS = { chat: 10, quiz: 10, voice: 10, challenge: 10 } as const;
 type UsageType = keyof typeof LIMITS;
 
 export async function checkUsage(userId: string, type: UsageType): Promise<{ allowed: boolean; remaining: number }> {

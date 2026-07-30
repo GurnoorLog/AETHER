@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { checkUsage, incrementUsage } from "@/lib/usage";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -7,6 +8,11 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const usage = await checkUsage(user.id, "challenge");
+  if (!usage.allowed) {
+    return NextResponse.json({ error: "Challenge limit reached" }, { status: 429 });
+  }
 
   const { subject, topic, language = "python", type = "code" } = await req.json();
   if (!GEMINI_API_KEY) return NextResponse.json({ error: "Missing GEMINI_API_KEY" }, { status: 500 });
@@ -61,6 +67,7 @@ Return ONLY the JSON object, no markdown, no explanation.`;
     if (!jsonMatch) return NextResponse.json({ error: "Failed to parse challenge" }, { status: 500 });
 
     const challenge = JSON.parse(jsonMatch[0]);
+    await incrementUsage(user.id, "challenge");
     return NextResponse.json(challenge);
   } catch {
     return NextResponse.json({ error: "Failed to generate challenge" }, { status: 500 });
