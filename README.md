@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aether
+
+**Aether** is an AI-powered learning platform that turns your study materials into a personalized tutoring experience. Upload your notes, PDFs, and links — Aether builds a custom roadmap, teaches you module by module, quizzes you, and adapts to how you learn.
+
+## Features
+
+- **AI Tutor Chat** — context-aware conversations over your own documents, with Mermaid diagrams and LaTeX math rendering built in.
+- **Personalized Roadmaps** — Aether generates a structured learning plan (modules, lessons, objectives) from your session goals.
+- **RAG Knowledge Base** — upload PDFs, images, Google Drive files, or YouTube links; Aether retrieves the right context for every answer.
+- **Quizzes & Challenges** — auto-generated from your documents and roadmap modules, with scoring and progress tracking.
+- **Voice Learning** — talk to Aether or listen to lessons read aloud (speech-to-text / text-to-speech).
+- **AI Music Generation** — generate study tracks from a mood and instrument prompt.
+- **Progress Tracking** — mastery levels per subject, analytics, and memory of where you left off.
+- **Gamified Kingdom** — build and manage a learning kingdom as you complete modules.
+
+## Access
+
+Aether is currently in **beta** and gated by invitation. New sign-ups go through a request/approval flow before they can use the platform.
+
+## Tech Stack
+
+- **Framework:** Next.js (App Router, React)
+- **Backend / Auth:** Supabase (Postgres, Auth with Google OAuth, storage, RLS)
+- **AI:** Google Gemini (chat, roadmap generation, quiz generation) with streaming
+- **RAG:** Vector embeddings + similarity search over uploaded documents
+- **Misc:** KaTeX (LaTeX), Mermaid.js (diagrams), Deepgram (voice), Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) and sign in with Google.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Environment variables are configured via `.env.local` (Supabase URL, service role key, Gemini API key, Deepgram keys).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+- `app/` — Next.js routes (chat, dashboard, hub, quizzes, music, admin portal)
+- `components/` — UI components (sidebars, chat, mermaid/latex renderers)
+- `lib/` — server/client helpers (Supabase, usage limits, RAG, admin auth)
+- `app/api/` — API routes (chat, RAG ingest/search, quizzes, TTS, beta, admin)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Made by **Gurnoor Tamber**.
