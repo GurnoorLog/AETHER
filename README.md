@@ -25,24 +25,7 @@ Aether is currently in **beta** and gated by invitation. New sign-ups go through
 - **RAG:** Vector embeddings + similarity search over uploaded documents
 - **Misc:** KaTeX (LaTeX), Mermaid.js (diagrams), Deepgram (voice), Tailwind CSS
 
-## Getting Started
-
-```bash
-npm install
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) and sign in with Google.
-
-Environment variables are configured via `.env.local` (Supabase URL, service role key, Gemini API key, Deepgram keys).
-
-## Project Structure
-
-- `app/` — Next.js routes (chat, dashboard, hub, quizzes, music, admin portal)
-- `components/` — UI components (sidebars, chat, mermaid/latex renderers)
-- `lib/` — server/client helpers (Supabase, usage limits, RAG, admin auth)
-- `app/api/` — API routes (chat, RAG ingest/search, quizzes, TTS, beta, admin)
-
 ---
 
-Made by **Gurnoor Tamber**.
+Please join us on this journey, gng. You won't regret it.
+
