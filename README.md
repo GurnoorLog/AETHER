@@ -1,10 +1,10 @@
 # Aether
 
-Aether is an AI learning platform. It's adaptive — you upload your notes, PDFs, links, whatever you're studying, and it builds a roadmap around them. Then it teaches you module by module, quizzes you as you go, and adjusts to how you actually learn.
+Aether is an AI learning platform. You upload your notes, PDFs, links — whatever you're studying — and it builds a roadmap around them. Then it teaches you module by module, quizzes you as you go, and adjusts to how you actually learn.
 
-**Still in beta, gng.** So you might run into some bugs — if you do, please report them to me (gurnoor.tamber.x.01@gmail.com or via the Discord below). This is only the start of my Aether journey, and every bug you report makes it better fr.
+**Still in beta, gng.** You might run into some bugs — if you do, please report them to me (gurnoor.tamber.x.01@gmail.com or via the Discord below). This is only the start of my Aether journey, and every bug you report makes it better fr.
 
-> **Note on study music:** You might not be able to use the music generation feature right now — the model is hosted in a Google Colab notebook, so it's only online while that Colab session is running. I'm working on moving it to a permanently hosted server. But you can see it in action in the demo video below 👇
+> **Note on study music:** The music generation feature might not work right now — the model is hosted in a Google Colab notebook, so it's only online while that Colab session is running. I'm working on moving it to a permanently hosted server. But you can see it in action in the demo video below 👇
 
 Check out the demo video to see it in action: https://youtu.be/Adcq0bVabeU?si=0l5Pa1uXiQevhbf-
 
