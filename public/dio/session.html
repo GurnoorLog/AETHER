@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Study Session | Aether AI</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/petite-vue@0.4.1/dist/petite-vue.iife.js" defer init></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/dio/css/style.css">
+</head>
+<body>
+
+<div class="min-h-screen bg-[#0A0A0A] text-white flex overflow-hidden">
+
+  <!-- Left Sidebar (15%) -->
+  <div class="w-[15%] h-screen sticky top-0" v-scope="{
+    activeNav: 'home',
+    userName: 'Alex V.',
+    newSessionHref: '/dio/session.html',
+    homeHref: 'index.html',
+    tutorHref: '/dio/tutor.html',
+    knowledgeHref: '/dio/knowledge.html',
+    docsHref: '#docs',
+    quizzesHref: '/dio/quizzes.html',
+    progressHref: '/dio/progress.html',
+    roadmapHref: '/dio/roadmap.html',
+    musicHref: '/dio/music.html'
+  }">
+    <aside class="w-full h-full flex flex-col border-r border-white/5 bg-[#0A0A0A] p-6 z-40">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="w-10 h-10 bg-[#FDE047] rounded-xl flex items-center justify-center">
+          <iconify-icon icon="lucide:zap" class="text-black text-2xl"></iconify-icon>
+        </div>
+        <span class="text-2xl font-bold tracking-tighter uppercase">Aether</span>
+      </div>
+
+      <div class="mb-8 relative">
+        <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"></iconify-icon>
+        <input type="text" placeholder="Search..."
+          @input="$emit('search', { query: $event.target.value })"
+          class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#FDE047]/50 transition-colors">
+      </div>
+
+      <a :href="newSessionHref"
+        class="bg-[#FDE047] text-black font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 mb-10 hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)]">
+        <iconify-icon icon="lucide:plus"></iconify-icon>New Session
+      </a>
+
+      <nav class="flex-1 space-y-2 overflow-y-auto">
+        <a :href="homeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'home', 'opacity-60 hover:opacity-100': activeNav !== 'home' }">
+          <iconify-icon icon="lucide:home" class="text-xl"></iconify-icon>Home
+        </a>
+        <a :href="tutorHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'tutor', 'opacity-60 hover:opacity-100': activeNav !== 'tutor' }">
+          <iconify-icon icon="lucide:bot" class="text-xl"></iconify-icon>AI Tutor
+        </a>
+        <a :href="knowledgeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'knowledge', 'opacity-60 hover:opacity-100': activeNav !== 'knowledge' }">
+          <iconify-icon icon="lucide:database" class="text-xl"></iconify-icon>Knowledge
+        </a>
+        <a :href="docsHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'docs', 'opacity-60 hover:opacity-100': activeNav !== 'docs' }">
+          <iconify-icon icon="lucide:file-text" class="text-xl"></iconify-icon>Documents
+        </a>
+        <a :href="quizzesHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'quizzes', 'opacity-60 hover:opacity-100': activeNav !== 'quizzes' }">
+          <iconify-icon icon="lucide:pencil-line" class="text-xl"></iconify-icon>Quizzes
+        </a>
+        <a :href="progressHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'progress', 'opacity-60 hover:opacity-100': activeNav !== 'progress' }">
+          <iconify-icon icon="lucide:bar-chart-3" class="text-xl"></iconify-icon>Progress
+        </a>
+        <a :href="roadmapHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'roadmap', 'opacity-60 hover:opacity-100': activeNav !== 'roadmap' }">
+          <iconify-icon icon="lucide:route" class="text-xl"></iconify-icon>Roadmap
+        </a>
+        <a :href="musicHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'music', 'opacity-60 hover:opacity-100': activeNav !== 'music' }">
+          <iconify-icon icon="lucide:music" class="text-xl"></iconify-icon>Focus Music
+        </a>
+      </nav>
+
+      <div class="pt-6 border-t border-white/5 mt-6 flex items-center justify-between opacity-60">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FDE047] to-[#F59E0B] border border-white/20"></div>
+          <span class="text-xs font-semibold">{{ userName }}</span>
+        </div>
+        <div class="flex gap-3">
+          <iconify-icon icon="lucide:bell" class="cursor-pointer hover:text-white" @click="$emit('notificationClick')"></iconify-icon>
+          <iconify-icon icon="lucide:settings" class="cursor-pointer hover:text-white" @click="$emit('settingsClick')"></iconify-icon>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Center Workspace (65%) -->
+  <main class="flex-1 flex flex-col relative z-0 overflow-y-auto">
+
+    <!-- Hero Section -->
+    <div class="h-[40vh] bg-[#FDE047] text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end min-h-[350px]">
+      <div class="absolute top-10 right-10 flex gap-4">
+        <div class="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">SYSTEM READY</div>
+        <div class="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Session Setup</div>
+      </div>
+      <div class="max-w-4xl mb-8">
+        <p class="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Aether Intelligent Tutoring</p>
+        <h1 class="text-6xl font-bold tracking-tighter leading-tight mb-2">Start Your Learning Session</h1>
+        <p class="text-lg font-medium opacity-80">Let's customize your study experience for maximum retention.</p>
+      </div>
+      <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-black/5 rounded-full -mb-64 -mr-32"></div>
+    </div>
+
+    <!-- Content Layer -->
+    <div class="flex-1 -mt-16 px-12 pb-24 space-y-12">
+
+      <!-- Section 1: Topic Selection -->
+      <section class="space-y-6">
+        <div class="flex items-end justify-between">
+          <h2 class="text-2xl font-bold tracking-tight">What would you like to study today?</h2>
+          <span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Select Primary Domain</span>
+        </div>
+        <div class="grid grid-cols-4 gap-4">
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:function-square" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Mathematics</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Calculus, Algebra, &amp; Statistics</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-[#FDE047]">
+            <div class="w-12 h-12 bg-[#FDE047] rounded-2xl flex items-center justify-center mb-4">
+              <iconify-icon icon="lucide:atom" class="text-2xl text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Physics</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Mechanics, Quantum, &amp; Optics</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:dna" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Biology</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Genetics, Evolution, &amp; Ecology</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:beaker" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Chemistry</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Organic, Inorganic, &amp; Energy</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:landmark" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">History</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Global Eras &amp; Civilization</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:book-open" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Literature</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Analysis &amp; Creative Writing</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:languages" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Languages</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Linguistics &amp; Vocabulary</p>
+          </div>
+          <div class="glass rounded-[32px] p-6 topic-card cursor-pointer hover:scale-105 transition-all group border-2 border-transparent">
+            <div class="w-12 h-12 bg-[#FDE047]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#FDE047]">
+              <iconify-icon icon="lucide:terminal" class="text-2xl text-[#FDE047] group-hover:text-black"></iconify-icon>
+            </div>
+            <h3 class="font-bold mb-1">Comp. Sci.</h3>
+            <p class="text-[10px] text-white/40 leading-relaxed">Algorithms &amp; Architecture</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Preferences & Objectives -->
+      <div class="grid grid-cols-2 gap-8">
+        <div class="space-y-8">
+          <section class="space-y-4">
+            <h2 class="text-xl font-bold">Customize Learning Style</h2>
+            <div class="space-y-4">
+              <div class="glass rounded-2xl p-6">
+                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">Learning Mode</p>
+                <div class="flex gap-2">
+                  <button class="flex-1 py-3 rounded-full bg-[#FDE047] text-black font-bold text-xs transition-all">Interactive</button>
+                  <button class="flex-1 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-xs hover:bg-white/10 transition-all">Lecture</button>
+                  <button class="flex-1 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-xs hover:bg-white/10 transition-all">Practice</button>
+                </div>
+              </div>
+              <div class="glass rounded-2xl p-6">
+                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">Difficulty Level</p>
+                <div class="flex gap-2">
+                  <button class="flex-1 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-xs hover:bg-white/10 transition-all">Beginner</button>
+                  <button class="flex-1 py-3 rounded-full bg-[#FDE047] text-black font-bold text-xs transition-all">Intermediate</button>
+                  <button class="flex-1 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold text-xs hover:bg-white/10 transition-all">Advanced</button>
+                </div>
+              </div>
+              <div class="glass rounded-2xl p-6">
+                <p class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">Duration</p>
+                <div class="grid grid-cols-4 gap-2">
+                  <button class="py-2 rounded-full bg-white/5 border border-white/10 text-white text-[10px] font-bold hover:bg-white/10 transition-all">30m</button>
+                  <button class="py-2 rounded-full bg-[#FDE047] text-black text-[10px] font-bold transition-all">60m</button>
+                  <button class="py-2 rounded-full bg-white/5 border border-white/10 text-white text-[10px] font-bold hover:bg-white/10 transition-all">90m</button>
+                  <button class="py-2 rounded-full bg-white/5 border border-white/10 text-white text-[10px] font-bold hover:bg-white/10 transition-all">Custom</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="space-y-8">
+          <section class="space-y-4">
+            <h2 class="text-xl font-bold">Learning Objectives</h2>
+            <div class="glass rounded-[32px] p-8 space-y-6 h-full">
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest">What are we mastering today?</label>
+                <div class="relative">
+                  <textarea placeholder="Explain specific concepts you want to focus on..."
+                    class="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[#FDE047]/50 min-h-[120px] transition-colors"></textarea>
+                  <div class="absolute bottom-4 right-4 text-[10px] text-white/20">AI analysis active...</div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest">Supplementary Materials</label>
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center hover:bg-white/5 transition-all cursor-pointer group">
+                  <iconify-icon icon="lucide:upload-cloud" class="text-4xl text-white/20 mb-4 group-hover:text-[#FDE047] group-hover:scale-110 transition-all"></iconify-icon>
+                  <p class="text-xs text-white/40">Drop PDFs, Slides, or Notes here</p>
+                  <p class="text-[10px] text-white/20 mt-1">Aether will index them for context</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Section 3: Tutor & Action -->
+      <section class="grid grid-cols-2 gap-8 items-center">
+        <div class="flex items-center gap-6 glass rounded-[32px] p-6 border-l-4 border-[#FDE047]">
+          <div class="w-20 h-20 rounded-2xl bg-black flex items-center justify-center border-2 border-[#FDE047] floating">
+            <iconify-icon icon="lucide:sparkles" class="text-4xl text-[#FDE047]"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-[#FDE047] uppercase tracking-widest mb-1">Your Personal Tutor</p>
+            <h3 class="text-xl font-bold">Aether Core v4.2</h3>
+            <div class="flex gap-2 mt-2">
+              <span class="bg-white/5 px-3 py-1 rounded-full text-[10px] text-white/40">Socratic Method</span>
+              <span class="bg-white/5 px-3 py-1 rounded-full text-[10px] text-white/40">Multi-modal</span>
+            </div>
+          </div>
+          <div class="ml-auto text-right">
+            <p class="text-[10px] text-white/40">Satisfaction Rate</p>
+            <p class="text-lg font-bold">98.4%</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <button class="flex-1 bg-white/5 border border-white/10 text-white font-bold py-5 rounded-full hover:bg-white/10 hover:scale-105 active:scale-95 transition-all">Save as Template</button>
+          <button class="flex-[2] bg-[#FDE047] text-black font-bold py-5 rounded-full shadow-[0_0_30px_rgba(253,224,71,0.3)] hover:scale-105 active:scale-95 transition-all text-xl flex items-center justify-center gap-3">
+            <iconify-icon icon="lucide:play-circle"></iconify-icon>Start Learning Session
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Bottom Ticker -->
+    <div class="mt-auto p-12 border-t border-white/5 bg-black">
+      <div class="flex items-center justify-between opacity-30 grayscale">
+        <span class="text-[10px] font-bold tracking-widest">OPTIMIZED FOR DEEP LEARNING</span>
+        <div class="flex gap-12">
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:openai" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">OpenAI</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:notion" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">Notion</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:figma" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">Figma</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="simple-icons:github" class="text-2xl"></iconify-icon>
+            <span class="font-bold tracking-tighter">Github</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Right Sidebar (20%) -->
+  <div class="w-[20%] h-screen sticky top-0" v-scope="{
+    masteryPercentage: 72,
+    studyHours: 4.2,
+    newXP: 850,
+    firstFileProgress: 50,
+    isMusicPlaying: true
+  }">
+    <aside class="w-full h-full flex flex-col p-6 space-y-6 border-l border-white/5 bg-[#0A0A0A] overflow-y-auto">
+
+      <!-- Daily Mastery -->
+      <div class="glass rounded-[32px] p-6 text-center">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">Daily Mastery</h4>
+        <div class="relative w-32 h-32 mx-auto flex items-center justify-center mb-4">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8" class="text-white/5"></circle>
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8"
+              stroke-dasharray="364" :stroke-dashoffset="364 - (364 * masteryPercentage / 100)"
+              class="text-[#FDE047] transition-all duration-500"></circle>
+          </svg>
+          <div class="absolute flex flex-col items-center">
+            <span class="text-2xl font-black">{{ masteryPercentage }}%</span>
+            <span class="text-[8px] uppercase tracking-widest text-white/40">Complete</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-left">
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">Study Time</p>
+            <p class="text-sm font-bold">{{ studyHours }} hrs</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">New XP</p>
+            <p class="text-sm font-bold text-[#FDE047]">+{{ newXP }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Log -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Memory Log</h4>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🧠</span>
+          <div>
+            <p class="text-xs font-medium">Struggled with Integrals last week.</p>
+            <p class="text-[10px] text-[#FDE047] mt-1">Review scheduled tomorrow</p>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🎨</span>
+          <div>
+            <p class="text-xs font-medium">Learns faster using diagrams.</p>
+            <p class="text-[10px] text-white/40 mt-1">Applied to current session</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indexing Files -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Indexing Files</h4>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-blue-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Lecture_Notes_V2.pdf</p>
+              <div class="w-24 h-1 bg-white/10 rounded-full mt-1">
+                <div class="h-full bg-[#FDE047] rounded-full transition-all duration-300" :style="{ width: firstFileProgress + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <span class="text-[8px] font-bold uppercase text-[#FDE047]" v-if="firstFileProgress < 100">Indexing</span>
+        </div>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-green-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Physics_Ch_04.pdf</p>
+              <p class="text-[8px] text-white/30">Ready to analyze</p>
+            </div>
+          </div>
+          <iconify-icon icon="lucide:check-circle" class="text-green-500"></iconify-icon>
+        </div>
+      </div>
+
+      <!-- Focus Ambience -->
+      <div class="glass rounded-[32px] p-6 mt-auto border border-[#FDE047]/20 shadow-[0_0_30px_rgba(253,224,71,0.05)]">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#FDE047]">Focus Ambience</h4>
+          <iconify-icon icon="lucide:volume-2"></iconify-icon>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+            <iconify-icon icon="lucide:cloud-rain" class="text-2xl text-[#FDE047]"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-xs font-bold">Cyber Rain</p>
+            <p class="text-[10px] text-white/40">Deep Focus Mode</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <iconify-icon icon="lucide:skip-back" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('prevTrack')"></iconify-icon>
+          <iconify-icon :icon="isMusicPlaying ? 'lucide:pause' : 'lucide:play'" class="text-2xl cursor-pointer hover:text-[#FDE047]" @click="$emit('togglePlay')"></iconify-icon>
+          <iconify-icon icon="lucide:skip-forward" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('nextTrack')"></iconify-icon>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Global Background Orbs -->
+  <div class="fixed inset-0 pointer-events-none z-[-1] opacity-20">
+    <div class="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-[#FDE047]/10 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-[#FDE047]/5 rounded-full blur-[100px]"></div>
+  </div>
+
+</div>
+
+</body>
+</html>

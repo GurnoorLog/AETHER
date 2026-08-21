@@ -1,0 +1,150 @@
+:root {
+  --cyber-yellow: #FDE047;
+  --onyx: #0A0A0A;
+  --charcoal: #171717;
+  --cyan-glow: #22d3ee;
+  --success-green: #4ade80;
+  --error-red: #f87171;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--onyx);
+  overflow-x: hidden;
+}
+
+.liquid-wave {
+  border-bottom-right-radius: 120px;
+  border-bottom-left-radius: 40px;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: currentColor;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+}
+
+.wave-bar {
+  width: 3px;
+  height: 100%;
+  background: var(--cyber-yellow);
+  border-radius: 2px;
+  animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { height: 20%; }
+  50% { height: 100%; }
+}
+
+.chart-bar {
+  transition: height 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-line-animate {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 3s ease-in-out forwards;
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: 0; }
+}
+
+.pulse-soft {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .7; }
+}
+
+.progress-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.topic-card:hover {
+  border-color: var(--cyber-yellow);
+  box-shadow: 0 0 20px rgba(253, 224, 71, 0.2);
+}
+
+.pill-toggle:checked + label {
+  background-color: var(--cyber-yellow);
+  color: black;
+}
+
+.quiz-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 30px 60px -15px rgba(253, 224, 71, 0.15);
+}
+
+.music-waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 40px;
+}
+
+.wave-bar-active {
+  width: 4px;
+  background: var(--cyber-yellow);
+  border-radius: 2px;
+  animation: musicWave 1.2s ease-in-out infinite;
+}
+
+@keyframes musicWave {
+  0%, 100% { height: 10%; }
+  50% { height: 100%; }
+}

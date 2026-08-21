@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether AI | Progress Analytics</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/petite-vue@0.4.1/dist/petite-vue.iife.js" defer init></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/dio/css/style.css">
+</head>
+<body>
+
+<div class="min-h-screen bg-[#0A0A0A] text-white flex overflow-hidden">
+
+  <!-- Left Sidebar (15%) -->
+  <div class="w-[15%] h-screen flex-shrink-0" v-scope="{
+    activeNav: 'progress',
+    userName: 'Alex V.',
+    newSessionHref: '/dio/session.html',
+    homeHref: 'index.html',
+    tutorHref: '/dio/tutor.html',
+    knowledgeHref: '/dio/knowledge.html',
+    docsHref: '#docs',
+    quizzesHref: '/dio/quizzes.html',
+    progressHref: '/dio/progress.html',
+    roadmapHref: '/dio/roadmap.html',
+    musicHref: '/dio/music.html'
+  }">
+    <aside class="w-full h-full flex flex-col border-r border-white/5 bg-[#0A0A0A] p-6 z-40">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="w-10 h-10 bg-[#FDE047] rounded-xl flex items-center justify-center">
+          <iconify-icon icon="lucide:zap" class="text-black text-2xl"></iconify-icon>
+        </div>
+        <span class="text-2xl font-bold tracking-tighter uppercase">Aether</span>
+      </div>
+
+      <div class="mb-8 relative">
+        <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"></iconify-icon>
+        <input type="text" placeholder="Search..."
+          @input="$emit('search', { query: $event.target.value })"
+          class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#FDE047]/50 transition-colors">
+      </div>
+
+      <a :href="newSessionHref"
+        class="bg-[#FDE047] text-black font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 mb-10 hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)]">
+        <iconify-icon icon="lucide:plus"></iconify-icon>New Session
+      </a>
+
+      <nav class="flex-1 space-y-2 overflow-y-auto">
+        <a :href="homeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'home', 'opacity-60 hover:opacity-100': activeNav !== 'home' }">
+          <iconify-icon icon="lucide:home" class="text-xl"></iconify-icon>Home
+        </a>
+        <a :href="tutorHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'tutor', 'opacity-60 hover:opacity-100': activeNav !== 'tutor' }">
+          <iconify-icon icon="lucide:bot" class="text-xl"></iconify-icon>AI Tutor
+        </a>
+        <a :href="knowledgeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'knowledge', 'opacity-60 hover:opacity-100': activeNav !== 'knowledge' }">
+          <iconify-icon icon="lucide:database" class="text-xl"></iconify-icon>Knowledge
+        </a>
+        <a :href="docsHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'docs', 'opacity-60 hover:opacity-100': activeNav !== 'docs' }">
+          <iconify-icon icon="lucide:file-text" class="text-xl"></iconify-icon>Documents
+        </a>
+        <a :href="quizzesHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'quizzes', 'opacity-60 hover:opacity-100': activeNav !== 'quizzes' }">
+          <iconify-icon icon="lucide:pencil-line" class="text-xl"></iconify-icon>Quizzes
+        </a>
+        <a :href="progressHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'progress', 'opacity-60 hover:opacity-100': activeNav !== 'progress' }">
+          <iconify-icon icon="lucide:bar-chart-3" class="text-xl"></iconify-icon>Progress
+        </a>
+        <a :href="roadmapHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'roadmap', 'opacity-60 hover:opacity-100': activeNav !== 'roadmap' }">
+          <iconify-icon icon="lucide:route" class="text-xl"></iconify-icon>Roadmap
+        </a>
+        <a :href="musicHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'music', 'opacity-60 hover:opacity-100': activeNav !== 'music' }">
+          <iconify-icon icon="lucide:music" class="text-xl"></iconify-icon>Focus Music
+        </a>
+      </nav>
+
+      <div class="pt-6 border-t border-white/5 mt-6 flex items-center justify-between opacity-60">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FDE047] to-[#F59E0B] border border-white/20"></div>
+          <span class="text-xs font-semibold">{{ userName }}</span>
+        </div>
+        <div class="flex gap-3">
+          <iconify-icon icon="lucide:bell" class="cursor-pointer hover:text-white" @click="$emit('notificationClick')"></iconify-icon>
+          <iconify-icon icon="lucide:settings" class="cursor-pointer hover:text-white" @click="$emit('settingsClick')"></iconify-icon>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Center Workspace (65%) -->
+  <main class="w-[65%] flex flex-col relative z-0 overflow-y-auto h-screen">
+
+    <!-- Hero Section -->
+    <div class="h-[35vh] bg-[#FDE047] text-black p-12 liquid-wave relative overflow-hidden flex flex-col justify-end flex-shrink-0">
+      <div class="absolute top-10 right-10 flex gap-4">
+        <div class="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
+        <div class="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">MARCH 10 - 17</div>
+      </div>
+      <div class="max-w-3xl mb-8">
+        <p class="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Performance Analytics</p>
+        <h1 class="text-6xl font-bold tracking-tighter leading-tight mb-2">Your Learning Journey</h1>
+        <p class="text-lg font-medium opacity-80">You're in the top 5% of learners this week. Your focus peaked on Wednesday.</p>
+      </div>
+      <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20"></div>
+    </div>
+
+    <!-- Content Layer -->
+    <div class="px-12 -mt-16 pb-20 space-y-8">
+
+      <!-- Main Analytics Grid -->
+      <div class="grid grid-cols-12 gap-6 items-stretch">
+
+        <!-- Daily Mastery Ring -->
+        <div class="col-span-4 glass rounded-[32px] p-8 flex flex-col items-center justify-center text-center">
+          <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Daily Mastery</h4>
+          <div class="relative w-48 h-48 mx-auto flex items-center justify-center mb-6">
+            <svg class="w-full h-full -rotate-90">
+              <circle cx="96" cy="96" r="88" fill="transparent" stroke="currentColor" stroke-width="12" class="text-white/5"></circle>
+              <circle cx="96" cy="96" r="88" fill="transparent" stroke="#FDE047" stroke-width="12" stroke-dasharray="552" stroke-dashoffset="55" class="transition-all duration-1000 ease-out"></circle>
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-5xl font-black">90%</span>
+              <span class="text-[10px] uppercase tracking-widest text-white/40 mt-1">Mastery</span>
+            </div>
+          </div>
+          <div class="space-y-4 w-full">
+            <div class="flex justify-between items-center bg-white/5 p-3 rounded-2xl">
+              <span class="text-xs text-white/60">Concepts Learned</span>
+              <span class="text-sm font-bold">12</span>
+            </div>
+            <div class="flex justify-between items-center bg-white/5 p-3 rounded-2xl">
+              <span class="text-xs text-white/60">Accuracy Streak</span>
+              <span class="text-sm font-bold text-[#FDE047]">94%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Study Hours Bar Chart -->
+        <div class="col-span-8 glass rounded-[32px] p-8">
+          <div class="flex justify-between items-end mb-8">
+            <div class="space-y-1">
+              <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Study Hours</h4>
+              <p class="text-3xl font-bold">28.5 hrs <span class="text-xs font-normal opacity-40">this week</span></p>
+            </div>
+            <div class="flex gap-2">
+              <div class="flex items-center gap-1 text-[10px] font-bold text-[#FDE047]">
+                <div class="w-2 h-2 rounded-full bg-[#FDE047]"></div>Current
+              </div>
+              <div class="flex items-center gap-1 text-[10px] font-bold text-white/20">
+                <div class="w-2 h-2 rounded-full bg-white/20"></div>Avg
+              </div>
+            </div>
+          </div>
+          <div class="h-48 flex items-end justify-between px-4 mb-4 gap-4">
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-white/5 rounded-t-lg h-[40%] chart-bar"></div>
+              <span class="text-[10px] font-bold opacity-30">MON</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-white/5 rounded-t-lg h-[65%] chart-bar"></div>
+              <span class="text-[10px] font-bold opacity-30">TUE</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-gradient-to-t from-[#FDE047] to-cyan-400 rounded-t-lg h-[95%] chart-bar shadow-[0_0_20px_rgba(253,224,71,0.2)]"></div>
+              <span class="text-[10px] font-bold text-[#FDE047]">WED</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-white/5 rounded-t-lg h-[50%] chart-bar"></div>
+              <span class="text-[10px] font-bold opacity-30">THU</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-white/5 rounded-t-lg h-[75%] chart-bar"></div>
+              <span class="text-[10px] font-bold opacity-30">FRI</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-white/5 rounded-t-lg h-[45%] chart-bar"></div>
+              <span class="text-[10px] font-bold opacity-30">SAT</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-white/5 rounded-t-lg h-[30%] chart-bar"></div>
+              <span class="text-[10px] font-bold opacity-30">SUN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- XP and Mastery Trend -->
+      <div class="grid grid-cols-2 gap-6">
+
+        <!-- XP Card -->
+        <div class="glass rounded-[32px] p-8">
+          <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Experience Points</h4>
+          <div class="flex items-end gap-3 mb-6">
+            <span class="text-5xl font-black text-[#FDE047]">+2,450</span>
+            <span class="text-xl font-bold opacity-40 mb-1">XP</span>
+          </div>
+          <div class="space-y-4 mb-8">
+            <div class="flex justify-between items-end text-xs font-bold">
+              <span class="text-white/60 uppercase tracking-widest">Level 23</span>
+              <span class="text-[#FDE047]">65% to next level</span>
+              <span class="text-white/60 uppercase tracking-widest">Level 24</span>
+            </div>
+            <div class="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+              <div class="h-full bg-[#FDE047] rounded-full w-[65%] shadow-[0_0_15px_rgba(253,224,71,0.3)]"></div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <div class="glass px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
+              <span class="text-sm">📝</span>
+              <span class="text-[10px] font-bold">QUIZZES +850</span>
+            </div>
+            <div class="glass px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
+              <span class="text-sm">🔄</span>
+              <span class="text-[10px] font-bold">REVIEWS +600</span>
+            </div>
+            <div class="glass px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
+              <span class="text-sm">📄</span>
+              <span class="text-[10px] font-bold">ANALYSIS +250</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mastery Trend Graph -->
+        <div class="glass rounded-[32px] p-8 flex flex-col">
+          <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-6">Mastery Trend</h4>
+          <div class="flex-1 relative mt-4">
+            <svg viewBox="0 0 400 150" class="w-full h-full">
+              <defs>
+                <linearGradient id="fillGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#FDE047" stop-opacity="0.3"></stop>
+                  <stop offset="100%" stop-color="#FDE047" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M 0 100 Q 50 120 100 80 T 200 60 T 300 30 T 400 45" fill="none" stroke="#FDE047" stroke-width="4" class="progress-line-animate"></path>
+              <path d="M 0 100 Q 50 120 100 80 T 200 60 T 300 30 T 400 45 L 400 150 L 0 150 Z" fill="url(#fillGrad)"></path>
+              <circle cx="300" cy="30" r="6" fill="#FDE047" class="pulse-soft"></circle>
+            </svg>
+            <div class="flex justify-between mt-4 px-2">
+              <span class="text-[9px] font-bold opacity-20">MON</span>
+              <span class="text-[9px] font-bold opacity-20">WED</span>
+              <span class="text-[9px] font-bold opacity-20">FRI</span>
+              <span class="text-[9px] font-bold opacity-20">SUN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Milestones -->
+      <div class="space-y-4">
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-4">Learning Milestones</h4>
+        <div class="grid grid-cols-4 gap-4">
+          <div class="glass p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group">
+            <div class="w-10 h-10 rounded-xl bg-[#FDE047]/10 flex items-center justify-center mb-4 group-hover:bg-[#FDE047] group-hover:text-black transition-colors">
+              <iconify-icon icon="lucide:check-circle" class="text-xl"></iconify-icon>
+            </div>
+            <p class="text-xs font-bold mb-1">Biology Ch. 5</p>
+            <p class="text-[10px] text-white/40">COMPLETED • MAR 14</p>
+          </div>
+          <div class="glass p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group">
+            <div class="w-10 h-10 rounded-xl bg-cyan-400/10 flex items-center justify-center mb-4 text-cyan-400">
+              <iconify-icon icon="lucide:trending-up" class="text-xl"></iconify-icon>
+            </div>
+            <p class="text-xs font-bold mb-1">Derivatives Mastery</p>
+            <p class="text-[10px] text-white/40">MASTERED • MAR 15</p>
+          </div>
+          <div class="glass p-5 rounded-[28px] hover:scale-105 transition-all cursor-pointer group border-l-4 border-[#FDE047]">
+            <div class="w-10 h-10 rounded-xl bg-[#FDE047] text-black flex items-center justify-center mb-4">
+              <iconify-icon icon="lucide:flame" class="text-xl"></iconify-icon>
+            </div>
+            <p class="text-xs font-bold mb-1">7-Day Streak</p>
+            <p class="text-[10px] text-white/40 uppercase">Achievement</p>
+          </div>
+          <div class="glass p-5 rounded-[28px] opacity-40 hover:opacity-100 transition-all cursor-pointer group">
+            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-4">
+              <iconify-icon icon="lucide:trophy" class="text-xl"></iconify-icon>
+            </div>
+            <p class="text-xs font-bold mb-1">Perfect Score</p>
+            <p class="text-[10px] text-white/40 uppercase tracking-widest">UPCOMING</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strengths vs Weaknesses -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="glass rounded-[32px] p-8 border-l-4 border-red-500/50">
+          <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-400 mb-6">Focus Areas (Weaknesses)</h4>
+          <div class="space-y-6">
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold">Complex Integrals</span>
+                <span class="text-[10px] text-red-400">Needs Review</span>
+              </div>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-red-400 w-[35%]"></div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold">Statistical Analysis</span>
+                <span class="text-[10px] text-orange-400">Improving</span>
+              </div>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-orange-400 w-[55%]"></div>
+              </div>
+            </div>
+            <button class="w-full py-3 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all mt-4">Start Targeted Practice</button>
+          </div>
+        </div>
+        <div class="glass rounded-[32px] p-8 border-l-4 border-green-500/50">
+          <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400 mb-6">Your Strengths</h4>
+          <div class="space-y-6">
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold">Calculus Fundamentals</span>
+                <span class="text-[10px] text-green-400">98% Mastery</span>
+              </div>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-green-400 w-[98%]"></div>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold">Linear Algebra</span>
+                <span class="text-[10px] text-green-400">92% Mastery</span>
+              </div>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-green-400 w-[92%]"></div>
+              </div>
+            </div>
+            <button class="w-full py-3 rounded-full bg-[#FDE047]/10 text-[#FDE047] text-[10px] font-bold uppercase tracking-widest hover:bg-[#FDE047]/20 transition-all mt-4">Teach A Peer (+200 XP)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Recommendations -->
+      <div class="space-y-4">
+        <h4 class="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 pl-4">Smart Recommendations</h4>
+        <div class="grid grid-cols-3 gap-6">
+          <div class="glass p-6 rounded-[32px] border-t border-white/10 hover:border-[#FDE047]/50 transition-all group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                <iconify-icon icon="lucide:pencil-line" class="text-xl"></iconify-icon>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-1 bg-white/5 rounded-lg text-white/60">15 MIN</span>
+            </div>
+            <p class="text-sm font-bold mb-2 group-hover:text-[#FDE047] transition-colors">Integrals Mastery Quiz</p>
+            <p class="text-xs text-white/40 mb-6">Targeted session to improve your lowest score from Tuesday.</p>
+            <a href="#" class="inline-block px-6 py-2 bg-[#FDE047] text-black text-[10px] font-bold rounded-full uppercase tracking-tighter">Start Quiz</a>
+          </div>
+          <div class="glass p-6 rounded-[32px] border-t border-white/10 hover:border-[#FDE047]/50 transition-all group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                <iconify-icon icon="lucide:book-open" class="text-xl"></iconify-icon>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-1 bg-white/5 rounded-lg text-white/60">10 MIN</span>
+            </div>
+            <p class="text-sm font-bold mb-2 group-hover:text-[#FDE047] transition-colors">Probability Review</p>
+            <p class="text-xs text-white/40 mb-6">Review your recent lecture notes summarized by Aether.</p>
+            <a href="#" class="inline-block px-6 py-2 bg-white/10 text-white text-[10px] font-bold rounded-full uppercase tracking-tighter">Read Notes</a>
+          </div>
+          <div class="glass p-6 rounded-[32px] border-t border-white/10 hover:border-cyan-400/50 transition-all group">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                <iconify-icon icon="lucide:zap" class="text-xl"></iconify-icon>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-1 bg-cyan-400/20 rounded-lg text-cyan-400">NEW</span>
+            </div>
+            <p class="text-sm font-bold mb-2 group-hover:text-cyan-400 transition-colors">Advanced Calculus</p>
+            <p class="text-xs text-white/40 mb-6">Unlock the next module in your customized learning roadmap.</p>
+            <a href="#" class="inline-block px-6 py-2 bg-white/10 text-white text-[10px] font-bold rounded-full uppercase tracking-tighter">Unlock Module</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Right Sidebar (20%) -->
+  <div class="w-[20%] h-screen flex-shrink-0 overflow-y-auto" v-scope="{
+    masteryPercentage: 72,
+    studyHours: 4.2,
+    newXP: 850,
+    firstFileProgress: 50,
+    isMusicPlaying: true
+  }">
+    <aside class="w-full h-full flex flex-col p-6 space-y-6 border-l border-white/5 bg-[#0A0A0A] overflow-y-auto">
+
+      <!-- Daily Mastery -->
+      <div class="glass rounded-[32px] p-6 text-center">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">Daily Mastery</h4>
+        <div class="relative w-32 h-32 mx-auto flex items-center justify-center mb-4">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8" class="text-white/5"></circle>
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8"
+              stroke-dasharray="364" :stroke-dashoffset="364 - (364 * masteryPercentage / 100)"
+              class="text-[#FDE047] transition-all duration-500"></circle>
+          </svg>
+          <div class="absolute flex flex-col items-center">
+            <span class="text-2xl font-black">{{ masteryPercentage }}%</span>
+            <span class="text-[8px] uppercase tracking-widest text-white/40">Complete</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-left">
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">Study Time</p>
+            <p class="text-sm font-bold">{{ studyHours }} hrs</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">New XP</p>
+            <p class="text-sm font-bold text-[#FDE047]">+{{ newXP }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Log -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Memory Log</h4>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🧠</span>
+          <div>
+            <p class="text-xs font-medium">Struggled with Integrals last week.</p>
+            <p class="text-[10px] text-[#FDE047] mt-1">Review scheduled tomorrow</p>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🎨</span>
+          <div>
+            <p class="text-xs font-medium">Learns faster using diagrams.</p>
+            <p class="text-[10px] text-white/40 mt-1">Applied to current session</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indexing Files -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Indexing Files</h4>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-blue-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Lecture_Notes_V2.pdf</p>
+              <div class="w-24 h-1 bg-white/10 rounded-full mt-1">
+                <div class="h-full bg-[#FDE047] rounded-full transition-all duration-300" :style="{ width: firstFileProgress + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <span class="text-[8px] font-bold uppercase text-[#FDE047]" v-if="firstFileProgress < 100">Indexing</span>
+        </div>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-green-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Physics_Ch_04.pdf</p>
+              <p class="text-[8px] text-white/30">Ready to analyze</p>
+            </div>
+          </div>
+          <iconify-icon icon="lucide:check-circle" class="text-green-500"></iconify-icon>
+        </div>
+      </div>
+
+      <!-- Focus Ambience -->
+      <div class="glass rounded-[32px] p-6 mt-auto border border-[#FDE047]/20 shadow-[0_0_30px_rgba(253,224,71,0.05)]">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#FDE047]">Focus Ambience</h4>
+          <iconify-icon icon="lucide:volume-2"></iconify-icon>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+            <iconify-icon icon="lucide:cloud-rain" class="text-2xl text-[#FDE047]"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-xs font-bold">Cyber Rain</p>
+            <p class="text-[10px] text-white/40">Deep Focus Mode</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <iconify-icon icon="lucide:skip-back" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('prevTrack')"></iconify-icon>
+          <iconify-icon :icon="isMusicPlaying ? 'lucide:pause' : 'lucide:play'" class="text-2xl cursor-pointer hover:text-[#FDE047]" @click="$emit('togglePlay')"></iconify-icon>
+          <iconify-icon icon="lucide:skip-forward" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('nextTrack')"></iconify-icon>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Floating Trophy Notification -->
+  <div class="fixed bottom-10 left-10 space-y-3 z-50">
+    <div class="bg-black/80 backdrop-blur-xl border border-[#FDE047]/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl">
+      <iconify-icon icon="lucide:award" class="text-[#FDE047] animate-pulse"></iconify-icon>
+      <span class="text-[10px] font-bold uppercase tracking-widest">🏆 New High Score Unlocked</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const bars = document.querySelectorAll('.chart-bar');
+  setTimeout(() => {
+    bars.forEach(bar => {
+      const height = bar.style.height;
+      bar.style.height = '0%';
+      setTimeout(() => {
+        bar.style.height = height;
+      }, 50);
+    });
+  }, 500);
+});
+</script>
+
+</body>
+</html>

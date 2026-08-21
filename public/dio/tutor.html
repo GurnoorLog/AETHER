@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tutor Chat | Aether AI</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/petite-vue@0.4.1/dist/petite-vue.iife.js" defer init></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/dio/css/style.css">
+</head>
+<body>
+
+<div class="min-h-screen bg-[#0A0A0A] text-white flex overflow-hidden">
+
+  <!-- Left Sidebar (15%) -->
+  <div class="w-[15%] h-full flex flex-col" v-scope="{
+    activeNav: 'tutor',
+    userName: 'Alex V.',
+    newSessionHref: '/dio/session.html',
+    homeHref: 'index.html',
+    tutorHref: '/dio/tutor.html',
+    knowledgeHref: '/dio/knowledge.html',
+    docsHref: '#docs',
+    quizzesHref: '/dio/quizzes.html',
+    progressHref: '/dio/progress.html',
+    roadmapHref: '/dio/roadmap.html',
+    musicHref: '/dio/music.html'
+  }">
+    <aside class="w-full h-full flex flex-col border-r border-white/5 bg-[#0A0A0A] p-6 z-40">
+      <div class="flex items-center gap-3 mb-10">
+        <div class="w-10 h-10 bg-[#FDE047] rounded-xl flex items-center justify-center">
+          <iconify-icon icon="lucide:zap" class="text-black text-2xl"></iconify-icon>
+        </div>
+        <span class="text-2xl font-bold tracking-tighter uppercase">Aether</span>
+      </div>
+
+      <div class="mb-8 relative">
+        <iconify-icon icon="lucide:search" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"></iconify-icon>
+        <input type="text" placeholder="Search..."
+          @input="$emit('search', { query: $event.target.value })"
+          class="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#FDE047]/50 transition-colors">
+      </div>
+
+      <a :href="newSessionHref"
+        class="bg-[#FDE047] text-black font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 mb-10 hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(253,224,71,0.2)]">
+        <iconify-icon icon="lucide:plus"></iconify-icon>New Session
+      </a>
+
+      <nav class="flex-1 space-y-2 overflow-y-auto">
+        <a :href="homeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'home', 'opacity-60 hover:opacity-100': activeNav !== 'home' }">
+          <iconify-icon icon="lucide:home" class="text-xl"></iconify-icon>Home
+        </a>
+        <a :href="tutorHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'tutor', 'opacity-60 hover:opacity-100': activeNav !== 'tutor' }">
+          <iconify-icon icon="lucide:bot" class="text-xl"></iconify-icon>AI Tutor
+        </a>
+        <a :href="knowledgeHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'knowledge', 'opacity-60 hover:opacity-100': activeNav !== 'knowledge' }">
+          <iconify-icon icon="lucide:database" class="text-xl"></iconify-icon>Knowledge
+        </a>
+        <a :href="docsHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'docs', 'opacity-60 hover:opacity-100': activeNav !== 'docs' }">
+          <iconify-icon icon="lucide:file-text" class="text-xl"></iconify-icon>Documents
+        </a>
+        <a :href="quizzesHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'quizzes', 'opacity-60 hover:opacity-100': activeNav !== 'quizzes' }">
+          <iconify-icon icon="lucide:pencil-line" class="text-xl"></iconify-icon>Quizzes
+        </a>
+        <a :href="progressHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'progress', 'opacity-60 hover:opacity-100': activeNav !== 'progress' }">
+          <iconify-icon icon="lucide:bar-chart-3" class="text-xl"></iconify-icon>Progress
+        </a>
+        <a :href="roadmapHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'roadmap', 'opacity-60 hover:opacity-100': activeNav !== 'roadmap' }">
+          <iconify-icon icon="lucide:route" class="text-xl"></iconify-icon>Roadmap
+        </a>
+        <a :href="musicHref"
+          class="flex items-center gap-3 p-3 rounded-xl transition-all"
+          :class="{ 'bg-white/5 text-[#FDE047]': activeNav === 'music', 'opacity-60 hover:opacity-100': activeNav !== 'music' }">
+          <iconify-icon icon="lucide:music" class="text-xl"></iconify-icon>Focus Music
+        </a>
+      </nav>
+
+      <div class="pt-6 border-t border-white/5 mt-6 flex items-center justify-between opacity-60">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FDE047] to-[#F59E0B] border border-white/20"></div>
+          <span class="text-xs font-semibold">{{ userName }}</span>
+        </div>
+        <div class="flex gap-3">
+          <iconify-icon icon="lucide:bell" class="cursor-pointer hover:text-white" @click="$emit('notificationClick')"></iconify-icon>
+          <iconify-icon icon="lucide:settings" class="cursor-pointer hover:text-white" @click="$emit('settingsClick')"></iconify-icon>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Center Workspace (65%) -->
+  <main class="flex-1 flex flex-col relative z-0 h-full">
+
+    <!-- Conversation Header -->
+    <header class="p-6 pb-0">
+      <div v-scope="{ isActive: true, isProcessing: true }">
+        <div class="flex items-center justify-between bg-white/10 backdrop-blur-[24px] border border-white/20 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] rounded-[32px] p-6 mb-8">
+          <div class="flex items-center gap-6">
+            <div class="relative">
+              <div class="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-[#FDE047]">
+                <iconify-icon icon="lucide:sparkles" class="text-3xl text-[#FDE047]"></iconify-icon>
+              </div>
+              <div v-if="isActive" class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold">Aether Core</h3>
+              <div class="flex items-center gap-3 text-xs text-white/50">
+                <span class="flex items-center gap-1 text-green-400">
+                  <div v-if="isActive" class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                  Listening
+                </span>
+                <span>•</span>
+                <span>Reviewing your notes</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div v-if="isProcessing" class="waveform">
+              <div class="wave-bar" style="animation-delay: -0.2s"></div>
+              <div class="wave-bar" style="animation-delay: -0.4s"></div>
+              <div class="wave-bar" style="animation-delay: -0.1s"></div>
+              <div class="wave-bar" style="animation-delay: -0.5s"></div>
+              <div class="wave-bar" style="animation-delay: -0.3s"></div>
+            </div>
+            <button @click="$emit('call')" class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors">
+              <iconify-icon icon="lucide:phone" class="text-xl"></iconify-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Chat Content -->
+    <div class="flex-1 overflow-y-auto px-8 pb-32 space-y-8">
+      <div class="max-w-4xl mx-auto space-y-10 py-6">
+
+        <!-- Message 1: User -->
+        <div class="flex justify-end">
+          <div class="bg-white/5 border border-white/10 rounded-[28px] rounded-tr-lg p-5 max-w-[80%] shadow-lg">
+            <p class="text-sm leading-relaxed">I'm having trouble understanding why the derivatives of trigonometric functions like sine and cosine switch signs the way they do. Is there a visual way to think about it?</p>
+          </div>
+        </div>
+
+        <!-- Message 1: AI Response -->
+        <div class="flex justify-start items-start gap-4">
+          <div class="w-10 h-10 rounded-xl bg-[#FDE047] flex-shrink-0 flex items-center justify-center text-black shadow-[0_0_15px_rgba(253,224,71,0.4)]">
+            <iconify-icon icon="lucide:sparkles"></iconify-icon>
+          </div>
+          <div class="space-y-6 max-w-[85%]">
+            <div class="glass rounded-[28px] rounded-tl-lg p-6">
+              <p class="text-sm leading-relaxed mb-4">That's a fantastic question, Alex. Most students just memorize it, but there's a beautiful geometric intuition behind it. 🎨</p>
+              <p class="text-sm leading-relaxed">Think of a point moving around a <b>unit circle</b>. The height of the point is sin(θ) and its horizontal position is cos(θ). The derivative is simply the velocity vector of that point.</p>
+            </div>
+
+            <!-- GlassCard -->
+            <div v-scope="{ showIllustration: true, illustrationCaption: 'Visualizing Slope Accumulation' }">
+              <div class="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-[32px] p-6 border-l-4 border-[#FDE047] shadow-2xl floating">
+                <div class="flex items-center gap-2 mb-4">
+                  <iconify-icon icon="lucide:lightbulb" class="text-[#FDE047] text-xl"></iconify-icon>
+                  <span class="text-xs font-bold uppercase tracking-widest">Visual Explanation</span>
+                </div>
+
+                <div v-if="showIllustration" class="bg-black/40 rounded-2xl h-48 mb-4 border border-white/5 flex items-center justify-center overflow-hidden relative">
+                  <div class="absolute inset-0 bg-gradient-to-br from-[#FDE047]/10 to-transparent"></div>
+                  <div class="z-10 text-center">
+                    <div class="flex items-center justify-center gap-1 mb-2">
+                      <div class="w-1 h-20 bg-[#FDE047]"></div>
+                      <div class="w-1 h-16 bg-[#FDE047]/80"></div>
+                      <div class="w-1 h-24 bg-[#FDE047]/60"></div>
+                      <div class="w-1 h-12 bg-[#FDE047]/40"></div>
+                      <div class="w-1 h-32 bg-[#FDE047]"></div>
+                    </div>
+                    <p class="text-[10px] text-white/40 uppercase tracking-tight">{{ illustrationCaption }}</p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <button @click="$emit('primaryAction')" class="bg-[#FDE047] text-black text-xs font-bold py-3 rounded-full hover:scale-105 active:scale-95 transition-all">
+                    Interactive Demo
+                  </button>
+                  <button @click="$emit('secondaryAction')" class="bg-white/5 text-white text-xs font-bold py-3 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+                    Step-by-Step
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass rounded-[28px] p-6">
+              <p class="text-sm leading-relaxed">Notice how as sin(θ) increases (moving up), the velocity vector points to the left? That's why <code>d/dθ [sin(θ)] = cos(θ)</code>, but <code>d/dθ [cos(θ)] = -sin(θ)</code>. The negative sign represents the direction change.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message 2: User -->
+        <div class="flex justify-end">
+          <div class="bg-white/5 border border-white/10 rounded-[28px] rounded-tr-lg p-5 max-w-[80%] shadow-lg">
+            <p class="text-sm leading-relaxed">Oh! So it's basically a 90-degree rotation of the position vector? Can you show me how that works in code? Like a simple animation logic?</p>
+          </div>
+        </div>
+
+        <!-- Message 2: AI Response -->
+        <div class="flex justify-start items-start gap-4">
+          <div class="w-10 h-10 rounded-xl bg-[#FDE047] flex-shrink-0 flex items-center justify-center text-black shadow-[0_0_15px_rgba(253,224,71,0.4)]">
+            <iconify-icon icon="lucide:sparkles"></iconify-icon>
+          </div>
+          <div class="space-y-6 max-w-[90%]">
+            <div class="glass rounded-[28px] rounded-tl-lg p-6">
+              <p class="text-sm leading-relaxed mb-4">Exactly! You're thinking like a developer now. In a 2D coordinate system, a 90-degree counter-clockwise rotation swaps coordinates and negates one. Here is how that looks in logic:</p>
+              <div class="bg-black/50 rounded-2xl p-4 border border-white/10 font-mono text-xs overflow-x-auto my-4">
+                <pre class="text-[#FDE047]">// Position Vector (cos, sin)
+let x = Math.cos(theta);
+let y = Math.sin(theta);
+
+// Velocity Vector (Derivative)
+// Rotated by 90 degrees
+let vx = -y; // -sin(theta)
+let vy = x;  // cos(theta)</pre>
+              </div>
+              <p class="text-sm leading-relaxed">This is why the sign flips! Does that help clear up the 'why' behind the formulas?</p>
+              <span class="typing-cursor"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Composer (fixed at bottom) -->
+    <div class="absolute bottom-0 left-0 right-0 p-8 pt-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent">
+      <div v-scope="{ showPlus: true, showAttach: true, showMic: true }">
+        <div class="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
+          <div class="bg-white/10 backdrop-blur-[24px] border border-white/20 rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
+            <button v-if="showPlus"
+              @click="$emit('plusClick')"
+              class="w-12 h-12 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center text-white/40">
+              <iconify-icon icon="lucide:plus" class="text-xl"></iconify-icon>
+            </button>
+
+            <input type="text" placeholder="Ask Aether anything..."
+              class="flex-1 bg-transparent border-none focus:ring-0 text-sm py-4 text-white placeholder-white/40"
+              @keyup.enter="$emit('submit', { value: $event.target.value })">
+
+            <div class="flex items-center gap-2">
+              <button v-if="showAttach"
+                @click="$emit('attachClick')"
+                class="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-white">
+                <iconify-icon icon="lucide:paperclip"></iconify-icon>
+              </button>
+
+              <button v-if="showMic"
+                @click="$emit('micClick')"
+                class="w-12 h-12 rounded-full bg-[#FDE047] text-black shadow-[0_0_20px_rgba(253,224,71,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center">
+                <iconify-icon icon="lucide:mic" class="text-xl"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Right Sidebar (20%) -->
+  <div class="w-[20%] h-full flex flex-col" v-scope="{
+    masteryPercentage: 72,
+    studyHours: 4.2,
+    newXP: 850,
+    firstFileProgress: 50,
+    isMusicPlaying: true
+  }">
+    <aside class="w-full h-full flex flex-col p-6 space-y-6 border-l border-white/5 bg-[#0A0A0A] overflow-y-auto">
+
+      <!-- Daily Mastery -->
+      <div class="glass rounded-[32px] p-6 text-center">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">Daily Mastery</h4>
+        <div class="relative w-32 h-32 mx-auto flex items-center justify-center mb-4">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8" class="text-white/5"></circle>
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="currentColor" stroke-width="8"
+              stroke-dasharray="364" :stroke-dashoffset="364 - (364 * masteryPercentage / 100)"
+              class="text-[#FDE047] transition-all duration-500"></circle>
+          </svg>
+          <div class="absolute flex flex-col items-center">
+            <span class="text-2xl font-black">{{ masteryPercentage }}%</span>
+            <span class="text-[8px] uppercase tracking-widest text-white/40">Complete</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-left">
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">Study Time</p>
+            <p class="text-sm font-bold">{{ studyHours }} hrs</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-3">
+            <p class="text-[8px] text-white/40 uppercase mb-1">New XP</p>
+            <p class="text-sm font-bold text-[#FDE047]">+{{ newXP }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Log -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Memory Log</h4>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🧠</span>
+          <div>
+            <p class="text-xs font-medium">Struggled with Integrals last week.</p>
+            <p class="text-[10px] text-[#FDE047] mt-1">Review scheduled tomorrow</p>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-4 flex gap-3 items-start">
+          <span class="text-xl">🎨</span>
+          <div>
+            <p class="text-xs font-medium">Learns faster using diagrams.</p>
+            <p class="text-[10px] text-white/40 mt-1">Applied to current session</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indexing Files -->
+      <div class="space-y-3">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-white/40 pl-2">Indexing Files</h4>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-blue-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Lecture_Notes_V2.pdf</p>
+              <div class="w-24 h-1 bg-white/10 rounded-full mt-1">
+                <div class="h-full bg-[#FDE047] rounded-full transition-all duration-300" :style="{ width: firstFileProgress + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <span class="text-[8px] font-bold uppercase text-[#FDE047]" v-if="firstFileProgress < 100">Indexing</span>
+        </div>
+        <div class="bg-[#171717] rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <iconify-icon icon="lucide:file-text" class="text-green-400"></iconify-icon>
+            <div>
+              <p class="text-[10px] font-bold">Physics_Ch_04.pdf</p>
+              <p class="text-[8px] text-white/30">Ready to analyze</p>
+            </div>
+          </div>
+          <iconify-icon icon="lucide:check-circle" class="text-green-500"></iconify-icon>
+        </div>
+      </div>
+
+      <!-- Focus Ambience -->
+      <div class="glass rounded-[32px] p-6 mt-auto border border-[#FDE047]/20 shadow-[0_0_30px_rgba(253,224,71,0.05)]">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#FDE047]">Focus Ambience</h4>
+          <iconify-icon icon="lucide:volume-2"></iconify-icon>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+            <iconify-icon icon="lucide:cloud-rain" class="text-2xl text-[#FDE047]"></iconify-icon>
+          </div>
+          <div>
+            <p class="text-xs font-bold">Cyber Rain</p>
+            <p class="text-[10px] text-white/40">Deep Focus Mode</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <iconify-icon icon="lucide:skip-back" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('prevTrack')"></iconify-icon>
+          <iconify-icon :icon="isMusicPlaying ? 'lucide:pause' : 'lucide:play'" class="text-2xl cursor-pointer hover:text-[#FDE047]" @click="$emit('togglePlay')"></iconify-icon>
+          <iconify-icon icon="lucide:skip-forward" class="cursor-pointer hover:text-[#FDE047]" @click="$emit('nextTrack')"></iconify-icon>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Floating "Aether is speaking" -->
+  <div class="fixed bottom-24 left-[18%] flex items-center gap-2">
+    <div class="bg-black/80 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full flex items-center gap-3 shadow-2xl">
+      <div class="waveform">
+        <div class="wave-bar" style="animation-duration: 0.8s; height: 60%"></div>
+        <div class="wave-bar" style="animation-duration: 1.2s; height: 80%"></div>
+        <div class="wave-bar" style="animation-duration: 0.5s; height: 40%"></div>
+      </div>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-[#FDE047]">Aether is speaking...</span>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

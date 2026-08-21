@@ -9,9 +9,20 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@deepgram/agents": "^0.1.1",
+    "@deepgram/react": "^0.1.0",
+    "@dietrichgebert/ponytail": "^4.8.4",
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.110.7",
+    "jszip": "^3.10.1",
+    "katex": "^0.18.1",
+    "lucide-react": "^1.27.0",
+    "mermaid": "^11.16.0",
     "next": "16.2.10",
+    "pdf-parse": "^1.1.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "stripe": "^22.5.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
