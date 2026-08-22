@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { glassRadius, spacing, useTheme, type GlassTheme, type AccentKey } from '@/theme';
 import { AURA_VOICES, getVoice, setVoice } from '@/lib/prefs';
-import { createPortalSession, getSubscription, type SubscriptionInfo } from '@/lib/api';
+import { getEntitlementTier } from '@/lib/revenuecat';
 import { GlassIconButton } from '@/components/glass/GlassIconButton';
 import { GlassScreen } from '@/components/glass/GlassScreen';
 import { GlassSurface } from '@/components/glass/GlassSurface';
@@ -25,28 +24,22 @@ export default function SettingsScreen() {
   const { theme, dark, setDark, accent, setAccent } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const [voice, setVoiceState] = useState<string | null>(null);
-  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
-  const [portalLoading, setPortalLoading] = useState(false);
+  const [tier, setTier] = useState<'free' | 'pro' | 'unlimited'>('free');
 
   useEffect(() => {
     getVoice().then(setVoiceState);
   }, []);
 
   useEffect(() => {
-    getSubscription()
-      .then(setSubscription)
-      .catch(() => {});
+    getEntitlementTier().then(setTier).catch(() => {});
   }, []);
 
   const openPortal = async () => {
-    setPortalLoading(true);
     try {
-      const url = await createPortalSession();
-      await WebBrowser.openBrowserAsync(url);
+      const RevenueCatUI = (await import('react-native-purchases-ui')).default;
+      await RevenueCatUI.presentCustomerCenter();
     } catch {
-      // leave it silently; no portal if not subscribed
-    } finally {
-      setPortalLoading(false);
+      router.push('/pricing');
     }
   };
 
@@ -149,26 +142,23 @@ export default function SettingsScreen() {
             <View style={styles.row}>
               <View style={styles.rowText}>
                 <Text style={styles.rowTitle}>
-                  {subscription?.tier === 'pro'
+                  {tier === 'pro'
                     ? 'Pro'
-                    : subscription?.tier === 'unlimited'
+                    : tier === 'unlimited'
                       ? 'Unlimited'
                       : 'Free'}
                 </Text>
                 <Text style={styles.rowCaption}>
-                  {subscription?.tier && subscription.tier !== 'free'
-                    ? subscription.status === 'active' || subscription.status === 'trialing'
-                      ? `Active · renews ${subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : ''}`
-                      : subscription.status
+                  {tier !== 'free'
+                    ? 'Active subscription'
                     : 'Upgrade for more sessions, chat, and features.'}
                 </Text>
               </View>
             </View>
-            {subscription?.tier && subscription.tier !== 'free' ? (
+            {tier !== 'free' ? (
               <GlassButton
                 label="Manage Subscription"
                 onPress={openPortal}
-                loading={portalLoading}
                 variant="secondary"
                 size="md"
                 style={styles.manageBtn}

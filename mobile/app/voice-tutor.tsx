@@ -1,23 +1,24 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useAudioPlayer, useAudioPlayerStatus, useAudioRecorder, requestRecordingPermissionsAsync, RecordingPresets } from 'expo-audio';
-import { AudioLines, Bot, Mic, X } from 'lucide-react-native';
 
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { useActiveSession } from '@/lib/activeSession';
 import { streamChat, transcribeAudio, ttsToFile } from '@/lib/api';
 import { getVoice } from '@/lib/prefs';
-import { useTheme, glassRadius, spacing, type GlassTheme } from '@/theme';
-import { GlassIconButton } from '@/components/glass/GlassIconButton';
-import { GlassScreen } from '@/components/glass/GlassScreen';
-import { GlassSurface } from '@/components/glass/GlassSurface';
+import { Icon } from '@/components/glass/Icon';
+import { AudioLines, Bot, Mic, X } from '@/components/glass/icons';
 import { MarkdownText } from '@/components/glass/MarkdownText';
 
 type Phase = 'idle' | 'listening' | 'thinking' | 'speaking';
+
+const GREEN = '#6B8E61';
+const GREEN_DEEP = '#587A4E';
+const GREEN_WASH = '#E8F0E5';
+const CARD_BORDER = '#F3EDE3';
 
 export default function VoiceTutorPage() {
   const router = useRouter();
@@ -25,8 +26,6 @@ export default function VoiceTutorPage() {
   const insets = useSafeAreaInsets();
   const { session: authSession } = useAuth();
   const { session } = useActiveSession();
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
 
   const [phase, setPhase] = useState<Phase>('idle');
   const [status, setStatus] = useState<string | null>(null);
@@ -159,15 +158,22 @@ export default function VoiceTutorPage() {
   };
 
   return (
-    <GlassScreen accent="voice">
+    <View style={styles.screen}>
       <View style={styles.header}>
         <Text style={styles.title}>Voice Tutor</Text>
-        <GlassIconButton icon={X} onPress={() => router.back()} accent="voice" size={40} accessibilityLabel="Close voice tutor" />
+        <Pressable
+          style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Close voice tutor"
+        >
+          <Icon icon={X} size={18} color="#8A8578" strokeWidth={2.2} />
+        </Pressable>
       </View>
 
       <ScrollView
         style={styles.flex}
-        contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + spacing.xl }]}
+        contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 40 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -187,14 +193,13 @@ export default function VoiceTutorPage() {
             accessibilityState={{ busy: phase !== 'idle' }}
           >
             <Animated.View style={{ transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.08] }) }] }}>
-              <LinearGradient
-                colors={phase === 'listening' ? ['#7C60E4', '#4C34B8'] : ['#E7D8FB', '#C6B3F7']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.orb}
-              >
-                {phase === 'listening' ? <MicIcon /> : <AudioLinesIcon />}
-              </LinearGradient>
+              <View style={[styles.orb, phase === 'listening' && styles.orbActive]}>
+                {phase === 'listening' ? (
+                  <Icon icon={Mic} size={40} color="#FFFFFF" strokeWidth={1.8} />
+                ) : (
+                  <Icon icon={AudioLines} size={40} color="#FFFFFF" strokeWidth={1.8} />
+                )}
+              </View>
             </Animated.View>
           </Pressable>
         </View>
@@ -217,26 +222,26 @@ export default function VoiceTutorPage() {
         {(userText || aiText) ? (
           <View style={styles.transcript}>
             {userText ? (
-              <GlassSurface radius={glassRadius.squircle} intensity="regular" fill={theme.glass.fillStrong} bordered={false} style={styles.userCard}>
+              <View style={styles.card}>
                 <View style={styles.transcriptHeader}>
-                  <View style={[styles.transcriptBadge, { backgroundColor: theme.accents.voice.wash }]}>
-                    <MicIcon size={13} color={theme.accents.voice.solid} />
+                  <View style={styles.badgeUser}>
+                    <Icon icon={Mic} size={13} color={GREEN} strokeWidth={2} />
                   </View>
                   <Text style={styles.transcriptLabel}>You</Text>
                 </View>
                 <Text style={styles.userText}>{userText}</Text>
-              </GlassSurface>
+              </View>
             ) : null}
             {aiText ? (
-              <GlassSurface radius={glassRadius.squircle} intensity="regular" fill={theme.glass.fill} bordered={false} style={styles.aiCard}>
+              <View style={styles.card}>
                 <View style={styles.transcriptHeader}>
-                  <View style={[styles.transcriptBadge, { backgroundColor: theme.accents.voice.solid }]}>
-                    <BotIcon size={13} color="#FFF" />
+                  <View style={styles.badgeAi}>
+                    <Icon icon={Bot} size={13} color="#FFFFFF" strokeWidth={2} />
                   </View>
                   <Text style={styles.transcriptLabel}>Aether</Text>
                 </View>
-                <MarkdownText content={aiText} color={theme.light.inkSoft} />
-              </GlassSurface>
+                <MarkdownText content={aiText} color="#333333" />
+              </View>
             ) : null}
           </View>
         ) : (
@@ -245,46 +250,45 @@ export default function VoiceTutorPage() {
           </View>
         )}
       </ScrollView>
-    </GlassScreen>
+    </View>
   );
 }
 
-// Tiny local icon components so the page doesn't pull the whole icon set.
-function MicIcon({ size = 40, color = '#FFFFFF' }: { size?: number; color?: string }) {
-  return <Mic size={size} color={color} strokeWidth={1.8} />;
-}
-function AudioLinesIcon({ size = 40, color = '#7C60E4' }: { size?: number; color?: string }) {
-  return <AudioLines size={size} color={color} strokeWidth={1.8} />;
-}
-function BotIcon({ size = 13, color = '#FFF' }: { size?: number; color?: string }) {
-  return <Bot size={size} color={color} strokeWidth={2} />;
-}
-
-const makeStyles = (theme: GlassTheme) => StyleSheet.create({
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: '#FDFBF7' },
   flex: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
+    paddingHorizontal: 24,
+    paddingTop: 56,
+    paddingBottom: 16,
   },
   title: {
-    ...theme.glassType.title,
-    fontSize: 30,
-    fontWeight: '300',
-    letterSpacing: -0.8,
-    color: theme.light.ink,
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#333333',
   },
-  body: { alignItems: 'center', paddingHorizontal: spacing.lg, gap: spacing.lg },
-  orbWrap: { alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl },
+  closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: CARD_BORDER,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonPressed: { backgroundColor: GREEN_WASH },
+  body: { alignItems: 'center', paddingHorizontal: 24, gap: 28 },
+  orbWrap: { alignItems: 'center', justifyContent: 'center', marginTop: 40 },
   orbHalo: {
     position: 'absolute',
     width: 240,
     height: 240,
     borderRadius: 120,
-    backgroundColor: theme.accents.voice.wash,
+    backgroundColor: GREEN_WASH,
   },
   orb: {
     width: 160,
@@ -292,42 +296,55 @@ const makeStyles = (theme: GlassTheme) => StyleSheet.create({
     borderRadius: 80,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 4,
-    borderColor: 'rgba(255,255,255,0.8)',
-    shadowColor: '#4C34B8',
+    backgroundColor: GREEN,
+    shadowColor: GREEN,
     shadowOpacity: 0.35,
     shadowRadius: 30,
     shadowOffset: { width: 0, height: 12 },
     elevation: 10,
   },
-  statusWrap: { minHeight: 40, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg },
+  orbActive: { backgroundColor: GREEN_DEEP },
+  statusWrap: { minHeight: 40, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   hintText: {
-    ...theme.glassType.overline,
-    color: theme.accents.voice.solid,
+    color: GREEN,
     textAlign: 'center',
-    fontSize: 11,
-    letterSpacing: 2,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.2,
   },
   statusText: {
-    ...theme.glassType.caption,
-    color: theme.light.inkMuted,
+    color: '#999999',
     textAlign: 'center',
     fontSize: 13,
     letterSpacing: 0.2,
   },
-  transcript: { alignSelf: 'stretch', gap: spacing.md },
-  userCard: { padding: spacing.lg },
-  aiCard: { padding: spacing.lg },
-  transcriptHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
-  transcriptBadge: {
+  transcript: { alignSelf: 'stretch', gap: 12 },
+  card: {
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: CARD_BORDER,
+  },
+  transcriptHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  badgeUser: {
     width: 26,
     height: 26,
     borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: GREEN_WASH,
   },
-  transcriptLabel: { ...theme.glassType.overline, color: theme.light.inkMuted },
-  userText: { fontSize: 15, lineHeight: 22, color: theme.light.ink },
-  placeholder: { alignItems: 'center', paddingHorizontal: spacing.xl, paddingTop: spacing.sm },
-  placeholderText: { ...theme.glassType.body, textAlign: 'center', color: theme.light.inkFaint, fontSize: 14, lineHeight: 21 },
+  badgeAi: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: GREEN,
+  },
+  transcriptLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5, color: '#999999' },
+  userText: { fontSize: 15, lineHeight: 22, color: '#333333' },
+  placeholder: { alignItems: 'center', paddingHorizontal: 32, paddingTop: 8 },
+  placeholderText: { textAlign: 'center', color: '#CCCCCC', fontSize: 14, lineHeight: 21 },
 });

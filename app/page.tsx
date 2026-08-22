@@ -79,7 +79,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="flex flex-col min-h-screen relative bg-[#0A0A0A]">
       <div className="fixed top-[-15%] right-[-10%] w-[800px] h-[800px] bg-cyber-yellow/10 rounded-full blur-[160px] pointer-events-none z-0" />
       <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none z-0" />
 

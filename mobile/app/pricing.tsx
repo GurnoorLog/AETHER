@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 
-import { createCheckoutSession, getSubscription } from '@/lib/api';
+import { useRevenueCat, getTierFromCustomerInfo } from '@/hooks/useRevenueCat';
 import { glassRadius, spacing, useTheme, type AccentKey, type GlassTheme } from '@/theme';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
@@ -24,6 +23,7 @@ const PLANS: {
   features: string[];
   accent: AccentKey;
   popular: boolean;
+  rcIdentifier: string | null;
 }[] = [
   {
     name: 'Free',
@@ -41,6 +41,7 @@ const PLANS: {
     ],
     accent: 'field',
     popular: false,
+    rcIdentifier: null,
   },
   {
     name: 'Pro',
@@ -60,6 +61,7 @@ const PLANS: {
     ],
     accent: 'home',
     popular: true,
+    rcIdentifier: 'pro_monthly',
   },
   {
     name: 'Unlimited',
@@ -80,33 +82,22 @@ const PLANS: {
     ],
     accent: 'voice',
     popular: false,
+    rcIdentifier: 'unlimited_monthly',
   },
 ];
 
 export default function PricingScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => makeStyles(theme), [theme]);
-  const [loading, setLoading] = useState<string | null>(null);
-  const [error, setError] = useState('');
-  const [currentTier, setCurrentTier] = useState<string | null>(null);
+  const { offerings, customerInfo, purchasing, error, purchasePackage } = useRevenueCat();
+  const currentTier = getTierFromCustomerInfo(customerInfo);
 
-  useEffect(() => {
-    getSubscription()
-      .then((s) => setCurrentTier(s.tier))
-      .catch(() => {});
-  }, []);
-
-  const subscribe = async (tier: 'pro' | 'unlimited') => {
-    setLoading(tier);
-    setError('');
-    try {
-      const url = await createCheckoutSession(tier);
-      await WebBrowser.openBrowserAsync(url);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong. Try again.');
-    } finally {
-      setLoading(null);
-    }
+  const subscribe = async (plan: typeof PLANS[number]) => {
+    if (!plan.tier) return;
+    const pkg = offerings.find(o => o.identifier === plan.rcIdentifier);
+    if (!pkg) return;
+    const ok = await purchasePackage(pkg);
+    if (ok) router.back();
   };
 
   return (
@@ -166,9 +157,9 @@ export default function PricingScreen() {
 
             <GlassButton
               label={selected ? 'Current Plan' : plan.tier ? 'Subscribe' : 'Free'}
-              onPress={() => (plan.tier ? subscribe(plan.tier) : undefined)}
-              disabled={!plan.tier || selected}
-              loading={loading === plan.tier}
+              onPress={() => subscribe(plan)}
+              disabled={!plan.tier || selected || !!purchasing}
+              loading={purchasing === plan.rcIdentifier}
               size="lg"
               accent={plan.accent}
               style={styles.cta}
@@ -177,7 +168,7 @@ export default function PricingScreen() {
         );
       })}
 
-      <Text style={styles.footnote}>Prices in USD. Subscriptions billed monthly through Stripe. Cancel anytime.</Text>
+      <Text style={styles.footnote}>Prices in USD. Subscriptions managed by RevenueCat. Cancel anytime.</Text>
     </GlassScreen>
   );
 }

@@ -21,13 +21,9 @@ import { useAuth } from '@/lib/auth';
 import { useActiveSession } from '@/lib/activeSession';
 import { streamChat, transcribeAudio, ttsToFile, uploadKnowledgeImage } from '@/lib/api';
 import type { ChatMessage as DBChatMessage, Conversation } from '@/lib/types';
-import { glassRadius, spacing, useTheme, type GlassTheme } from '@/theme';
-import { GlassCard } from '@/components/glass/GlassCard';
-import { GlassIconButton } from '@/components/glass/GlassIconButton';
-import { GlassScreen } from '@/components/glass/GlassScreen';
-import { GlassSurface } from '@/components/glass/GlassSurface';
 import { Icon } from '@/components/glass/Icon';
 import { MarkdownText } from '@/components/glass/MarkdownText';
+import { BottomNav } from '@/components/BottomNav';
 import {
   AudioLines,
   Bot,
@@ -39,9 +35,10 @@ import {
   Plus,
   Send,
   Trash2,
-  UserRound,
   Volume2,
 } from '@/components/glass/icons';
+
+const GREEN = '#6B8E61';
 
 interface LocalMessage {
   id: string;
@@ -55,63 +52,33 @@ function generateTitle(text: string): string {
   return cleaned.length <= 50 ? cleaned : cleaned.slice(0, 50).trim() + '...';
 }
 
-const MessageBubble = memo(function MessageBubble({
-  m,
-  theme,
-  styles,
-}: {
-  m: LocalMessage;
-  theme: GlassTheme;
-  styles: ReturnType<typeof makeStyles>;
-}) {
+const MessageBubble = memo(function MessageBubble({ m }: { m: LocalMessage }) {
+  const isUser = m.role === 'user';
   return (
-    <View style={[styles.bubbleRow, m.role === 'user' ? styles.userRow : styles.botRow]}>
-      {m.role === 'assistant' ? (
-        <View style={[styles.avatar, { backgroundColor: theme.accents.voice.wash }]}>
-          <Icon icon={Bot} size={16} color={theme.accents.voice.solid} />
+    <View style={[styles.bubbleRow, isUser ? styles.userRow : styles.botRow]}>
+      {!isUser && (
+        <View style={styles.avatar}>
+          <Icon icon={Bot} size={16} color={GREEN} />
         </View>
-      ) : null}
-      {m.role === 'user' ? (
-        <GlassSurface
-          radius={glassRadius.lozenge}
-          intensity="regular"
-          fill={theme.glass.fillStrong}
-          tintColor={theme.accents.voice.wash}
-          bordered={false}
-          style={[styles.bubble, styles.userBubble]}
-        >
-          <Text style={[styles.messageText, { color: theme.light.ink }]}>{m.content}</Text>
-        </GlassSurface>
+      )}
+      {isUser ? (
+        <View style={[styles.bubble, styles.userBubble]}>
+          <Text style={styles.userBubbleText}>{m.content}</Text>
+        </View>
       ) : m.content ? (
-        <GlassSurface
-          radius={glassRadius.squircle}
-          intensity="regular"
-          fill={theme.glass.fill}
-          bordered={false}
-          style={[styles.bubble, styles.botBubble]}
-        >
-          <MarkdownText content={m.content} color={theme.light.inkSoft} />
-        </GlassSurface>
+        <View style={[styles.bubble, styles.botBubble]}>
+          <MarkdownText content={m.content} color="#555" />
+        </View>
       ) : m.streaming ? (
-        <GlassSurface
-          radius={glassRadius.squircle}
-          intensity="regular"
-          fill={theme.glass.fill}
-          bordered={false}
-          style={[styles.bubble, styles.botBubble]}
-        >
-          <View style={styles.typing}>
-            <ActivityIndicator color={theme.accents.voice.solid} size="small" />
-          </View>
-        </GlassSurface>
+        <View style={[styles.bubble, styles.botBubble]}>
+          <ActivityIndicator color={GREEN} size="small" style={{ paddingVertical: 4 }} />
+        </View>
       ) : null}
     </View>
   );
 });
 
 export default function TutorTab() {
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
   const { session: authSession } = useAuth();
   const { session } = useActiveSession();
   const insets = useSafeAreaInsets();
@@ -136,11 +103,7 @@ export default function TutorTab() {
   const [replyUri, setReplyUri] = useState<string | null>(null);
 
   const fetchConversations = useCallback(async () => {
-    if (!authSession || !session) {
-      setConversations([]);
-      setLoading(false);
-      return;
-    }
+    if (!authSession || !session) { setConversations([]); setLoading(false); return; }
     const { data } = await supabase
       .from('conversations')
       .select('id, user_id, session_id, title, created_at, updated_at')
@@ -160,9 +123,7 @@ export default function TutorTab() {
     if (data) setMessages((data as DBChatMessage[]).map((m) => ({ id: m.id, role: m.role, content: m.content })));
   }, []);
 
-  useEffect(() => {
-    fetchConversations();
-  }, [fetchConversations, focused]);
+  useEffect(() => { fetchConversations(); }, [fetchConversations, focused]);
 
   useEffect(() => {
     if (pendingConversation) {
@@ -173,16 +134,11 @@ export default function TutorTab() {
   }, [pendingConversation, router]);
 
   useEffect(() => {
-    if (!activeId) {
-      setMessages([]);
-      return;
-    }
+    if (!activeId) { setMessages([]); return; }
     fetchMessages(activeId);
   }, [activeId, focused, fetchMessages]);
 
-  useEffect(() => {
-    scrollRef.current?.scrollToEnd({ animated: true });
-  }, [messages, status]);
+  useEffect(() => { scrollRef.current?.scrollToEnd({ animated: true }); }, [messages, status]);
 
   const createConversation = async () => {
     if (!authSession || !session) return;
@@ -200,10 +156,7 @@ export default function TutorTab() {
 
   const attachImage = async () => {
     if (!session) return;
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 0.8,
-    });
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
     if (result.canceled || result.assets.length === 0) return;
     const asset = result.assets[0];
     setAttaching(true);
@@ -215,25 +168,19 @@ export default function TutorTab() {
       setTimeout(() => setStatus(null), 3000);
     } catch (err) {
       setStatus(err instanceof Error ? err.message : 'Upload failed');
-    } finally {
-      setAttaching(false);
-    }
+    } finally { setAttaching(false); }
   };
 
   const deleteConversation = (convId: string) => {
     Alert.alert('Delete conversation', 'Delete this chat and all its messages?', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Delete',
-        style: 'destructive',
+        text: 'Delete', style: 'destructive',
         onPress: async () => {
           await supabase.from('chat_messages').delete().eq('conversation_id', convId);
           await supabase.from('conversations').delete().eq('id', convId);
           setConversations((prev) => prev.filter((c) => c.id !== convId));
-          if (activeId === convId) {
-            setActiveId(null);
-            setMessages([]);
-          }
+          if (activeId === convId) { setActiveId(null); setMessages([]); }
         },
       },
     ]);
@@ -243,43 +190,30 @@ export default function TutorTab() {
     const clean = text.trim();
     if (!clean || sending || !activeId || !session) return;
     const isFirst = messages.length === 0;
-
     setInput('');
     setSending(true);
     setStatus(null);
     setMessages((prev) => [...prev, { id: `local-${Date.now()}`, role: 'user', content: clean }]);
-
     if (isFirst) {
       const title = generateTitle(clean);
       await supabase.from('conversations').update({ title }).eq('id', activeId);
       setConversations((prev) => prev.map((c) => (c.id === activeId ? { ...c, title } : c)));
     }
-
     let fullText = '';
     setMessages((prev) => [...prev, { id: '__streaming__', role: 'assistant', content: '', streaming: true }]);
-
     try {
       await streamChat(
         { message: clean, conversation_id: activeId, session_id: session.id },
         (e) => {
-          if (e.type === 'status') {
-            setStatus(e.text);
-          } else if (e.type === 'chunk') {
-            fullText += e.text;
-            setStatus(null);
-            setMessages((prev) =>
-              prev.map((m) => (m.id === '__streaming__' ? { ...m, content: fullText } : m)),
-            );
-          } else if (e.type === 'error') {
-            throw new Error(e.error);
-          }
+          if (e.type === 'status') setStatus(e.text);
+          else if (e.type === 'chunk') { fullText += e.text; setStatus(null); setMessages((prev) => prev.map((m) => (m.id === '__streaming__' ? { ...m, content: fullText } : m))); }
+          else if (e.type === 'error') throw new Error(e.error);
         },
       );
       if (speaking && fullText.trim()) speak(fullText);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Chat failed';
       setMessages((prev) => prev.filter((m) => m.id !== '__streaming__'));
-      setStatus(msg);
+      setStatus(err instanceof Error ? err.message : 'Chat failed');
     } finally {
       setSending(false);
       setMessages((prev) => prev.map((m) => (m.id === '__streaming__' ? { ...m, streaming: false } : m)));
@@ -289,39 +223,18 @@ export default function TutorTab() {
   const sendMessage = () => sendText(input);
 
   const speak = async (text: string) => {
-    try {
-      const uri = await ttsToFile(text);
-      setReplyUri(uri);
-    } catch {
-      // TTS failure is non-fatal — text reply is already shown.
-    }
+    try { const uri = await ttsToFile(text); setReplyUri(uri); } catch { /* non-fatal */ }
   };
 
-  // Stable player: load the newest TTS uri, then play once it's ready.
-  useEffect(() => {
-    if (!replyUri) return;
-    replyPlayer.replace(replyUri);
-  }, [replyUri, replyPlayer]);
-
-  useEffect(() => {
-    if (replyUri && replyStatus.isLoaded && !replyStatus.playing) replyPlayer.play();
-  }, [replyUri, replyStatus, replyPlayer]);
+  useEffect(() => { if (!replyUri) return; replyPlayer.replace(replyUri); }, [replyUri, replyPlayer]);
+  useEffect(() => { if (replyUri && replyStatus.isLoaded && !replyStatus.playing) replyPlayer.play(); }, [replyUri, replyStatus, replyPlayer]);
 
   const startListening = async () => {
     if (sending || recording) return;
     const perm = await requestRecordingPermissionsAsync();
-    if (!perm.granted) {
-      Alert.alert('Microphone access needed', 'Enable mic permission to use the voice tutor.');
-      return;
-    }
-    try {
-      await recorder.prepareToRecordAsync();
-      recorder.record();
-      setRecording(true);
-      setStatus('Listening…');
-    } catch {
-      Alert.alert('Recording failed', 'Could not start the microphone.');
-    }
+    if (!perm.granted) { Alert.alert('Microphone access needed', 'Enable mic permission to use the voice tutor.'); return; }
+    try { await recorder.prepareToRecordAsync(); recorder.record(); setRecording(true); setStatus('Listening…'); }
+    catch { Alert.alert('Recording failed', 'Could not start the microphone.'); }
   };
 
   const stopListening = async () => {
@@ -331,41 +244,23 @@ export default function TutorTab() {
     try {
       await recorder.stop();
       const uri = recorder.uri;
-      if (!uri) {
-        setStatus('Nothing recorded');
-        return;
-      }
+      if (!uri) { setStatus('Nothing recorded'); return; }
       const transcript = await transcribeAudio(uri);
-      if (transcript.trim()) {
-        setStatus(null);
-        sendText(transcript);
-      } else {
-        setStatus('No speech heard — try again');
-      }
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : 'Transcription failed');
-    }
+      if (transcript.trim()) { setStatus(null); sendText(transcript); }
+      else setStatus('No speech heard — try again');
+    } catch (err) { setStatus(err instanceof Error ? err.message : 'Transcription failed'); }
   };
 
-  useEffect(() => {
-    if (!activeId) return;
-    replyPlayer.pause();
-    setReplyUri(null);
-  }, [activeId, replyPlayer]);
-
-  useEffect(
-    () => () => {
-      replyPlayer.pause();
-    },
-    [replyPlayer],
-  );
+  useEffect(() => { if (!activeId) return; replyPlayer.pause(); setReplyUri(null); }, [activeId, replyPlayer]);
+  useEffect(() => () => { replyPlayer.pause(); }, [replyPlayer]);
 
   const needsSession = !session;
 
   return (
-    <GlassScreen accent="voice" edges={['left', 'right']}>
+    <View style={styles.root}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={0}>
-        <View style={[styles.header, styles.column]}>
+        {/* Header */}
+        <View style={styles.header}>
           <View style={styles.headerText}>
             <Text style={styles.title}>{activeId ? 'Chat' : 'Tutor'}</Text>
             <Text style={styles.subtitle}>{session?.title ?? 'No session selected'}</Text>
@@ -373,145 +268,113 @@ export default function TutorTab() {
           <View style={styles.headerActions}>
             {activeId ? (
               <>
-                <GlassIconButton
-                  icon={AudioLines}
-                  onPress={() => router.push({ pathname: '/voice-tutor', params: { conversationId: activeId } })}
-                  accent="voice"
-                  size={40}
-                  accessibilityLabel="Open voice tutor"
-                />
-                <GlassIconButton icon={ChevronLeft} onPress={() => setActiveId(null)} accent="voice" size={40} accessibilityLabel="Back to conversations" />
+                <Pressable style={styles.headerBtn} onPress={() => router.push({ pathname: '/voice-tutor', params: { conversationId: activeId } })}>
+                  <Icon icon={AudioLines} size={20} color={GREEN} />
+                </Pressable>
+                <Pressable style={styles.headerBtn} onPress={() => setActiveId(null)}>
+                  <Icon icon={ChevronLeft} size={20} color="#999" />
+                </Pressable>
               </>
             ) : null}
-            <GlassIconButton
-              icon={Volume2}
-              onPress={() => setSpeaking((s) => !s)}
-              active={speaking}
-              accent="voice"
-              size={40}
-              accessibilityLabel={speaking ? 'Mute voice replies' : 'Enable voice replies'}
-            />
-            <GlassIconButton icon={Plus} onPress={createConversation} accessibilityLabel="New chat" accent="voice" />
+            <Pressable style={styles.headerBtn} onPress={() => setSpeaking((s) => !s)}>
+              <Icon icon={Volume2} size={20} color={speaking ? GREEN : '#CCC'} />
+            </Pressable>
+            <Pressable style={styles.headerBtn} onPress={createConversation}>
+              <Icon icon={Plus} size={20} color={GREEN} />
+            </Pressable>
           </View>
         </View>
 
         {needsSession ? (
-          <View style={[styles.center, styles.column]}>
-            <GlassCard>
-              <View style={styles.noSession}>
-                <Icon icon={MessageSquareText} size={28} color={theme.accents.voice.solid} />
-                <Text style={theme.glassType.subtitle}>Select a session first</Text>
-                <Text style={theme.glassType.body}>Pick a session from the Hub, then come back to chat with Aether.</Text>
-              </View>
-            </GlassCard>
+          <View style={styles.center}>
+            <View style={styles.emptyCard}>
+              <Icon icon={MessageSquareText} size={32} color="#CCC" />
+              <Text style={styles.emptyTitle}>Select a session first</Text>
+              <Text style={styles.emptyDesc}>Pick a session from the Hub, then come back to chat with Aether.</Text>
+            </View>
           </View>
         ) : !activeId ? (
-          /* Conversation list — mirror of the web chat page. Tap to open, trash to delete. */
-          <ScrollView
-            style={styles.flex}
-            contentContainerStyle={[styles.listContent, styles.column]}
-            showsVerticalScrollIndicator={false}
-          >
-            <Text style={styles.listOverline}>Recent Conversations</Text>
-
+          /* Conversation list */
+          <ScrollView style={styles.flex} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+            <Text style={styles.sectionLabel}>Recent Conversations</Text>
             {loading ? (
-              <ActivityIndicator color={theme.accents.voice.solid} style={styles.chipLoader} />
+              <ActivityIndicator color={GREEN} style={{ paddingVertical: 16 }} />
             ) : conversations.length === 0 ? (
               <View style={styles.emptyList}>
-                <Icon icon={Bot} size={40} color={theme.light.inkFaint} />
+                <Icon icon={Bot} size={40} color="#CCC" />
                 <Text style={styles.emptyTitle}>Start a conversation</Text>
                 <Text style={styles.emptyDesc}>Ask Aether anything about {session.subject || 'this subject'}.</Text>
-                <Pressable onPress={createConversation} style={styles.newChatBtn} accessibilityRole="button">
+                <Pressable style={styles.createChatBtn} onPress={createConversation}>
                   <Icon icon={Plus} size={16} color="#FFF" strokeWidth={2} />
-                  <Text style={styles.newChatLabel}>New Chat</Text>
+                  <Text style={styles.createChatBtnText}>New Chat</Text>
                 </Pressable>
               </View>
             ) : (
               conversations.map((c) => (
                 <View key={c.id} style={styles.convRow}>
-                  <Pressable
-                    onPress={() => setActiveId(c.id)}
-                    style={({ pressed }) => [styles.convCard, pressed && styles.pressed]}
-                    accessibilityRole="button"
-                  >
-                    <View style={[styles.convIcon, { backgroundColor: theme.accents.voice.wash }]}>
-                      <Icon icon={MessageSquareText} size={18} color={theme.accents.voice.solid} />
+                  <Pressable style={styles.convCard} onPress={() => setActiveId(c.id)}>
+                    <View style={styles.convIcon}>
+                      <Icon icon={MessageSquareText} size={18} color={GREEN} />
                     </View>
                     <View style={styles.convText}>
-                      <Text style={styles.convTitle} numberOfLines={1}>
-                        {c.title}
-                      </Text>
-                      <Text style={styles.convDate}>
-                        {new Date(c.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      </Text>
+                      <Text style={styles.convTitle} numberOfLines={1}>{c.title}</Text>
+                      <Text style={styles.convDate}>{new Date(c.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</Text>
                     </View>
-                    <Icon icon={ChevronRight} size={16} color={theme.light.inkFaint} />
+                    <Icon icon={ChevronRight} size={16} color="#CCC" />
                   </Pressable>
-                  <GlassIconButton icon={Trash2} onPress={() => deleteConversation(c.id)} accent="data" size={34} accessibilityLabel="Delete conversation" />
+                  <Pressable style={styles.deleteBtn} onPress={() => deleteConversation(c.id)} hitSlop={8}>
+                    <Icon icon={Trash2} size={14} color="#CCC" />
+                  </Pressable>
                 </View>
               ))
             )}
+            <View style={{ height: 120 }} />
           </ScrollView>
         ) : (
+          /* Active chat */
           <>
-            {/* Messages */}
             <ScrollView
               ref={scrollRef}
               style={styles.flex}
-              contentContainerStyle={[styles.messages, styles.column]}
+              contentContainerStyle={styles.messages}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
               {messages.length === 0 && !sending ? (
-                <View style={[styles.center, styles.column]}>
-                  <Icon icon={Bot} size={44} color={theme.light.inkFaint} />
+                <View style={styles.center}>
+                  <Icon icon={Bot} size={44} color="#CCC" />
                   <Text style={styles.emptyTitle}>Ask anything about {session.subject || 'this subject'}</Text>
                   <Text style={styles.emptyDesc}>Aether searches your documents and answers with citations.</Text>
                 </View>
               ) : (
-                messages.map((m) => <MessageBubble key={m.id} m={m} theme={theme} styles={styles} />)
+                messages.map((m) => <MessageBubble key={m.id} m={m} />)
               )}
               {status ? (
                 <View style={styles.statusRow}>
-                  <ActivityIndicator color={theme.accents.voice.solid} size="small" />
+                  <ActivityIndicator color={GREEN} size="small" />
                   <Text style={styles.statusText}>{status}</Text>
                 </View>
               ) : null}
             </ScrollView>
 
             {/* Composer */}
-            <View style={[styles.composerWrap, styles.column, { paddingBottom: insets.bottom + 74 }]}>
-              <GlassSurface radius={glassRadius.pill} intensity="thick" fill={theme.glass.fillStrong} bordered={false} style={styles.composer}>
-                <Pressable
-                  onPress={attachImage}
-                  disabled={sending || attaching}
-                  accessibilityRole="button"
-                  accessibilityLabel="Add an image to your knowledge base"
-                  style={({ pressed }) => [
-                    styles.attachBtn,
-                    pressed && !sending && { backgroundColor: 'rgba(124,96,228,0.2)' },
-                  ]}
-                >
-                  {attaching ? <ActivityIndicator color={theme.accents.voice.solid} size="small" /> : <Icon icon={Camera} size={18} color={theme.accents.voice.solid} strokeWidth={2} />}
+            <View style={[styles.composerWrap, { paddingBottom: insets.bottom + 90 }]}>
+              <View style={styles.composer}>
+                <Pressable style={styles.attachBtn} onPress={attachImage} disabled={sending || attaching}>
+                  {attaching ? <ActivityIndicator color={GREEN} size="small" /> : <Icon icon={Camera} size={18} color={GREEN} strokeWidth={2} />}
                 </Pressable>
                 <Pressable
+                  style={[styles.micBtn, { backgroundColor: recording ? GREEN : '#E8F0E5' }]}
                   onPressIn={startListening}
                   onPressOut={stopListening}
                   disabled={sending}
-                  accessibilityRole="button"
-                  accessibilityLabel={recording ? 'Release to send voice note' : 'Hold to talk'}
-                  accessibilityState={{ disabled: sending, busy: recording }}
-                  style={({ pressed }) => [
-                    styles.micBtn,
-                    { backgroundColor: recording ? theme.accents.data.solid : pressed ? 'rgba(124,96,228,0.2)' : 'rgba(124,96,228,0.14)' },
-                  ]}
                 >
-                  {recording ? <ActivityIndicator color="#FFF" size="small" /> : <Icon icon={Mic} size={18} color={theme.accents.voice.solid} strokeWidth={2} />}
+                  {recording ? <ActivityIndicator color="#FFF" size="small" /> : <Icon icon={Mic} size={18} color={GREEN} strokeWidth={2} />}
                 </Pressable>
                 <TextInput
                   style={styles.input}
                   placeholder="Message Aether..."
-                  placeholderTextColor={theme.light.inkFaint}
+                  placeholderTextColor="#CCC"
                   value={input}
                   onChangeText={setInput}
                   multiline
@@ -520,135 +383,73 @@ export default function TutorTab() {
                   returnKeyType="send"
                 />
                 <Pressable
+                  style={[styles.sendBtn, (!input.trim() || sending) && styles.sendDisabled]}
                   onPress={sendMessage}
                   disabled={!input.trim() || sending}
-                  accessibilityRole="button"
-                  accessibilityLabel="Send"
-                  style={({ pressed }) => [
-                    styles.sendBtn,
-                    { backgroundColor: theme.accents.voice.solid },
-                    (!input.trim() || sending) && styles.sendDisabled,
-                    pressed && styles.sendPressed,
-                  ]}
                 >
                   {sending ? <ActivityIndicator color="#FFF" size="small" /> : <Icon icon={Send} size={18} color="#FFF" strokeWidth={2} />}
                 </Pressable>
-              </GlassSurface>
+              </View>
             </View>
           </>
         )}
       </KeyboardAvoidingView>
-    </GlassScreen>
+      <BottomNav />
+    </View>
   );
 }
 
-const makeStyles = (theme: GlassTheme) => StyleSheet.create({
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#FDFBF7' },
   flex: { flex: 1 },
-  column: { width: '100%', maxWidth: 720, alignSelf: 'center' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 },
+
+  // Header
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 56, paddingBottom: 12 },
   headerText: { flex: 1, gap: 2 },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  title: { ...theme.glassType.title, fontSize: 30, fontWeight: Platform.select({ ios: '200', android: '300', default: '200' }), letterSpacing: -0.8, color: theme.light.ink },
-  subtitle: { ...theme.glassType.caption, color: theme.light.inkMuted },
-  center: { flex: 1, justifyContent: 'center', paddingHorizontal: spacing.lg },
-  noSession: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg, textAlign: 'center' },
-  listContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl, gap: spacing.md },
-  listOverline: { ...theme.glassType.overline, color: theme.light.inkMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
-  emptyList: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xl, paddingHorizontal: spacing.lg },
-  newChatBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: theme.accents.voice.solid,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: glassRadius.pill,
-    marginTop: spacing.sm,
-  },
-  newChatLabel: { color: '#FFF', fontSize: 14, fontWeight: '700' },
-  convRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  convCard: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    backgroundColor: theme.glass.fill,
-    borderRadius: glassRadius.card,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: theme.glass.borderInk,
-  },
-  pressed: { opacity: 0.7 },
-  convIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  title: { fontSize: 26, fontWeight: '700', color: '#333' },
+  subtitle: { fontSize: 12, color: '#999' },
+  headerBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F3EDE3', alignItems: 'center', justifyContent: 'center' },
+
+  // Empty states
+  emptyCard: { backgroundColor: '#FFF', borderRadius: 24, borderWidth: 1, borderColor: '#F3EDE3', padding: 32, alignItems: 'center' },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: '#333', marginTop: 12, textAlign: 'center' },
+  emptyDesc: { fontSize: 14, color: '#999', textAlign: 'center', lineHeight: 20, marginTop: 6 },
+
+  // Conversation list
+  listContent: { paddingHorizontal: 24, paddingBottom: 100 },
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, marginTop: 8 },
+  emptyList: { alignItems: 'center', paddingVertical: 40 },
+  createChatBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: GREEN, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 20, marginTop: 16 },
+  createChatBtnText: { color: '#FFF', fontWeight: '700', fontSize: 14 },
+  convRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
+  convCard: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFF', borderRadius: 20, borderWidth: 1, borderColor: '#F3EDE3', paddingHorizontal: 16, paddingVertical: 14 },
+  convIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: '#E8F0E5', alignItems: 'center', justifyContent: 'center' },
   convText: { flex: 1, gap: 2 },
-  convTitle: { ...theme.glassType.label, fontSize: 14 },
-  convDate: { ...theme.glassType.caption, fontSize: 11 },
-  chipLoader: { paddingVertical: spacing.sm, alignSelf: 'flex-start' },
-  messages: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md, gap: spacing.md },
-  bubbleRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.sm },
+  convTitle: { fontSize: 14, fontWeight: '600', color: '#333' },
+  convDate: { fontSize: 11, color: '#BBB' },
+  deleteBtn: { padding: 8 },
+
+  // Messages
+  messages: { paddingHorizontal: 24, paddingBottom: 12, gap: 12 },
+  bubbleRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
   userRow: { justifyContent: 'flex-end' },
   botRow: { justifyContent: 'flex-start' },
-  avatar: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  bubble: { maxWidth: '85%', paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
-  userBubble: {
-    borderBottomRightRadius: 6,
-  },
-  botBubble: {
-    borderBottomLeftRadius: 6,
-  },
-  messageText: { fontSize: 15, lineHeight: 23 },
-  typing: { paddingVertical: spacing.xs },
-  statusRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.xs },
-  statusText: { ...theme.glassType.caption, color: theme.light.inkMuted, flexShrink: 1 },
-  composerWrap: { paddingHorizontal: spacing.lg, paddingTop: spacing.xs },
-  composer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    paddingVertical: 6,
-    paddingLeft: spacing.sm,
-    paddingRight: 6,
-    gap: spacing.sm,
-  },
-  micBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  attachBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(124,96,228,0.14)',
-  },
-  input: {
-    flex: 1,
-    color: theme.light.ink,
-    fontSize: 15,
-    maxHeight: 120,
-    paddingTop: 8,
-    paddingBottom: 8,
-  },
-  sendBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  avatar: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#E8F0E5', alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  bubble: { maxWidth: '80%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20 },
+  userBubble: { backgroundColor: GREEN, borderBottomRightRadius: 6 },
+  botBubble: { backgroundColor: '#FFF', borderBottomLeftRadius: 6, borderWidth: 1, borderColor: '#F3EDE3' },
+  userBubbleText: { color: '#FFF', fontSize: 15, lineHeight: 22 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 4 },
+  statusText: { fontSize: 12, color: '#999', flexShrink: 1 },
+
+  // Composer
+  composerWrap: { paddingHorizontal: 24, paddingTop: 8 },
+  composer: { flexDirection: 'row', alignItems: 'flex-end', backgroundColor: '#FFF', borderRadius: 28, borderWidth: 1, borderColor: '#F3EDE3', paddingVertical: 6, paddingLeft: 8, paddingRight: 6, gap: 6 },
+  attachBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#E8F0E5', alignItems: 'center', justifyContent: 'center' },
+  micBtn: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  input: { flex: 1, color: '#333', fontSize: 15, maxHeight: 120, paddingTop: 8, paddingBottom: 8 },
+  sendBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: GREEN, alignItems: 'center', justifyContent: 'center' },
   sendDisabled: { opacity: 0.4 },
-  sendPressed: { opacity: 0.8 },
-  emptyTitle: { ...theme.glassType.subtitle, fontSize: 16, marginTop: spacing.md, textAlign: 'center' },
-  emptyDesc: { ...theme.glassType.body, color: theme.light.inkMuted, marginTop: 4, textAlign: 'center' },
 });

@@ -13,7 +13,7 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="login" />
-            <Stack.Screen name="auth" />
+            <Stack.Screen name="auth" options={{ presentation: 'transparentModal', animation: 'slide_from_bottom' }} />
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="voice-tutor" />

@@ -345,41 +345,8 @@ export async function uploadKnowledgeImage(uri: string, name: string, mime: stri
   return { doc_id: json.doc_id, filename: json.filename };
 }
 
-// --- Subscription ---
-
-export interface SubscriptionInfo {
-  tier: string;
-  status: string | null;
-  currentPeriodEnd: string | null;
-}
-
-export async function getSubscription(): Promise<SubscriptionInfo> {
-  const res = await apiFetch('/api/stripe/subscription');
-  if (!res.ok) throw new Error(`Subscription failed: ${res.status}`);
-  return res.json();
-}
-
-export async function createCheckoutSession(tier: 'pro' | 'unlimited'): Promise<string> {
-  const res = await apiFetch('/api/stripe/checkout', {
-    method: 'POST',
-    body: JSON.stringify({ tier }),
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    throw new Error(body?.error ?? `Checkout failed: ${res.status}`);
-  }
-  const data = await res.json();
-  if (!data.url) throw new Error('Checkout session missing URL');
-  return data.url;
-}
-
-export async function createPortalSession(): Promise<string> {
-  const res = await apiFetch('/api/stripe/portal', { method: 'POST' });
-  if (!res.ok) throw new Error(`Portal failed: ${res.status}`);
-  const data = await res.json();
-  if (!data.url) throw new Error('Portal session missing URL');
-  return data.url;
-}
+// --- Subscription (RevenueCat) ---
+// Handled via useRevenueCat hook and src/lib/revenuecat.ts — no server-side Stripe needed.
 
 // --- Chat (SSE) ---
 

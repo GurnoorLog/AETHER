@@ -72,4 +72,7 @@ export {
   Languages,
   ScrollText,
   TrendingUp,
+  Heart,
+  Leaf,
+  ArrowUpRight,
 } from 'lucide-react-native';

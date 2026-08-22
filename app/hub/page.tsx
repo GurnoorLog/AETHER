@@ -73,12 +73,18 @@ function extractSubjectColor(subject: string): string {
   return colors[subject] || "#FDE047";
 }
 
-function Icon({ d, className }: { d: string; className?: string }) {
-  return (
-    <svg className={className || "w-5 h-5"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-      <path strokeLinecap="round" strokeLinejoin="round" d={d} />
-    </svg>
-  );
+const STAT_COLORS = [
+  { bg: "#F0EEFA", icon: "#7C69A2", value: "#7C69A2" },
+  { bg: "#FFF5E6", icon: "#EAB308", value: "#EAB308" },
+  { bg: "#EBF1FF", icon: "#6366F1", value: "#6366F1" },
+  { bg: "#EBF7F2", icon: "#6B8E61", value: "#6B8E61" },
+];
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
 }
 
 export default function HubPage() {
@@ -89,7 +95,6 @@ export default function HubPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
-  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchHubData = useCallback(async () => {
     if (!user) return;
@@ -126,17 +131,18 @@ export default function HubPage() {
       filter === "all" ||
       (filter === "active" && s.progress < 100) ||
       (filter === "completed" && s.progress >= 100);
-    const matchesSearch =
-      !searchQuery ||
-      s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
+    return matchesFilter;
   });
 
   const totalMastery =
     subjects.length > 0
       ? Math.round(subjects.reduce((acc, s) => acc + s.mastery_level, 0) / subjects.length)
       : 0;
+
+  const thisWeekCount = conversations.filter((c) => {
+    const daysSince = (Date.now() - new Date(c.updated_at || c.created_at).getTime()) / 86400000;
+    return daysSince <= 7;
+  }).length;
 
   const handleResume = (sessionSlug: string) => {
     router.push(`/${sessionSlug}/dashboard`);
@@ -146,7 +152,6 @@ export default function HubPage() {
     e.stopPropagation();
     if (!user) return;
     const supabase = createClient();
-    // Cascade-delete all session-related data (FK-safe order)
     const { data: convs } = await supabase.from("conversations").select("id").eq("session_id", sessionId);
     if (convs) {
       for (const conv of convs) {
@@ -167,218 +172,290 @@ export default function HubPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-deep-onyx flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FDFBF7" }}>
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-cyber-yellow/40 border-t-cyber-yellow rounded-full animate-spin" />
-          <span className="text-white/30 text-xs font-medium tracking-wide">Loading</span>
+          <div className="w-5 h-5 border-2 border-[#6B8E61]/40 border-t-[#6B8E61] rounded-full animate-spin" />
+          <span className="text-[#999] text-xs font-medium tracking-wide">Loading</span>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="h-screen bg-deep-onyx flex flex-col overflow-hidden">
+  const firstName = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
 
-      {/* Top Nav */}
-      <nav className="fixed top-0 left-0 right-0 h-16 px-8 flex items-center justify-between z-50 glass border-b border-white/[0.04]">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-cyber-yellow rounded-[10px] flex items-center justify-center">
-            <svg className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-            </svg>
+  const stats = [
+    { label: "Sessions", value: conversations.length, iconBg: STAT_COLORS[0].bg, iconColor: STAT_COLORS[0].icon, valueColor: STAT_COLORS[0].value, icon: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" },
+    { label: "Mastery", value: `${totalMastery}%`, iconBg: STAT_COLORS[1].bg, iconColor: STAT_COLORS[1].icon, valueColor: STAT_COLORS[1].value, icon: "M12 4.5v15m7.5-7.5h-15" },
+    { label: "Subjects", value: subjects.length, iconBg: STAT_COLORS[2].bg, iconColor: STAT_COLORS[2].icon, valueColor: STAT_COLORS[2].value, icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" },
+    { label: "This week", value: thisWeekCount, iconBg: STAT_COLORS[3].bg, iconColor: STAT_COLORS[3].icon, valueColor: STAT_COLORS[3].value, icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
+  ];
+
+  return (
+    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#FDFBF7" }}>
+
+      {/* Background illustration */}
+      <div
+        className="absolute top-0 left-0 right-0 z-0"
+        style={{
+          height: 420,
+          backgroundImage: "url('https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/uploads/c9a76f2a-6a29-4173-94bf-f86d6b31e11e/1787316199228-51b2f98a/Gemini_Generated_Image_252l7z252l7z252l.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+        }}
+      />
+
+      {/* Main scrollable area */}
+      <main className="flex-1 overflow-y-auto relative z-10">
+
+        {/* Greeting */}
+        <div className="px-6 pt-16 relative">
+          <h1 className="text-[28px] font-bold text-[#333] tracking-tight leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            {getGreeting()},<br />
+            <span style={{ color: "#6B8E61" }}>{firstName} 👋</span>
+          </h1>
+          <p className="text-[15px] mt-1 opacity-80" style={{ color: "#666" }}>
+            Ready to learn something amazing today?
+          </p>
+
+          {/* Avatar */}
+          <div className="absolute top-12 right-6 w-12 h-12 rounded-full border-2 border-white shadow-sm overflow-hidden">
+            <div className="w-full h-full rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: "#F9F6F0" }}>
+              🐨
+            </div>
           </div>
-          <span className="text-[15px] font-bold tracking-[-0.03em] text-white/90">Aether</span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        {/* Floating buttons area */}
+        <div className="relative h-[180px] px-6">
+          {/* Heart bubble */}
+          <div className="absolute left-1/2 top-[15%] -translate-x-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+            <svg className="w-5 h-5" fill="#6B8E61" viewBox="0 0 24 24">
+              <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/[0.03] border border-white/[0.06] rounded-full py-2 pl-10 pr-4 text-xs text-white placeholder-white/25 focus:outline-none focus:border-white/[0.12] w-44 transition-colors"
-            />
           </div>
-
-
-
+          {/* New button */}
           <button
             onClick={() => setShowModal(true)}
-            className="btn-primary py-2 px-5 text-[11px] font-bold uppercase tracking-wider"
+            className="absolute right-6 top-[20%] h-10 px-4 rounded-xl flex items-center gap-1.5 shadow-lg text-white font-bold text-[15px]"
+            style={{ backgroundColor: "#6B8E61", transition: "transform 0.2s, opacity 0.2s" }}
+            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
-            New Session
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            New
           </button>
         </div>
-      </nav>
 
-      {/* Page Content */}
-      <main className="flex-1 mt-16 overflow-y-auto">
-
-        {/* Hero */}
-        <section className="relative min-h-[34vh] liquid-wave flex flex-col items-center justify-center text-center px-6">
-          {/* Subtle dot pattern */}
-          <div className="absolute inset-0 noise-texture" />
-          <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-black/[0.03] rounded-full blur-3xl" />
-          <div className="absolute bottom-[-40px] right-[8%] w-56 h-56 bg-black/[0.03] rounded-full blur-2xl" />
-
-          <div className="relative z-10">
-            <h1 className="heading-display text-black mb-3 text-2xl sm:text-3xl lg:text-4xl">Your Learning Hub</h1>
-            <p className="text-base font-medium text-black/50 mb-8 max-w-md mx-auto">All your sessions, organized and ready.</p>
-
-            <div className="flex items-center justify-center gap-3">
-              <div className="bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-semibold tracking-wide">
-                {conversations.length} Active Sessions
-              </div>
-              <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-4 py-1.5 rounded-full text-[10px] font-semibold tracking-wide text-black/70">
-                {totalMastery}% Mastery
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Unified Sessions Section — premium merge of Featured + All */}
-        <section className="-mt-10 px-4 sm:px-6 lg:px-12 relative z-20 pb-16">
-          <div className="flex items-center justify-between mb-6 pl-1">
-            <div className="flex items-center gap-3">
-              <div className="w-1.5 h-6 bg-cyber-yellow rounded-full" />
-              <h2 className="text-lg font-black tracking-tight">Your Sessions</h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-white/[0.03] rounded-full p-0.5 flex">
-                {(["all", "active", "completed"] as const).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 ${
-                      filter === f
-                        ? "bg-cyber-yellow text-black"
-                        : "text-white/30 hover:text-white/60"
-                    }`}
-                  >
-                    {f === "all" ? "All" : f === "active" ? "Active" : "Done"}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-            {/* Create Card (always first) */}
-            <div
-              onClick={() => setShowModal(true)}
-              className="glass-card rounded-[24px] p-5 sm:p-7 flex flex-col items-center justify-center text-center group cursor-pointer border-dashed border-white/[0.06] hover:border-white/[0.12] min-h-[220px]"
-            >
-              <div className="w-14 h-14 bg-cyber-yellow/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-cyber-yellow/15 transition-all group-hover:scale-110">
-                <svg className="w-6 h-6 text-cyber-yellow/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-bold mb-1">New Session</h3>
-              <p className="text-[10px] text-white/30 uppercase tracking-widest">Start learning</p>
-            </div>
-
-            {filteredSessions.length === 0 ? (
-              <div className="glass-card rounded-[24px] p-6 sm:p-8 flex flex-col items-center justify-center text-center lg:col-span-2 min-h-[220px]">
-                <p className="text-white/25 text-sm">
-                  {filter === "all" ? "No sessions yet. Create one!" : `No ${filter} sessions.`}
-                </p>
-              </div>
-            ) : (
-              filteredSessions.map((session) => (
+        {/* White card area */}
+        <div
+          className="relative z-20 -mt-8 mx-0 px-6 pt-10 pb-6 rounded-t-[40px]"
+          style={{
+            backgroundColor: "#fff",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.04)",
+          }}
+        >
+          {/* Stat cards */}
+          <div className="grid grid-cols-4 gap-3">
+            {stats.map((stat, i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-3 p-3.5 rounded-[20px]"
+                style={{ border: "1.5px solid #FDFBF7", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
+              >
                 <div
-                  key={session.id}
-                  onClick={() => session.slug && handleResume(session.slug)}
-                  className="glass-card rounded-[24px] p-4 sm:p-6 group cursor-pointer relative overflow-hidden hover:border-cyber-yellow/20 transition-all"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: stat.iconBg }}
                 >
-                  <div
-                    className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style={{ background: `radial-gradient(circle at 30% 30%, ${extractSubjectColor(session.subject)}, transparent 70%)` }}
-                  />
-                  <button
-                    onClick={(e) => handleDeleteSession(session.id, e)}
-                    className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer z-10"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                    </svg>
-                  </button>
-
-                  <div className="flex items-center gap-3 mb-5">
-                    <span className="text-2xl">{getSubjectEmoji(session.subject)}</span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider ${
-                      session.progress >= 100
-                        ? "bg-green-500/15 text-green-400"
-                        : "bg-white/[0.05] text-white/40"
-                    }`}>
-                      {session.progress >= 100 ? "Done" : "Active"}
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-bold mb-1 leading-tight">{session.title}</h3>
-                  <p className="text-[11px] text-white/30 mb-5">{timeAgo(session.updated_at || session.created_at)}</p>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-[10px] font-medium text-white/25 uppercase tracking-wider">
-                      <span>Progress</span>
-                      <span className="text-white/40 font-bold">{session.progress}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{
-                          width: `${session.progress}%`,
-                          backgroundColor: extractSubjectColor(session.subject),
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="pt-4 mt-4 border-t border-white/[0.04] flex items-center justify-between">
-                    <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest group-hover:text-cyber-yellow/60 transition-colors">
-                      Resume →
-                    </span>
-                  </div>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={stat.iconColor} strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={stat.icon} />
+                  </svg>
                 </div>
-              ))
-            )}
-          </div>
-        </section>
-
-        {/* Stats */}
-        <section className="px-4 sm:px-6 lg:px-12 pb-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25", value: conversations.length, label: "Sessions" },
-              { icon: "M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342", value: subjects.length, label: "Subjects" },
-              { icon: "M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5", value: `${totalMastery}%`, label: "Mastery" },
-              { icon: "M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z", value: conversations.filter((c) => {
-                const daysSince = (Date.now() - new Date(c.updated_at || c.created_at).getTime()) / 86400000;
-                return daysSince <= 7;
-              }).length, label: "This Week" },
-            ].map((stat, i) => (
-              <div key={i} className="glass-card rounded-[20px] p-4 sm:p-6 text-center">
-                <Icon d={stat.icon} className="w-5 h-5 text-white/20 mx-auto mb-3" />
-                <p className="text-2xl font-bold tracking-tight">{stat.value}</p>
-                <p className="label-micro text-white/20 mt-1">{stat.label}</p>
+                <div>
+                  <p className="text-[24px] font-bold leading-none" style={{ color: stat.valueColor }}>{stat.value}</p>
+                  <p className="text-[11px] font-medium mt-1.5" style={{ color: "#999" }}>{stat.label}</p>
+                </div>
               </div>
             ))}
           </div>
-        </section>
 
-        {/* Footer */}
-        <div className="px-4 sm:px-6 lg:px-12 py-8 border-t border-white/[0.04]">
-          <div className="flex items-center justify-between opacity-20">
-            <span className="text-[9px] font-medium tracking-wider uppercase text-white/50">Powering the future of learning</span>
-            <div className="flex gap-8">
-              {["OpenAI", "Notion", "Figma"].map((name) => (
-                <span key={name} className="text-[10px] font-semibold tracking-tight text-white/40">{name}</span>
+          {/* Your Sessions */}
+          <div className="mt-10">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#6B8E61" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+                <h2 className="text-[18px] font-bold" style={{ color: "#333" }}>Your Sessions</h2>
+              </div>
+              <button className="flex items-center gap-1.5 text-[13px] font-bold" style={{ color: "#6B8E61" }}>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                View calendar
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2 mb-6">
+              {(["all", "active", "completed"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className="h-9 px-6 rounded-[18px] text-[14px] font-bold transition-colors"
+                  style={
+                    filter === f
+                      ? { backgroundColor: "#F3EDE3", color: "#6B8E61" }
+                      : { color: "#999" }
+                  }
+                >
+                  {f === "all" ? "All" : f === "active" ? "Active" : "Done"}
+                </button>
               ))}
             </div>
+
+            {/* Sessions list or empty state */}
+            {filteredSessions.length === 0 ? (
+              <div
+                className="rounded-[32px] p-8 flex flex-col items-center text-center relative"
+                style={{ backgroundColor: "#fff", border: "1px solid #F3EDE3" }}
+              >
+                {/* Empty state illustration */}
+                <div className="mb-6 flex justify-center w-full relative">
+                  <div
+                    className="w-[150px] h-[150px] rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#F9F6F0" }}
+                  >
+                    <span className="text-[60px]">🐨</span>
+                  </div>
+                  {/* Sparkles */}
+                  <svg className="absolute top-4 right-16 w-5 h-5 fill-[#FAD59B]" viewBox="0 0 24 24">
+                    <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
+                  </svg>
+                  <svg className="absolute top-10 left-16 w-3.5 h-3.5 fill-[#FAD59B]" viewBox="0 0 24 24">
+                    <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
+                  </svg>
+                  <svg className="absolute bottom-10 right-12 w-3.5 h-3.5 fill-[#FAD59B]" viewBox="0 0 24 24">
+                    <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold mb-2" style={{ color: "#333" }}>No sessions yet</h3>
+                <p className="text-[14px] leading-relaxed max-w-[260px] mb-8 opacity-80" style={{ color: "#666" }}>
+                  Tap New to start your first learning session and I&apos;ll build a personalized path just for you.
+                </p>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="w-full h-[58px] rounded-[29px] flex items-center justify-center gap-2 text-white font-bold text-[16px] shadow-lg"
+                  style={{ backgroundColor: "#6B8E61", boxShadow: "0 8px 20px rgba(107,142,97,0.2)" }}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  Create your first session
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredSessions.map((session) => (
+                  <div
+                    key={session.id}
+                    onClick={() => session.slug && handleResume(session.slug)}
+                    className="rounded-[24px] p-4 group cursor-pointer relative overflow-hidden transition-all"
+                    style={{ backgroundColor: "#fff", border: "1px solid #F3EDE3" }}
+                  >
+                    <div
+                      className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                      style={{ background: `radial-gradient(circle at 30% 30%, ${extractSubjectColor(session.subject)}, transparent 70%)` }}
+                    />
+                    <button
+                      onClick={(e) => handleDeleteSession(session.id, e)}
+                      className="absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-400 transition-all cursor-pointer z-10"
+                      style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                      </svg>
+                    </button>
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-2xl">{getSubjectEmoji(session.subject)}</span>
+                      <span
+                        className="px-2.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider"
+                        style={
+                          session.progress >= 100
+                            ? { backgroundColor: "rgba(34,197,94,0.1)", color: "#22c55e" }
+                            : { backgroundColor: "rgba(0,0,0,0.04)", color: "#999" }
+                        }
+                      >
+                        {session.progress >= 100 ? "Done" : "Active"}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-bold mb-1 leading-tight" style={{ color: "#333" }}>{session.title}</h3>
+                    <p className="text-[11px] mb-3" style={{ color: "#999" }}>{timeAgo(session.updated_at || session.created_at)}</p>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[10px] font-medium uppercase tracking-wider" style={{ color: "#bbb" }}>
+                        <span>Progress</span>
+                        <span className="font-bold" style={{ color: "#999" }}>{session.progress}%</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
+                        <div
+                          className="h-full rounded-full transition-all duration-700"
+                          style={{ width: `${session.progress}%`, backgroundColor: extractSubjectColor(session.subject) }}
+                        />
+                      </div>
+                    </div>
+                    <div className="pt-3 mt-3 flex items-center justify-between" style={{ borderTop: "1px solid #F3EDE3" }}>
+                      <span className="text-[9px] font-bold uppercase tracking-widest group-hover:opacity-100 transition-opacity" style={{ color: "#6B8E61", opacity: 0.5 }}>
+                        Resume →
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
+
+        <div className="h-24" />
       </main>
+
+      {/* Bottom Nav */}
+      <footer className="shrink-0 z-40 bg-white border-t px-6 pb-2" style={{ borderColor: "#F3EDE3" }}>
+        <nav className="flex justify-between items-center h-[72px]">
+          {[
+            { label: "Hub", icon: "M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25", active: true },
+            { label: "Subjects", icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" },
+            { label: "Sessions", icon: "M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" },
+            { label: "Progress", icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" },
+            { label: "More", icon: "M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" },
+          ].map((item) => (
+            <button
+              key={item.label}
+              className="flex flex-col items-center gap-1.5"
+            >
+              {item.active ? (
+                <div className="px-4 py-1.5 rounded-full" style={{ backgroundColor: "#E8F0E5" }}>
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#6B8E61" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                  </svg>
+                </div>
+              ) : (
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#999" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                </svg>
+              )}
+              <span
+                className="text-[11px] font-bold"
+                style={{ color: item.active ? "#6B8E61" : "#999" }}
+              >
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </nav>
+        {/* Home indicator */}
+        <div className="w-[134px] h-[5px] rounded-full mx-auto mb-2" style={{ backgroundColor: "rgba(0,0,0,0.1)" }} />
+      </footer>
 
       <CreateSessionModal
         open={showModal}

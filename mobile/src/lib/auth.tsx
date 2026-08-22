@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { configureRevenueCat, identifyUser } from '@/lib/revenuecat';
 import type { Session } from '@supabase/supabase-js';
 
 export const SITE_URL = 'https://aether-sooty-one.vercel.app';
@@ -12,12 +13,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    configureRevenueCat();
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
+      if (data.session?.user?.id) identifyUser(data.session.user.id);
       setLoading(false);
     });
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
+      if (s?.user?.id) identifyUser(s.user.id);
+    });
 
     return () => {
       sub.subscription.unsubscribe();

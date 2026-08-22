@@ -1,268 +1,365 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { getProgress, type ProgressReport } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { useActiveSession } from '@/lib/activeSession';
-import { glassRadius, spacing, useTheme, type GlassTheme } from '@/theme';
-import { GlassCard } from '@/components/glass/GlassCard';
-import { GlassScreen } from '@/components/glass/GlassScreen';
-import { GlassStat } from '@/components/glass/GlassStat';
 import { Icon } from '@/components/glass/Icon';
-import { Activity, Check, Clock, Rocket, Target, Trophy } from '@/components/glass/icons';
+import { BottomNav } from '@/components/BottomNav';
+import {
+  BookOpen,
+  Check,
+  FileText,
+  GraduationCap,
+  Lock,
+  Target,
+  TrendingUp,
+} from '@/components/glass/icons';
 
-export default function ProgressScreen() {
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
+const GREEN = '#6B8E61';
+const RED = '#C05050';
+const PASS_SCORE = 70;
+
+interface ModuleRow {
+  id: string;
+  title: string;
+  module_index: number;
+  status: string | null;
+  completed_at: string | null;
+}
+
+interface QuizRow {
+  id: string;
+  title: string;
+  score: number | null;
+  total_questions: number | null;
+  completed: boolean | null;
+  created_at: string;
+}
+
+export default function ProgressTab() {
   const { session: authSession } = useAuth();
   const { session } = useActiveSession();
-  const [data, setData] = useState<ProgressReport | null>(null);
+  const [modules, setModules] = useState<ModuleRow[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchProgress = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     if (!authSession || !session) {
       setLoading(false);
       return;
     }
-    try {
-      setData(await getProgress(session.id));
-    } catch {
-      // keep data null; UI falls back to zeros
-    }
+    setLoading(true);
+    const [modulesRes, quizzesRes] = await Promise.all([
+      supabase
+        .from('session_roadmap_modules')
+        .select('id, title, module_index, status, completed_at')
+        .eq('session_id', session.id)
+        .eq('user_id', authSession.user.id)
+        .order('module_index', { ascending: true }),
+      supabase
+        .from('session_quizzes')
+        .select('id, title, score, total_questions, completed, created_at')
+        .eq('session_id', session.id)
+        .eq('user_id', authSession.user.id)
+        .order('created_at', { ascending: false }),
+    ]);
+    if (modulesRes.data) setModules(modulesRes.data as ModuleRow[]);
+    if (quizzesRes.data) setQuizzes(quizzesRes.data as QuizRow[]);
     setLoading(false);
   }, [authSession, session]);
 
   useEffect(() => {
-    fetchProgress();
-  }, [fetchProgress]);
+    fetchData();
+  }, [fetchData]);
 
-  const avgMastery = data?.avgMastery ?? 0;
-  const BAR_DATA = data?.BAR_DATA ?? [
-    { day: 'MON', height: 0, peak: false },
-    { day: 'TUE', height: 0, peak: false },
-    { day: 'WED', height: 0, peak: false },
-    { day: 'THU', height: 0, peak: false },
-    { day: 'FRI', height: 0, peak: false },
-    { day: 'SAT', height: 0, peak: false },
-    { day: 'SUN', height: 0, peak: false },
-  ];
-  const maxBar = Math.max(...BAR_DATA.map((b) => b.height), 1);
+  const completedModules = modules.filter((m) => m.status === 'completed').length;
+  const takenQuizzes = quizzes.filter((q) => q.completed);
+  const avgScore =
+    takenQuizzes.length > 0
+      ? Math.round(
+          takenQuizzes.reduce((a, q) => a + (q.score ?? 0), 0) / takenQuizzes.length,
+        )
+      : 0;
+
+  if (!session) {
+    return (
+      <View style={styles.root}>
+        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>Progress</Text>
+          <View style={styles.emptyCard}>
+            <View style={styles.emptyIcon}>
+              <Icon icon={Target} size={28} color="#CCC" />
+            </View>
+            <Text style={styles.emptyTitle}>No active session</Text>
+            <Text style={styles.emptyDesc}>
+              Select a session from the Hub to see your progress here.
+            </Text>
+          </View>
+          <View style={{ height: 100 }} />
+        </ScrollView>
+        <BottomNav />
+      </View>
+    );
+  }
 
   return (
-    <GlassScreen scroll accent="home">
-      {/* Gradient hero */}
-      <View style={styles.hero}>
-        <LinearGradient
-          colors={theme.accents.home.gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.heroFill}
-        />
-        <View style={styles.heroIcon}>
-          <Icon icon={Rocket} size={20} color="#8E77E6" strokeWidth={2} />
-        </View>
-        <View style={styles.heroText}>
-          <Text style={styles.heroEyebrow}>PROGRESS CHECK-IN</Text>
-          <Text style={styles.heroTitle} numberOfLines={1}>
-            {session?.title || 'Your Session'}
-          </Text>
-        </View>
-        <View style={styles.heroScore}>
-          <Text style={styles.heroScoreValue}>{avgMastery}%</Text>
-          <Text style={styles.heroScoreLabel}>MASTERY</Text>
-        </View>
-      </View>
+    <View style={styles.root}>
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Progress</Text>
+        <Text style={styles.subtitle} numberOfLines={1}>{session.title}</Text>
 
-      {loading ? (
-        <GlassCard>
-          <View style={styles.loadingRow}>
-            <ActivityIndicator color={theme.accents.home.solid} size="small" />
-            <Text style={theme.glassType.body}>Analyzing your progress...</Text>
+        <View style={styles.overviewCard}>
+          <View style={styles.overviewRow}>
+            <View style={styles.overviewItem}>
+              <View style={[styles.overviewIconWrap, { backgroundColor: '#F0EEFA' }]}>
+                <Icon icon={GraduationCap} size={20} color="#7C69A2" />
+              </View>
+              <Text style={[styles.overviewValue, { color: '#7C69A2' }]}>
+                {loading ? '–' : `${completedModules}/${modules.length}`}
+              </Text>
+              <Text style={styles.overviewLabel}>Modules</Text>
+            </View>
+            <View style={styles.overviewDivider} />
+            <View style={styles.overviewItem}>
+              <View style={[styles.overviewIconWrap, { backgroundColor: '#FFF5E6' }]}>
+                <Icon icon={FileText} size={20} color="#EAB308" />
+              </View>
+              <Text style={[styles.overviewValue, { color: '#EAB308' }]}>
+                {loading ? '–' : takenQuizzes.length}
+              </Text>
+              <Text style={styles.overviewLabel}>Quizzes Taken</Text>
+            </View>
+            <View style={styles.overviewDivider} />
+            <View style={styles.overviewItem}>
+              <View style={[styles.overviewIconWrap, { backgroundColor: '#E8F0E5' }]}>
+                <Icon icon={TrendingUp} size={20} color={GREEN} />
+              </View>
+              <Text style={[styles.overviewValue, { color: GREEN }]}>
+                {loading ? '–' : `${avgScore}%`}
+              </Text>
+              <Text style={styles.overviewLabel}>Avg Score</Text>
+            </View>
           </View>
-        </GlassCard>
-      ) : (
-        <>
-          {/* Mastery + streak row */}
-          <View style={styles.statsRow}>
-            <GlassCard style={styles.statCard}>
-              <GlassStat value={`${avgMastery}%`} label="Mastery" accent="home" size="md" />
-            </GlassCard>
-            <GlassCard style={styles.statCard}>
-              <GlassStat value={String(data?.accuracyStreak ?? 0)} label="Day Streak" accent="audio" size="md" />
-            </GlassCard>
-            <GlassCard style={styles.statCard}>
-              <GlassStat value={String(data?.totalXP ?? 0)} label="Total XP" accent="vocab" size="md" />
-            </GlassCard>
-          </View>
+        </View>
 
-          {/* Week bars */}
-          <GlassCard>
-            <Text style={styles.cardLabel}>ACTIVITY THIS WEEK</Text>
-            <View style={styles.bars}>
-              {BAR_DATA.map((b) => (
-                <View key={b.day} style={styles.barCol}>
-                  <View style={styles.barSlot}>
+        <Text style={styles.sectionTitle}>Module Progress</Text>
+        {loading ? (
+          <View style={styles.card}>
+            <Text style={styles.emptyTextInline}>Loading your progress...</Text>
+          </View>
+        ) : modules.length === 0 ? (
+          <View style={styles.card}>
+            <Text style={styles.emptyTextInline}>
+              No modules yet. Create a session from the Hub to start tracking.
+            </Text>
+          </View>
+        ) : (
+          modules.map((mod) => {
+            const isCompleted = mod.status === 'completed';
+            const isCurrent = mod.status === 'current';
+            const statusLabel = isCompleted ? 'COMPLETED' : isCurrent ? 'CURRENT' : 'LOCKED';
+            const pct = isCompleted ? 100 : 0;
+            return (
+              <View key={mod.id} style={styles.card}>
+                <View style={styles.moduleTop}>
+                  <View
+                    style={[
+                      styles.moduleDot,
+                      isCompleted && styles.moduleDotDone,
+                      !isCompleted && !isCurrent && styles.moduleDotLocked,
+                    ]}
+                  >
+                    {isCompleted ? (
+                      <Icon icon={Check} size={14} color="#FFF" strokeWidth={3} />
+                    ) : !isCurrent ? (
+                      <Icon icon={Lock} size={13} color="#CCC" />
+                    ) : null}
+                  </View>
+                  <Text style={[styles.moduleTitle, isCurrent && { color: GREEN }]} numberOfLines={2}>
+                    {`Module ${mod.module_index + 1} · ${mod.title}`}
+                  </Text>
+                  <View
+                    style={[
+                      styles.statusPill,
+                      isCompleted && styles.statusPillDone,
+                      isCurrent && styles.statusPillCurrent,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusPillText,
+                        isCompleted && { color: GREEN },
+                        isCurrent && { color: '#B08D3E' },
+                      ]}
+                    >
+                      {statusLabel}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.track}>
+                  <View
+                    style={[
+                      styles.trackFill,
+                      { width: `${pct}%` },
+                      !isCompleted && !isCurrent && { backgroundColor: '#DDD5C7' },
+                    ]}
+                  />
+                </View>
+                {isCompleted && mod.completed_at ? (
+                  <Text style={styles.moduleMeta}>
+                    Completed {new Date(mod.completed_at).toLocaleDateString()}
+                  </Text>
+                ) : isCurrent ? (
+                  <Text style={styles.moduleMeta}>In progress — keep going!</Text>
+                ) : (
+                  <Text style={styles.moduleMeta}>Finish earlier modules to unlock</Text>
+                )}
+              </View>
+            );
+          })
+        )}
+
+        <Text style={styles.sectionTitle}>Quiz History</Text>
+        {loading ? null : quizzes.length === 0 ? (
+          <View style={styles.card}>
+            <View style={styles.quizEmptyIconWrap}>
+              <Icon icon={BookOpen} size={22} color="#CCC" />
+            </View>
+            <Text style={styles.emptyTextInline}>
+              No quizzes yet. Generate one from the Quizzes tab to test yourself.
+            </Text>
+          </View>
+        ) : (
+          quizzes.slice(0, 10).map((quiz) => {
+            const passed = quiz.completed && (quiz.score ?? 0) >= PASS_SCORE;
+            return (
+              <View key={quiz.id} style={styles.card}>
+                <View style={styles.quizTop}>
+                  <Text style={styles.quizTitle} numberOfLines={2}>{quiz.title}</Text>
+                  {quiz.completed ? (
                     <View
                       style={[
-                        styles.bar,
-                        {
-                          height: Math.max(6, (b.height / maxBar) * 80),
-                          backgroundColor: b.peak ? theme.accents.home.solid : 'rgba(124,96,228,0.25)',
-                        },
+                        styles.scoreBadge,
+                        { backgroundColor: passed ? '#E8F0E5' : '#F3E8E8' },
                       ]}
-                    />
-                  </View>
-                  <Text style={[styles.barDay, b.peak && { color: theme.accents.home.solid }]}>{b.day}</Text>
+                    >
+                      <Text style={[styles.scoreBadgeText, { color: passed ? GREEN : RED }]}>
+                        {quiz.score ?? 0}%
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={[styles.scoreBadge, { backgroundColor: '#F3EDE3' }]}>
+                      <Text style={[styles.scoreBadgeText, { color: '#999' }]}>—</Text>
+                    </View>
+                  )}
                 </View>
-              ))}
-            </View>
-          </GlassCard>
-
-          {/* Stat grid */}
-          <View style={styles.statsRow}>
-            <GlassCard style={styles.statCard}>
-              <View style={styles.miniStat}>
-                <Icon icon={Target} size={16} color={theme.accents.home.solid} />
-                <Text style={styles.miniValue}>{data?.conceptsLearned ?? 0}</Text>
-                <Text style={styles.miniLabel}>Concepts</Text>
+                <Text style={styles.quizMeta}>
+                  {new Date(quiz.created_at).toLocaleDateString()}
+                  {' · '}
+                  {quiz.total_questions ?? 0} questions
+                  {quiz.completed ? (passed ? ' · Passed' : ' · Below passing') : ' · Not taken'}
+                </Text>
               </View>
-            </GlassCard>
-            <GlassCard style={styles.statCard}>
-              <View style={styles.miniStat}>
-                <Icon icon={Clock} size={16} color={theme.accents.field.solid} />
-                <Text style={styles.miniValue}>{data?.studyHours ?? 0}h</Text>
-                <Text style={styles.miniLabel}>Studied</Text>
-              </View>
-            </GlassCard>
-            <GlassCard style={styles.statCard}>
-              <View style={styles.miniStat}>
-                <Icon icon={Activity} size={16} color={theme.accents.audio.solid} />
-                <Text style={styles.miniValue}>{data?.level ?? 1}</Text>
-                <Text style={styles.miniLabel}>Level</Text>
-              </View>
-            </GlassCard>
-          </View>
+            );
+          })
+        )}
 
-          {/* Strengths / weaknesses */}
-          {(data?.strengths?.length ?? 0) > 0 ? (
-            <GlassCard>
-              <Text style={styles.cardLabel}>STRENGTHS</Text>
-              {data!.strengths.map((s) => (
-                <View key={s.name} style={styles.barRow}>
-                  <Text style={styles.barLabel} numberOfLines={1}>{s.name}</Text>
-                  <View style={styles.barTrack}>
-                    <View style={[styles.barFill, { width: `${Math.min(s.mastery, 100)}%`, backgroundColor: theme.accents.audio.solid }]} />
-                  </View>
-                  <Text style={styles.barPct}>{Math.round(s.mastery)}%</Text>
-                </View>
-              ))}
-            </GlassCard>
-          ) : null}
+        <View style={{ height: 100 }} />
+      </ScrollView>
 
-          {(data?.weaknesses?.length ?? 0) > 0 ? (
-            <GlassCard>
-              <Text style={styles.cardLabel}>TO REVIEW</Text>
-              {data!.weaknesses.map((w) => (
-                <View key={w.name} style={styles.barRow}>
-                  <Text style={styles.barLabel} numberOfLines={1}>{w.name}</Text>
-                  <View style={styles.barTrack}>
-                    <View style={[styles.barFill, { width: `${Math.min(w.mastery, 100)}%`, backgroundColor: theme.accents.vocab.solid }]} />
-                  </View>
-                  <Text style={styles.barPct}>{Math.round(w.mastery)}%</Text>
-                </View>
-              ))}
-            </GlassCard>
-          ) : null}
-
-          {/* Milestones */}
-          {(data?.milestones?.length ?? 0) > 0 ? (
-            <GlassCard>
-              <Text style={styles.cardLabel}>MILESTONES</Text>
-              {data!.milestones.map((m, i) => (
-                <View key={i} style={styles.milestoneRow}>
-                  <View style={[styles.milestoneDot, m.completed && { backgroundColor: theme.accents.audio.solid }]}>
-                    {m.completed ? <Icon icon={Check} size={11} color="#FFF" strokeWidth={3} /> : null}
-                  </View>
-                  <Text style={[styles.milestoneText, !m.completed && { color: theme.light.inkMuted }]} numberOfLines={2}>
-                    {m.title}
-                  </Text>
-                </View>
-              ))}
-            </GlassCard>
-          ) : null}
-
-          {!session ? (
-            <GlassCard>
-              <Text style={theme.glassType.body}>Select a session from the Hub to see progress.</Text>
-            </GlassCard>
-          ) : null}
-
-          <Pressable onPress={() => router.push('/(tabs)/tutor')} accessibilityRole="button" style={({ pressed }) => [styles.cta, pressed && { opacity: 0.85 }]}>
-            <Icon icon={Trophy} size={16} color="#FFF" strokeWidth={2} />
-            <Text style={styles.ctaText}>KEEP LEARNING</Text>
-          </Pressable>
-        </>
-      )}
-    </GlassScreen>
+      <BottomNav />
+    </View>
   );
 }
 
-const makeStyles = (theme: GlassTheme) => StyleSheet.create({
-  hero: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    borderRadius: glassRadius.squircle,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    overflow: 'hidden',
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#FDFBF7' },
+  scroll: { flex: 1, paddingHorizontal: 24, paddingTop: 60 },
+  title: { fontSize: 28, fontWeight: '700', color: '#333', fontFamily: 'Outfit_700Bold' },
+  subtitle: { fontSize: 15, color: '#999', marginTop: 4, marginBottom: 24 },
+  overviewCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    padding: 20,
+    marginBottom: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  heroFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  heroIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.65)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  overviewRow: { flexDirection: 'row', alignItems: 'center' },
+  overviewItem: { flex: 1, alignItems: 'center', gap: 6 },
+  overviewIconWrap: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  overviewValue: { fontSize: 22, fontWeight: '700', color: '#333' },
+  overviewLabel: { fontSize: 11, color: '#999' },
+  overviewDivider: { width: 1, height: 48, backgroundColor: '#F3EDE3' },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 16 },
+  card: {
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
   },
-  heroText: { flex: 1, gap: 2 },
-  heroEyebrow: { ...theme.glassType.overline, fontSize: 9, color: 'rgba(142,119,230,0.9)' },
-  heroTitle: { ...theme.glassType.title, fontSize: 19, lineHeight: 23, letterSpacing: -0.4, color: '#181425' },
-  heroScore: { alignItems: 'flex-end' },
-  heroScoreValue: { ...theme.glassType.label, fontSize: 22, color: '#181425', fontWeight: '800' },
-  heroScoreLabel: { ...theme.glassType.overline, fontSize: 8, color: 'rgba(24,20,37,0.5)' },
-  loadingRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  statsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
-  statCard: { flex: 1 },
-  cardLabel: { ...theme.glassType.overline, fontSize: 9, color: theme.light.inkMuted, marginBottom: spacing.md },
-  bars: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: spacing.sm },
-  barCol: { flex: 1, alignItems: 'center', gap: 6 },
-  barSlot: { height: 80, justifyContent: 'flex-end' },
-  bar: { width: '70%', borderRadius: 4, minHeight: 6 },
-  barDay: { ...theme.glassType.overline, fontSize: 8, color: theme.light.inkFaint },
-  miniStat: { alignItems: 'center', gap: 4, paddingVertical: spacing.sm },
-  miniValue: { ...theme.glassType.label, fontSize: 16, fontWeight: '700', color: theme.light.ink },
-  miniLabel: { ...theme.glassType.overline, fontSize: 8, color: theme.light.inkFaint },
-  barRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
-  barLabel: { ...theme.glassType.caption, fontSize: 12, width: 90 },
-  barTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: theme.inkEdge(0.08), overflow: 'hidden' },
-  barFill: { height: '100%', borderRadius: 3 },
-  barPct: { ...theme.glassType.label, fontSize: 11, width: 36, textAlign: 'right' },
-  milestoneRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
-  milestoneDot: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.inkEdge(0.06) },
-  milestoneText: { ...theme.glassType.body, fontSize: 13, flex: 1 },
-  cta: {
-    flexDirection: 'row',
+  moduleTop: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  moduleDot: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#E8F0E5',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    backgroundColor: theme.accents.home.solid,
-    borderRadius: glassRadius.pill,
-    paddingVertical: spacing.md,
-    marginTop: spacing.xs,
   },
-  ctaText: { ...theme.glassType.label, fontSize: 12, color: '#FFF' },
+  moduleDotDone: { backgroundColor: GREEN },
+  moduleDotLocked: { backgroundColor: '#F3EDE3' },
+  moduleTitle: { flex: 1, fontSize: 14, fontWeight: '600', color: '#333', lineHeight: 20 },
+  statusPill: { backgroundColor: '#F3EDE3', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 3 },
+  statusPillDone: { backgroundColor: '#E8F0E5' },
+  statusPillCurrent: { backgroundColor: '#FBF3E4' },
+  statusPillText: { fontSize: 10, fontWeight: '700', color: '#BBB', letterSpacing: 0.5 },
+  track: { height: 6, borderRadius: 3, backgroundColor: '#F3EDE3', overflow: 'hidden' },
+  trackFill: { height: '100%', borderRadius: 3, backgroundColor: GREEN },
+  moduleMeta: { fontSize: 12, color: '#999', marginTop: 8 },
+  quizTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
+  quizTitle: { flex: 1, fontSize: 14, fontWeight: '600', color: '#333', lineHeight: 20 },
+  scoreBadge: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
+  scoreBadgeText: { fontSize: 11, fontWeight: '700' },
+  quizMeta: { fontSize: 12, color: '#999', marginTop: 6 },
+  quizEmptyIconWrap: { alignSelf: 'center', marginBottom: 8 },
+  emptyCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    padding: 32,
+    alignItems: 'center',
+    marginTop: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  emptyIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F9F6F0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: '#333' },
+  emptyDesc: { fontSize: 14, color: '#999', textAlign: 'center', lineHeight: 20, marginTop: 6 },
+  emptyTextInline: { fontSize: 13, color: '#999', textAlign: 'center', lineHeight: 19 },
 });

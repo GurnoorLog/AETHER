@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
@@ -6,14 +6,20 @@ import { useAuth } from '@/lib/auth';
 import { useActiveSession } from '@/lib/activeSession';
 import { generateQuiz, submitQuiz } from '@/lib/api';
 import type { QuizQuestion, SessionQuiz } from '@/lib/types';
-import { glassRadius, spacing, useTheme, type AccentKey, type GlassTheme } from '@/theme';
-import { GlassActionPill, GlassPageHeader } from '@/components/glass/GlassPageHeader';
-import { GlassButton } from '@/components/glass/GlassButton';
-import { GlassCard } from '@/components/glass/GlassCard';
-import { GlassScreen } from '@/components/glass/GlassScreen';
-import { GlassSurface } from '@/components/glass/GlassSurface';
 import { Icon } from '@/components/glass/Icon';
-import { AlertCircle, Check, Play, RefreshCw, Trophy, X } from '@/components/glass/icons';
+import { BottomNav } from '@/components/BottomNav';
+import {
+  AlertCircle,
+  Check,
+  ChevronRight,
+  Play,
+  RefreshCw,
+  Trophy,
+  X,
+} from '@/components/glass/icons';
+
+const GREEN = '#6B8E61';
+const RED = '#C05050';
 
 type QuizView = 'list' | 'taking' | 'results';
 
@@ -24,8 +30,6 @@ interface ModuleInfo {
 }
 
 export default function QuizzesTab() {
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
   const { session: authSession } = useAuth();
   const { session } = useActiveSession();
   const [modules, setModules] = useState<ModuleInfo[]>([]);
@@ -113,6 +117,11 @@ export default function QuizzesTab() {
     });
   };
 
+  const exitQuiz = () => {
+    setView('list');
+    setActiveQuiz(null);
+  };
+
   const handleSubmit = async () => {
     if (!activeQuiz) return;
     const correct = selectedAnswers.filter((a, i) => a === activeQuiz.questions[i].correct_index).length;
@@ -128,266 +137,464 @@ export default function QuizzesTab() {
     }
   };
 
-  const question = activeQuiz?.questions[currentQuestion];
-  const accent: AccentKey = 'vocab';
-  const solid = theme.accents[accent].solid;
+  const question: QuizQuestion | undefined = activeQuiz?.questions[currentQuestion];
 
   if (!session) {
     return (
-      <GlassScreen scroll accent={accent}>
-        <GlassPageHeader title="Quizzes" />
-        <GlassCard>
-          <Text style={theme.glassType.body}>Select a session from the Hub to start quizzing.</Text>
-        </GlassCard>
-      </GlassScreen>
+      <View style={styles.root}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.pageTitle}>Quizzes</Text>
+          <View style={styles.emptyCard}>
+            <View style={styles.emptyIcon}>
+              <Icon icon={Trophy} size={28} color="#CCC" />
+            </View>
+            <Text style={styles.emptyTitle}>No active session</Text>
+            <Text style={styles.emptyDesc}>Select a session from the Hub to start quizzing.</Text>
+          </View>
+          <View style={{ height: 120 }} />
+        </ScrollView>
+        <BottomNav />
+      </View>
     );
   }
 
-  return (
-    <GlassScreen scroll={view === 'list'} accent={accent}>
-      {view === 'list' ? (
-        <>
-          <GlassPageHeader
-            title="Quizzes"
-            actions={
-              <GlassActionPill
-                label={generating ? 'Generating...' : 'Generate'}
-                icon={generating ? undefined : RefreshCw}
-                onPress={() => handleGenerateQuiz()}
-                active
-                accent={accent}
-                disabled={generating}
-              />
-            }
-          />
-
-          {modules.length > 0 ? (
-            <View style={styles.moduleRow}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.moduleChips}>
-                <Pressable onPress={() => setSelectedModule('')} accessibilityRole="button" accessibilityState={{ selected: selectedModule === '' }}>
-                  <GlassSurface
-                    radius={glassRadius.pill}
-                    intensity={selectedModule === '' ? 'thick' : 'regular'}
-                    fill={selectedModule === '' ? theme.glass.fillStrong : theme.glass.fillSubtle}
-                    tintColor={selectedModule === '' ? theme.accents[accent].wash : undefined}
-                    style={styles.moduleChip}
-                  >
-                    <Text style={[styles.moduleChipLabel, { color: selectedModule === '' ? solid : theme.light.inkMuted }]}>GENERAL</Text>
-                  </GlassSurface>
-                </Pressable>
-                {modules.map((m) => {
-                  const active = selectedModule === m.id;
-                  return (
-                    <Pressable key={m.id} onPress={() => setSelectedModule(m.id)} accessibilityRole="button" accessibilityState={{ selected: active }}>
-                      <GlassSurface
-                        radius={glassRadius.pill}
-                        intensity={active ? 'thick' : 'regular'}
-                        fill={active ? theme.glass.fillStrong : theme.glass.fillSubtle}
-                        tintColor={active ? theme.accents[accent].wash : undefined}
-                        style={styles.moduleChip}
-                      >
-                        <Text style={[styles.moduleChipLabel, { color: active ? solid : theme.light.inkMuted }]} numberOfLines={1}>{m.title}</Text>
-                      </GlassSurface>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          ) : null}
-
-          {error ? (
-            <GlassCard style={styles.errorCard}>
-              <View style={styles.errorRow}>
-                <Icon icon={AlertCircle} size={18} color={theme.accents.data.solid} />
-                <Text style={[styles.errorText, { color: theme.accents.data.solid }]}>{error}</Text>
-              </View>
-            </GlassCard>
-          ) : null}
-
-          {loading ? (
-            <GlassCard><Text style={theme.glassType.body}>Loading quizzes...</Text></GlassCard>
-          ) : quizzes.length === 0 ? (
-            <GlassCard>
-              <View style={styles.empty}>
-                <Icon icon={Trophy} size={30} color={theme.light.inkFaint} />
-                <Text style={theme.glassType.subtitle}>No quizzes yet</Text>
-                <Text style={theme.glassType.body}>Generate a quiz on a module (or general knowledge) to test yourself.</Text>
-              </View>
-            </GlassCard>
-          ) : (
-            quizzes.map((q) => {
-              const pct = q.total_questions > 0 ? Math.round(((q.score ?? 0) / q.total_questions) * 100) : 0;
-              return (
-                <GlassCard key={q.id} style={styles.quizCard}>
-                  <Pressable onPress={() => startQuiz(q)} accessibilityRole="button">
-                    <View style={styles.quizTop}>
-                      <Text style={styles.quizTitle} numberOfLines={2}>{q.title}</Text>
-                      {q.completed ? (
-                        <View style={[styles.scoreBadge, { backgroundColor: pct >= 70 ? theme.accents.audio.wash : theme.accents.data.wash }]}>
-                          <Text style={[styles.scoreText, { color: pct >= 70 ? theme.accents.audio.solid : theme.accents.data.solid }]}>{pct}%</Text>
-                        </View>
-                      ) : null}
-                    </View>
-                    <Text style={styles.quizMeta}>{q.questions.length} questions · {q.completed ? 'Completed' : 'Not taken'}</Text>
-                    <View style={styles.quizAction}>
-                      <Icon icon={Play} size={14} color={solid} />
-                      <Text style={[styles.quizActionText, { color: solid }]}>{q.completed ? 'RETRY' : 'START'}</Text>
-                    </View>
-                  </Pressable>
-                </GlassCard>
-              );
-            })
-          )}
-        </>
-      ) : activeQuiz && question ? (
-        <>
-          <GlassPageHeader
-            title={submitted ? 'Results' : activeQuiz.title}
-            actions={
-              !submitted ? (
-                <GlassActionPill
-                  label="Exit"
-                  icon={X}
-                  onPress={() => { setView('list'); setActiveQuiz(null); }}
-                  danger
-                />
-              ) : undefined
-            }
-          />
+  if (view === 'taking' && activeQuiz && question) {
+    return (
+      <View style={styles.root}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.takeHeader}>
+            <Text style={styles.takeTitle} numberOfLines={1}>{activeQuiz.title}</Text>
+            <Pressable onPress={exitQuiz} accessibilityRole="button" style={styles.exitBtn} hitSlop={8}>
+              <Icon icon={X} size={13} color="#999" strokeWidth={2.5} />
+              <Text style={styles.exitBtnText}>EXIT</Text>
+            </Pressable>
+          </View>
 
           {/* Progress */}
           <View style={styles.progressRow}>
             <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${((currentQuestion) / activeQuiz.questions.length) * 100}%`, backgroundColor: solid }]} />
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${(currentQuestion / activeQuiz.questions.length) * 100}%` },
+                ]}
+              />
             </View>
-            <Text style={styles.progressText}>{currentQuestion + 1} / {activeQuiz.questions.length}</Text>
+            <Text style={styles.progressCount}>{currentQuestion + 1} / {activeQuiz.questions.length}</Text>
           </View>
 
-          {submitted ? (
-            <View style={styles.results}>
-              <View style={[styles.resultsRing, { borderColor: score! >= 70 ? theme.accents.audio.solid : theme.accents.data.solid }]}>
-                <Text style={[styles.resultsScore, { color: score! >= 70 ? theme.accents.audio.solid : theme.accents.data.solid }]}>{score}%</Text>
-              </View>
-              <Text style={theme.glassType.subtitle}>{score! >= 70 ? 'Great work!' : 'Keep practicing!'}</Text>
-              <Text style={styles.resultsMeta}>You got {selectedAnswers.filter((a, i) => a === activeQuiz.questions[i].correct_index).length} of {activeQuiz.questions.length} correct.</Text>
-              {activeQuiz.questions.map((q, qi) => {
-                const correct = selectedAnswers[qi] === q.correct_index;
-                const picked = selectedAnswers[qi];
-                return (
-                  <GlassCard key={qi} style={styles.reviewCard}>
-                    <Text style={styles.reviewQuestion}>{qi + 1}. {q.question}</Text>
-                    <View style={styles.reviewAnswer}>
-                      <Icon icon={correct ? Check : X} size={14} color={correct ? theme.accents.audio.solid : theme.accents.data.solid} />
-                      <Text style={[styles.reviewText, { color: correct ? theme.accents.audio.solid : theme.accents.data.solid }]}>
-                        {correct ? 'Correct' : `Correct answer: ${q.options[q.correct_index]}`}
+          {/* Question card */}
+          <View style={styles.card}>
+            <Text style={styles.questionOverline}>QUESTION {currentQuestion + 1} OF {activeQuiz.questions.length}</Text>
+            <Text style={styles.questionText}>{question.question}</Text>
+          </View>
+
+          {/* Answers */}
+          <View style={styles.answers}>
+            {question.options.map((opt, i) => {
+              const selected = selectedAnswers[currentQuestion] === i;
+              return (
+                <Pressable key={i} onPress={() => selectAnswer(i)} accessibilityRole="radio" accessibilityState={{ selected }}>
+                  <View style={[styles.answerCard, selected && styles.answerSelected]}>
+                    <View style={[styles.answerLetter, selected && styles.answerLetterSelected]}>
+                      <Text style={[styles.answerLetterText, selected && styles.answerLetterTextSelected]}>
+                        {String.fromCharCode(65 + i)}
                       </Text>
                     </View>
-                    {!correct && picked >= 0 ? (
-                      <View style={styles.reviewAnswer}>
-                        <Text style={[styles.reviewText, { color: theme.accents.data.solid }]}>Your pick: {q.options[picked]}</Text>
-                      </View>
-                    ) : null}
-                    {q.explanation ? (
-                      <Text style={styles.reviewExplanation}>{q.explanation}</Text>
-                    ) : null}
-                  </GlassCard>
-                );
-              })}
-              <GlassButton label="Back to Quizzes" onPress={() => { setView('list'); setActiveQuiz(null); }} icon={Trophy} accent={accent} />
+                    <Text style={[styles.answerText, selected && styles.answerTextSelected]}>{opt}</Text>
+                    {selected ? <Icon icon={Check} size={16} color={GREEN} strokeWidth={2.5} /> : null}
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: selectedAnswers[currentQuestion] === -1 }}
+            disabled={selectedAnswers[currentQuestion] === -1}
+            onPress={() =>
+              currentQuestion < activeQuiz.questions.length - 1
+                ? setCurrentQuestion((c) => c + 1)
+                : handleSubmit()
+            }
+            style={[
+              styles.primaryBtn,
+              selectedAnswers[currentQuestion] === -1 && styles.primaryBtnDisabled,
+            ]}
+          >
+            <Text style={styles.primaryBtnText}>
+              {currentQuestion === activeQuiz.questions.length - 1 ? 'SUBMIT QUIZ' : 'NEXT QUESTION'}
+            </Text>
+          </Pressable>
+
+          <View style={{ height: 60 }} />
+        </ScrollView>
+      </View>
+    );
+  }
+
+  if (view === 'results' && activeQuiz) {
+    const passed = (score ?? 0) >= 70;
+    const correctCount = selectedAnswers.filter(
+      (a, i) => a === activeQuiz.questions[i].correct_index,
+    ).length;
+    return (
+      <View style={styles.root}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.takeHeader}>
+            <Text style={styles.takeTitle}>Results</Text>
+          </View>
+
+          <View style={styles.resultsBlock}>
+            <View style={[styles.scoreRing, { borderColor: passed ? GREEN : RED }]}>
+              <Text style={[styles.scoreRingValue, { color: passed ? GREEN : RED }]}>{score}%</Text>
             </View>
-          ) : (
-            <>
-              <GlassCard style={styles.questionCard}>
-                <Text style={[styles.questionOverline, { color: solid }]}>QUESTION {currentQuestion + 1} OF {activeQuiz.questions.length}</Text>
-                <Text style={styles.questionText}>{question.question}</Text>
-              </GlassCard>
-              <View style={styles.answers}>
-                {question.options.map((opt, i) => {
-                  const selected = selectedAnswers[currentQuestion] === i;
-                  return (
-                    <Pressable key={i} onPress={() => selectAnswer(i)} accessibilityRole="radio" accessibilityState={{ selected }}>
-                      <GlassSurface
-                        radius={glassRadius.card}
-                        intensity={selected ? 'thick' : 'regular'}
-                        fill={selected ? theme.glass.fillStrong : theme.glass.fillSubtle}
-                        tintColor={selected ? theme.accents[accent].wash : undefined}
-                        style={[styles.answer, selected && { borderColor: solid, borderWidth: 1.5 }]}
-                      >
-                        <View style={[styles.answerLetter, { backgroundColor: selected ? solid : theme.inkEdge(0.06) }]}>
-                          <Text style={[styles.answerLetterText, { color: selected ? '#FFF' : theme.light.inkMuted }]}>
-                            {String.fromCharCode(65 + i)}
-                          </Text>
-                        </View>
-                        <Text style={[styles.answerText, { color: selected ? theme.light.ink : theme.light.inkSoft }]}>{opt}</Text>
-                        {selected ? <Icon icon={Check} size={16} color={solid} strokeWidth={2.5} /> : null}
-                      </GlassSurface>
-                    </Pressable>
-                  );
-                })}
+            <Text style={styles.resultsHeadline}>{passed ? 'Great work!' : 'Keep practicing!'}</Text>
+            <Text style={styles.resultsMeta}>
+              You got {correctCount} of {activeQuiz.questions.length} correct.
+            </Text>
+          </View>
+
+          {activeQuiz.questions.map((q, qi) => {
+            const correct = selectedAnswers[qi] === q.correct_index;
+            const picked = selectedAnswers[qi];
+            return (
+              <View key={qi} style={styles.card}>
+                <Text style={styles.reviewQuestion}>{qi + 1}. {q.question}</Text>
+                <View style={styles.reviewRow}>
+                  <Icon icon={correct ? Check : X} size={14} color={correct ? GREEN : RED} strokeWidth={2.5} />
+                  <Text style={[styles.reviewText, { color: correct ? GREEN : RED }]}>
+                    {correct ? 'Correct' : `Correct answer: ${q.options[q.correct_index]}`}
+                  </Text>
+                </View>
+                {!correct && picked >= 0 ? (
+                  <View style={styles.reviewRow}>
+                    <Icon icon={AlertCircle} size={14} color={RED} />
+                    <Text style={[styles.reviewText, { color: RED }]}>Your pick: {q.options[picked]}</Text>
+                  </View>
+                ) : null}
+                {q.explanation ? (
+                  <Text style={styles.reviewExplanation}>{q.explanation}</Text>
+                ) : null}
               </View>
-              <GlassButton
-                label={currentQuestion === activeQuiz.questions.length - 1 ? 'Submit Quiz' : 'Next Question'}
-                onPress={() =>
-                  currentQuestion < activeQuiz.questions.length - 1
-                    ? setCurrentQuestion((c) => c + 1)
-                    : handleSubmit()
-                }
-                disabled={selectedAnswers[currentQuestion] === -1}
-                size="lg"
-                accent={accent}
-              />
-            </>
-          )}
-        </>
-      ) : null}
-    </GlassScreen>
+            );
+          })}
+
+          <Pressable onPress={exitQuiz} accessibilityRole="button" style={styles.primaryBtn}>
+            <Icon icon={Trophy} size={15} color="#FFF" strokeWidth={2.2} />
+            <Text style={styles.primaryBtnText}>BACK TO QUIZZES</Text>
+          </Pressable>
+
+          <View style={{ height: 60 }} />
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // List view
+  return (
+    <View style={styles.root}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Page header */}
+        <View style={styles.listHeader}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.overline}>TEST YOURSELF</Text>
+            <Text style={styles.pageTitle}>Quizzes</Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: generating }}
+            disabled={generating}
+            onPress={() => handleGenerateQuiz()}
+            style={[styles.generateBtn, generating && styles.generateBtnDisabled]}
+          >
+            {!generating ? <Icon icon={RefreshCw} size={14} color="#FFF" strokeWidth={2.2} /> : null}
+            <Text style={styles.generateBtnText}>{generating ? 'GENERATING...' : 'GENERATE'}</Text>
+          </Pressable>
+        </View>
+
+        {/* Module filter chips */}
+        {modules.length > 0 ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: 20 }}
+            contentContainerStyle={{ gap: 8, paddingRight: 24 }}
+          >
+            <Pressable onPress={() => setSelectedModule('')} accessibilityRole="button" accessibilityState={{ selected: selectedModule === '' }}>
+              <View style={[styles.moduleChip, selectedModule === '' && styles.moduleChipActive]}>
+                <Text style={[styles.moduleChipLabel, selectedModule === '' && styles.moduleChipLabelActive]}>GENERAL</Text>
+              </View>
+            </Pressable>
+            {modules.map((m) => {
+              const active = selectedModule === m.id;
+              return (
+                <Pressable key={m.id} onPress={() => setSelectedModule(m.id)} accessibilityRole="button" accessibilityState={{ selected: active }}>
+                  <View style={[styles.moduleChip, styles.moduleChipWide, active && styles.moduleChipActive]}>
+                    <Text style={[styles.moduleChipLabel, active && styles.moduleChipLabelActive]} numberOfLines={1}>{m.title}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        ) : null}
+
+        {error ? (
+          <View style={[styles.card, styles.errorCard]}>
+            <Icon icon={AlertCircle} size={18} color={RED} />
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
+
+        {loading ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyDesc}>Loading quizzes...</Text>
+          </View>
+        ) : quizzes.length === 0 ? (
+          <View style={styles.emptyCard}>
+            <View style={styles.emptyIcon}>
+              <Icon icon={Trophy} size={28} color="#CCC" />
+            </View>
+            <Text style={styles.emptyTitle}>No quizzes yet</Text>
+            <Text style={styles.emptyDesc}>
+              Generate a quiz on a module (or general knowledge) to test yourself.
+            </Text>
+          </View>
+        ) : (
+          quizzes.map((q) => {
+            const pct = q.total_questions > 0 ? Math.round(((q.score ?? 0) / q.total_questions) * 100) : 0;
+            return (
+              <Pressable key={q.id} accessibilityRole="button" onPress={() => startQuiz(q)} style={styles.card}>
+                <View style={styles.quizTop}>
+                  <Text style={styles.quizTitle} numberOfLines={2}>{q.title}</Text>
+                  {q.completed ? (
+                    <View style={[styles.scoreBadge, { backgroundColor: pct >= 70 ? '#E8F0E5' : '#F3E8E8' }]}>
+                      <Text style={[styles.scoreBadgeText, { color: pct >= 70 ? GREEN : RED }]}>{pct}%</Text>
+                    </View>
+                  ) : null}
+                </View>
+                <Text style={styles.quizMeta}>
+                  {q.questions.length} questions · {q.completed ? 'Completed' : 'Not taken'}
+                </Text>
+                <View style={styles.quizAction}>
+                  <Icon icon={Play} size={12} color={GREEN} />
+                  <Text style={styles.quizActionText}>{q.completed ? 'RETRY' : 'START'}</Text>
+                  <Icon icon={ChevronRight} size={13} color="#CCC" strokeWidth={2.2} />
+                </View>
+              </Pressable>
+            );
+          })
+        )}
+
+        <View style={{ height: 120 }} />
+      </ScrollView>
+      <BottomNav />
+    </View>
   );
 }
 
-const makeStyles = (theme: GlassTheme) => StyleSheet.create({
-  moduleRow: { marginBottom: spacing.lg },
-  moduleChips: { gap: spacing.sm, paddingRight: spacing.lg },
-  moduleChip: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, maxWidth: 220 },
-  moduleChipLabel: { ...theme.glassType.label, fontSize: 13 },
-  errorCard: { marginBottom: spacing.md },
-  errorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  errorText: { ...theme.glassType.body, flex: 1 },
-  empty: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg, textAlign: 'center' },
-  quizCard: { marginBottom: spacing.md },
-  quizTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: spacing.md },
-  quizTitle: { ...theme.glassType.subtitle, fontSize: 15, flex: 1 },
-  scoreBadge: { borderRadius: glassRadius.pill, paddingHorizontal: spacing.md, paddingVertical: 4 },
-  scoreText: { ...theme.glassType.overline, fontSize: 10 },
-  quizMeta: { ...theme.glassType.caption, marginTop: 4 },
-  quizAction: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: spacing.sm },
-  quizActionText: { ...theme.glassType.overline, fontSize: 10 },
-  progressRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.lg },
-  progressTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: theme.inkEdge(0.08), overflow: 'hidden' },
-  progressFill: { height: '100%', borderRadius: 3 },
-  progressText: { ...theme.glassType.label, fontSize: 13 },
-  questionCard: { marginBottom: spacing.lg },
-  questionOverline: { ...theme.glassType.overline, fontSize: 10, letterSpacing: 1.6, marginBottom: spacing.sm },
-  questionText: { ...theme.glassType.subtitle, fontSize: 18, lineHeight: 26 },
-  answers: { gap: spacing.sm, marginBottom: spacing.lg },
-  answer: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md },
-  answerLetter: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  answerLetterText: { ...theme.glassType.label, fontSize: 13 },
-  answerText: { flex: 1, fontSize: 15, lineHeight: 21 },
-  results: { gap: spacing.md, alignItems: 'center' },
-  resultsRing: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 6,
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#FDFBF7' },
+  scroll: { flex: 1 },
+  scrollContent: { paddingTop: 60, paddingHorizontal: 24 },
+
+  // Typography
+  overline: { fontSize: 10, fontWeight: '700', color: GREEN, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
+  pageTitle: { fontSize: 28, fontWeight: '700', color: '#333' },
+
+  // Cards
+  card: {
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+
+  // List header
+  listHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 24 },
+  generateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: GREEN,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+  },
+  generateBtnDisabled: { opacity: 0.55 },
+  generateBtnText: { fontSize: 11, fontWeight: '700', color: '#FFF', letterSpacing: 0.5 },
+
+  // Module chips
+  moduleChip: {
+    backgroundColor: '#F3EDE3',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    alignSelf: 'flex-start',
+  },
+  moduleChipWide: { maxWidth: 200 },
+  moduleChipActive: { backgroundColor: GREEN },
+  moduleChipLabel: { fontSize: 12, fontWeight: '700', color: '#666', letterSpacing: 0.3 },
+  moduleChipLabelActive: { color: '#FFF' },
+
+  // Error
+  errorCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  errorText: { flex: 1, fontSize: 13, lineHeight: 18, color: RED, fontWeight: '600' },
+
+  // Quiz cards
+  quizTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 },
+  quizTitle: { flex: 1, fontSize: 15, fontWeight: '700', color: '#333', lineHeight: 21 },
+  scoreBadge: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
+  scoreBadgeText: { fontSize: 11, fontWeight: '700' },
+  quizMeta: { fontSize: 12, color: '#999', marginTop: 4 },
+  quizAction: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 12 },
+  quizActionText: { fontSize: 10, fontWeight: '700', color: GREEN, letterSpacing: 0.5 },
+
+  // Taking header
+  takeHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 },
+  takeTitle: { flex: 1, fontSize: 22, fontWeight: '700', color: '#333' },
+  exitBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#F3EDE3',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  exitBtnText: { fontSize: 10, fontWeight: '700', color: '#999', letterSpacing: 0.5 },
+
+  // Progress
+  progressRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  progressTrack: { flex: 1, height: 6, borderRadius: 3, backgroundColor: '#F3EDE3', overflow: 'hidden' },
+  progressFill: { height: '100%', borderRadius: 3, backgroundColor: GREEN },
+  progressCount: { fontSize: 12, fontWeight: '700', color: '#999' },
+
+  // Question
+  questionOverline: { fontSize: 10, fontWeight: '700', color: GREEN, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8 },
+  questionText: { fontSize: 18, fontWeight: '600', color: '#333', lineHeight: 26 },
+
+  // Answers
+  answers: { gap: 10, marginBottom: 24 },
+  answerCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  answerSelected: { borderWidth: 1.5, borderColor: GREEN, backgroundColor: '#FBFCF9' },
+  answerLetter: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: spacing.sm,
+    backgroundColor: '#F3EDE3',
   },
-  resultsScore: { ...theme.glassType.display, fontSize: 36 },
-  resultsMeta: { ...theme.glassType.body, color: theme.light.inkMuted },
-  reviewCard: { width: '100%', marginBottom: spacing.xs },
-  reviewQuestion: { ...theme.glassType.label, fontSize: 13, lineHeight: 19 },
-  reviewAnswer: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: spacing.xs },
-  reviewText: { ...theme.glassType.caption, fontSize: 12, flexShrink: 1 },
-  reviewExplanation: { ...theme.glassType.body, fontSize: 13, lineHeight: 19, marginTop: spacing.sm, color: theme.light.inkSoft },
+  answerLetterSelected: { backgroundColor: GREEN },
+  answerLetterText: { fontSize: 13, fontWeight: '700', color: '#999' },
+  answerLetterTextSelected: { color: '#FFF' },
+  answerText: { flex: 1, fontSize: 14, lineHeight: 20, color: '#666' },
+  answerTextSelected: { color: '#333', fontWeight: '600' },
+
+  // Buttons
+  primaryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: GREEN,
+    borderRadius: 22,
+    paddingVertical: 16,
+    marginTop: 4,
+  },
+  primaryBtnDisabled: { opacity: 0.45 },
+  primaryBtnText: { fontSize: 12, fontWeight: '700', color: '#FFF', letterSpacing: 0.8 },
+
+  // Results
+  resultsBlock: { alignItems: 'center', marginBottom: 24 },
+  scoreRing: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    borderWidth: 6,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  scoreRingValue: { fontSize: 34, fontWeight: '800' },
+  resultsHeadline: { fontSize: 18, fontWeight: '700', color: '#333' },
+  resultsMeta: { fontSize: 13, color: '#999', marginTop: 4 },
+
+  // Review
+  reviewQuestion: { fontSize: 13, fontWeight: '700', color: '#333', lineHeight: 19 },
+  reviewRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
+  reviewText: { fontSize: 12, fontWeight: '600', flexShrink: 1, lineHeight: 17 },
+  reviewExplanation: { fontSize: 12, color: '#999', lineHeight: 18, marginTop: 10 },
+
+  // Empty / no session
+  emptyCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    padding: 32,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  emptyIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F9F6F0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: '#333', marginTop: 2 },
+  emptyDesc: { fontSize: 14, color: '#999', textAlign: 'center', lineHeight: 20, marginTop: 6 },
 });

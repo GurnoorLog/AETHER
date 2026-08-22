@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -13,27 +14,23 @@ import { router } from 'expo-router';
 
 import { supabase } from '@/lib/supabase';
 import { createSession, type CreatedSession } from '@/lib/api';
+import { getEntitlementTier } from '@/lib/revenuecat';
 import { useActiveSession } from '@/lib/activeSession';
-import { glassRadius, spacing, useTheme, type AccentKey, type GlassTheme } from '@/theme';
-import { GlassButton } from '@/components/glass/GlassButton';
-import { GlassCard } from '@/components/glass/GlassCard';
-import { GlassIconButton } from '@/components/glass/GlassIconButton';
-import { GlassSurface } from '@/components/glass/GlassSurface';
 import { Icon } from '@/components/glass/Icon';
 import { GraduationCap, BookOpen, Brain, Rocket, Sparkles, X } from '@/components/glass/icons';
 
-const PRESETS: { label: string; accent: AccentKey }[] = [
-  { label: 'Mathematics', accent: 'home' },
-  { label: 'Physics', accent: 'field' },
-  { label: 'Biology', accent: 'audio' },
-  { label: 'Chemistry', accent: 'feedback' },
-  { label: 'History', accent: 'vocab' },
-  { label: 'Literature', accent: 'voice' },
+const GREEN = '#6B8E61';
+
+const PRESETS = [
+  { label: 'Mathematics', icon: Brain },
+  { label: 'Physics', icon: Rocket },
+  { label: 'Biology', icon: BookOpen },
+  { label: 'Chemistry', icon: GraduationCap },
+  { label: 'History', icon: BookOpen },
+  { label: 'Literature', icon: BookOpen },
 ];
 
 export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [subject, setSubject] = useState('');
   const [objectives, setObjectives] = useState('');
   const [creating, setCreating] = useState(false);
@@ -53,7 +50,7 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
     if (!created) return close();
     setSession({ id: created.sessionId, slug: created.slug, title: created.title, subject: subject });
     close();
-    router.replace('/(tabs)/home');
+    router.replace('/(tabs)');
   };
 
   const handleCreate = async () => {
@@ -63,19 +60,14 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('subscription_tier')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      const tier = profile?.subscription_tier ?? 'free';
+      const tier = await getEntitlementTier();
       if (tier === 'free') {
         const { count } = await supabase
           .from('sessions')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user.id);
         if ((count ?? 0) >= 1) {
-          setError('Free plan includes 1 active session. Upgrade to Pro for up to 10. Tap below to view plans.');
+          setError('Free plan includes 1 active session. Upgrade to Pro for up to 10.');
           setCreating(false);
           return;
         }
@@ -84,9 +76,7 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
       setCreated(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create session');
-    } finally {
-      setCreating(false);
-    }
+    } finally { setCreating(false); }
   };
 
   return (
@@ -94,23 +84,29 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={close} />
         <View style={styles.sheet}>
+          <Image source={require('../../assets/design/sakura_leaves.png')} style={styles.sakuraImage} resizeMode="contain" />
           <View style={styles.header}>
             <Text style={styles.title}>{created ? 'Roadmap Ready' : 'New Study Session'}</Text>
-            <GlassIconButton icon={X} onPress={close} accessibilityLabel="Close" size={34} />
+            <Pressable onPress={close} hitSlop={8}>
+              <Icon icon={X} size={22} color="#999" />
+            </Pressable>
           </View>
 
           {created ? (
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
               <View style={styles.readyRow}>
-                <View style={[styles.readyIcon, { backgroundColor: theme.accents.home.wash }]}>
-                  <Icon icon={Sparkles} size={22} color={theme.accents.home.solid} />
+                <View style={styles.readyIcon}>
+                  <Icon icon={Sparkles} size={22} color={GREEN} />
                 </View>
                 <View style={styles.readyText}>
                   <Text style={styles.readyTitle}>{created.title}</Text>
                   <Text style={styles.readySubtitle}>Your personalized learning path is ready.</Text>
                 </View>
               </View>
-              <GlassButton label="Start Learning" onPress={startLearning} size="lg" icon={Rocket} accent="home" />
+              <Pressable style={styles.createBtn} onPress={startLearning}>
+                <Icon icon={Rocket} size={18} color="#FFF" />
+                <Text style={styles.createBtnText}>Start Learning</Text>
+              </Pressable>
             </ScrollView>
           ) : (
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -120,26 +116,12 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
                   <Pressable
                     key={p.label}
                     onPress={() => setSubject(p.label)}
-                    accessibilityRole="button"
-                    accessibilityLabel={p.label}
-                    style={styles.presetWrap}
+                    style={[styles.preset, subject === p.label && styles.presetActive]}
                   >
-                    <GlassSurface
-                      radius={glassRadius.lozenge}
-                      intensity={subject === p.label ? 'thick' : 'regular'}
-                      fill={subject === p.label ? theme.glass.fillStrong : theme.glass.fillSubtle}
-                      tintColor={subject === p.label ? theme.accents[p.accent].wash : undefined}
-                      style={styles.preset}
-                    >
-                      <Icon
-                        icon={p.label === 'Mathematics' ? Brain : p.label === 'Physics' ? Rocket : BookOpen}
-                        size={20}
-                        color={subject === p.label ? theme.accents[p.accent].solid : theme.light.inkMuted}
-                      />
-                      <Text style={[styles.presetLabel, { color: subject === p.label ? theme.light.ink : theme.light.inkMuted }]} numberOfLines={1}>
-                        {p.label}
-                      </Text>
-                    </GlassSurface>
+                    <Icon icon={p.icon} size={20} color={subject === p.label ? GREEN : '#999'} />
+                    <Text style={[styles.presetLabel, subject === p.label && styles.presetLabelActive]} numberOfLines={1}>
+                      {p.label}
+                    </Text>
                   </Pressable>
                 ))}
               </View>
@@ -147,7 +129,7 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
               <TextInput
                 style={styles.input}
                 placeholder="Or type any topic you want to learn..."
-                placeholderTextColor={theme.light.inkFaint}
+                placeholderTextColor="#CCC"
                 value={subject}
                 onChangeText={setSubject}
                 autoCapitalize="sentences"
@@ -157,7 +139,7 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
               <TextInput
                 style={[styles.input, styles.objectives]}
                 placeholder="e.g. I want to understand derivatives and integrals for my exam next week..."
-                placeholderTextColor={theme.light.inkFaint}
+                placeholderTextColor="#CCC"
                 value={objectives}
                 onChangeText={setObjectives}
                 multiline
@@ -165,23 +147,25 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
               />
 
               {error ? (
-                <GlassCard style={styles.errorCard}>
+                <View style={styles.errorCard}>
                   <Text style={styles.errorText}>{error}</Text>
-                  <Pressable onPress={() => router.push('/pricing')} accessibilityRole="button" hitSlop={8}>
-                    <Text style={styles.upgradeLink}>VIEW PLANS →</Text>
-                  </Pressable>
-                </GlassCard>
+                </View>
               ) : null}
 
-              <GlassButton
-                label={creating ? 'Generating your roadmap...' : 'Create Session'}
+              <Pressable
+                style={[styles.createBtn, (!subject.trim() || creating) && styles.createBtnDisabled]}
                 onPress={handleCreate}
-                loading={creating}
-                disabled={!subject.trim()}
-                size="lg"
-                icon={GraduationCap}
-                accent="home"
-              />
+                disabled={!subject.trim() || creating}
+              >
+                {creating ? (
+                  <ActivityIndicator color="#FFF" size="small" />
+                ) : (
+                  <Icon icon={GraduationCap} size={18} color="#FFF" />
+                )}
+                <Text style={styles.createBtnText}>
+                  {creating ? 'Generating your roadmap...' : 'Create Session'}
+                </Text>
+              </Pressable>
             </ScrollView>
           )}
         </View>
@@ -190,48 +174,61 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
   );
 }
 
-const makeStyles = (theme: GlassTheme) => StyleSheet.create({
+const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
-  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(24,20,37,0.45)' },
+  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.3)' },
   sheet: {
-    backgroundColor: theme.light.base,
+    backgroundColor: '#FDFBF7',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     maxHeight: '88%',
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxxl,
+    paddingTop: 24,
+    paddingBottom: 40,
+    overflow: 'hidden',
+  },
+  sakuraImage: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 160,
+    height: 160,
+    opacity: 0.5,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
+    paddingHorizontal: 24,
+    marginBottom: 16,
+    zIndex: 1,
   },
-  title: { ...theme.glassType.title, fontSize: 22 },
-  content: { paddingHorizontal: spacing.xl, gap: spacing.lg },
-  label: { ...theme.glassType.overline, color: theme.light.inkMuted, marginTop: spacing.xs },
-  presetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  presetWrap: { width: '30.8%' },
-  preset: { paddingVertical: spacing.md, alignItems: 'center', gap: 6 },
-  presetLabel: { ...theme.glassType.label, fontSize: 12 },
+  title: { fontSize: 22, fontWeight: '700', color: '#333' },
+  content: { paddingHorizontal: 24, gap: 16 },
+  label: { fontSize: 12, fontWeight: '700', color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 4 },
+  presetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  preset: { width: '30.8%', backgroundColor: '#FFF', borderRadius: 16, borderWidth: 1.5, borderColor: '#F3EDE3', paddingVertical: 14, alignItems: 'center', gap: 6 },
+  presetActive: { borderColor: GREEN, backgroundColor: '#F0F5EE' },
+  presetLabel: { fontSize: 11, fontWeight: '600', color: '#999' },
+  presetLabelActive: { color: GREEN },
   input: {
-    backgroundColor: theme.dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.6)',
-    borderColor: theme.inkEdge(0.1),
+    backgroundColor: '#FFF',
+    borderColor: '#F3EDE3',
     borderWidth: 1,
-    borderRadius: glassRadius.card,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    color: theme.light.ink,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    color: '#333',
     fontSize: 15,
   },
-  objectives: { minHeight: 90, paddingTop: spacing.md },
-  errorCard: { marginTop: spacing.xs },
-  errorText: { ...theme.glassType.body, color: theme.accents.data.solid },
-  upgradeLink: { ...theme.glassType.overline, color: theme.accents.home.solid, marginTop: spacing.xs },
-  readyRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginVertical: spacing.lg },
-  readyIcon: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  objectives: { minHeight: 90, paddingTop: 14 },
+  errorCard: { backgroundColor: '#FFF0F0', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#FDD' },
+  errorText: { fontSize: 14, color: '#C05050', lineHeight: 20 },
+  readyRow: { flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: 16 },
+  readyIcon: { width: 48, height: 48, borderRadius: 16, backgroundColor: '#E8F0E5', alignItems: 'center', justifyContent: 'center' },
   readyText: { flex: 1, gap: 4 },
-  readyTitle: { ...theme.glassType.subtitle, fontSize: 17 },
-  readySubtitle: { ...theme.glassType.body, color: theme.light.inkMuted },
+  readyTitle: { fontSize: 17, fontWeight: '700', color: '#333' },
+  readySubtitle: { fontSize: 14, color: '#999' },
+  createBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: GREEN, height: 56, borderRadius: 28, shadowColor: GREEN, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.2, shadowRadius: 12, elevation: 6 },
+  createBtnDisabled: { opacity: 0.5 },
+  createBtnText: { color: '#FFF', fontWeight: '700', fontSize: 16 },
 });

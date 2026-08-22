@@ -341,8 +341,8 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
         {/* AI Response (Right) */}
         {lastAgentMsg && (
-          <section className="absolute right-16 top-1/2 -translate-y-1/2 w-[320px] space-y-4 max-lg:hidden">
-            <div className="glass rounded-[32px] p-8 border-l-4 border-[#FDE047] text-stream-fade">
+          <section className="absolute right-16 top-1/2 -translate-y-1/2 w-[320px] max-lg:hidden">
+            <div className="glass rounded-[32px] p-8 border-l-4 border-[#FDE047] text-stream-fade max-h-[400px] overflow-y-auto">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-[#FDE047] flex items-center justify-center text-black shadow-lg">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -351,10 +351,16 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#FDE047]">Aether Response</span>
               </div>
-              <p className="text-sm leading-relaxed text-white/90">
-                &ldquo;{lastAgentMsg.content.length > 300 ? lastAgentMsg.content.slice(0, 300) + "..." : lastAgentMsg.content}&rdquo;
-                <span className="typing-cursor" />
-              </p>
+              <div className="text-sm leading-relaxed text-white/90 whitespace-pre-wrap">
+                {lastAgentMsg.content.split("\n\n").map((para, i) => {
+                  const rendered = para
+                    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white font-bold'>$1</strong>")
+                    .replace(/`(.*?)`/g, '<code class="text-[#FDE047] bg-black/30 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
+                    .replace(/\*(.*?)\*/g, "<em class='italic text-white/80'>$1</em>");
+                  return <p key={i} className="mb-3 last:mb-0" dangerouslySetInnerHTML={{ __html: rendered }} />;
+                })}
+              </div>
+              <span className="typing-cursor" />
             </div>
           </section>
         )}
@@ -387,6 +393,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
                 value={volume}
                 onChange={(e) => setVolume(Number(e.target.value))}
                 className="volume-slider w-24 appearance-none bg-transparent cursor-pointer"
+                style={{ marginTop: "2px" }}
               />
             </div>
           </div>
@@ -405,11 +412,12 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
           <div className="w-px h-8 bg-white/10" />
 
-          <div className="flex items-center gap-4">
-            <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 cursor-pointer">
+          <div className="flex items-center gap-4 relative group">
+            <button className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all text-white/40 cursor-pointer" disabled title="Screen Share - Arriving Soon">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
               </svg>
+              <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-[8px] text-white/30 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">Arriving Soon</span>
             </button>
             <button
               onClick={() => setOutputMuted(!outputMuted)}
@@ -418,6 +426,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
                   ? "bg-white/5 border border-white/10 text-white/40"
                   : "bg-[#FDE047] text-black shadow-lg"
               }`}
+              title="Volume Control - Arriving Soon"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
@@ -427,29 +436,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         </div>
       </footer>
 
-      {/* Background Ticker */}
-      <div className="absolute bottom-8 w-full flex justify-center opacity-10 grayscale px-24 max-lg:px-4 pointer-events-none">
-        <div className="flex gap-16 max-lg:gap-4 items-center">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M22.282 9.821a5.985 5.985 0 00-.516-4.91 6.046 6.046 0 00-6.51-2.9A6.065 6.065 0 0014.293 3a5.985 5.985 0 00-4.407 1.957A6.046 6.046 0 003.5 10.46a6.065 6.065 0 00.725 5.176 5.985 5.985 0 00.516 4.91 6.046 6.046 0 006.51 2.9A6.065 6.065 0 009.707 21a5.985 5.985 0 004.407-1.957 6.046 6.046 0 008.369-7.714z" />
-            </svg>
-            <span className="font-black tracking-tighter">OPENAI</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" />
-            </svg>
-            <span className="font-black tracking-tighter">FIGMA</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M4.462 19.538c.456-.087.731-.491.656-.949l-.504-3.054H7.32l.84 5.114c.075.458-.2 0.862-.656.949l-4.042.94zm15.076-12.01l-1.557-.455L16.4 12.5l1.557.455 1.581-5.427zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" />
-            </svg>
-            <span className="font-black tracking-tighter">NOTION</span>
-          </div>
-        </div>
-      </div>
+
     </div>
   );
 }

@@ -647,29 +647,6 @@ export default function SessionMusicPage() {
             </div>
           </section>
 
-          <div className="pt-6 lg:pt-12 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 opacity-30 grayscale">
-            <span className="text-[10px] font-bold tracking-widest">INTEGRATED WITH</span>
-            <div className="flex gap-4 sm:gap-6 lg:gap-12">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-8.159-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.18-1.14-.6-.12-.48.18-1.02.6-1.14 4.2-1.32 9.54-.66 13.14 1.56.36.24.48.78.301 1.2v.06zm.12-3.36c-3.84-2.28-10.14-2.52-13.8-1.38-.48.12-1.02-.18-1.14-.6-.12-.48.18-1.02.6-1.14 4.2-1.26 11.28-1.02 15.66 1.56.54.3.66 1.02.36 1.56-.24.48-.96.66-1.56.36z" />
-                </svg>
-                <span className="font-bold tracking-tighter">Spotify</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" />
-                </svg>
-                <span className="font-bold tracking-tighter">Music</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 0-.36-.06-.52-.18-1.48-1.12-3.48-1.68-5.6-1.68-2.12 0-4.12.56-5.6 1.68-.16.12-.36.18-.56.18-.24 0-.48-.1-.66-.28-.18-.18-.28-.42-.28-.68 0-.26.1-.5.28-.68 1.78-1.34 4.2-2.02 6.82-2.02s5.04.68 6.82 2.02c.18.14.28.38.28.68 0 .26-.1.5-.28.68-.14.14-.34.22-.54.22z" />
-                </svg>
-                <span className="font-bold tracking-tighter">Soundcloud</span>
-              </div>
-            </div>
-          </div>
 
         </div>
 

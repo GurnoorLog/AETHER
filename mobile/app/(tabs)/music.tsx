@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 
@@ -6,14 +6,22 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { downloadAudio, enhanceMusicPrompt, generateTrack } from '@/lib/api';
 import type { GeneratedTrack } from '@/lib/types';
-import { useTheme, glassRadius, spacing, type AccentKey, type GlassTheme } from '@/theme';
-import { GlassActionPill, GlassPageHeader } from '@/components/glass/GlassPageHeader';
-import { GlassButton } from '@/components/glass/GlassButton';
-import { GlassCard } from '@/components/glass/GlassCard';
-import { GlassScreen } from '@/components/glass/GlassScreen';
-import { GlassSurface } from '@/components/glass/GlassSurface';
 import { Icon } from '@/components/glass/Icon';
-import { AlertCircle, Loader, Music, Pause, Play, Sparkles, SkipBack, SkipForward, Trash2 } from '@/components/glass/icons';
+import { BottomNav } from '@/components/BottomNav';
+import {
+  AlertCircle,
+  Loader,
+  Music,
+  Pause,
+  Play,
+  Sparkles,
+  SkipBack,
+  SkipForward,
+  Trash2,
+} from '@/components/glass/icons';
+
+const GREEN = '#6B8E61';
+const GREEN_SOFT = '#E8F0E5';
 
 const MOODS = ['Focused', 'Chill', 'Energetic', 'Dreamy'];
 const INSTRUMENTS = ['Ambient Synth', 'Piano', 'Lo-fi Beats', 'Strings'];
@@ -30,8 +38,6 @@ function timeAgo(dateStr: string): string {
 
 export default function MusicTab() {
   const { session: authSession } = useAuth();
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
   const [tracks, setTracks] = useState<GeneratedTrack[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
@@ -158,222 +164,324 @@ export default function MusicTab() {
     ]);
   };
 
-  const accent: AccentKey = 'audio';
-  const solid = theme.accents[accent].solid;
-
   return (
-    <GlassScreen scroll accent={accent}>
-      <GlassPageHeader
-        title="Focus Music"
-        actions={
-          <GlassActionPill
-            label={generating ? 'Generating...' : 'Generate'}
-            icon={generating ? undefined : Sparkles}
-            onPress={handleGenerate}
-            active
-            accent={accent}
-            disabled={generating}
-          />
-        }
-      />
+    <View style={styles.root}>
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        <Text style={styles.pageTitle}>Focus Music</Text>
 
-      <GlassCard>
-        <Text style={theme.glassType.label}>DESCRIBE YOUR TRACK</Text>
-        <View style={styles.inputWrap}>
+        {/* Generate card */}
+        <View style={[styles.card, styles.generateCard]}>
+          <Text style={styles.sectionLabel}>DESCRIBE YOUR TRACK</Text>
           <TextInput
             value={searchInput}
             onChangeText={setSearchInput}
             placeholder="e.g. rain on a window, deep focus"
-            placeholderTextColor={theme.light.inkFaint}
+            placeholderTextColor="#BBB"
             style={styles.input}
             multiline
           />
-        </View>
-        <Text style={[theme.glassType.caption, styles.sectionLabel]}>MOOD</Text>
-        <View style={styles.chipRow}>
-          {MOODS.map((m) => {
-            const active = mood === m;
-            return (
-              <Pressable key={m} onPress={() => setMood(m)} accessibilityRole="button" accessibilityState={{ selected: active }}>
-                <GlassSurface
-                  radius={glassRadius.pill}
-                  intensity={active ? 'thick' : 'regular'}
-                  fill={active ? theme.glass.fillStrong : theme.glass.fillSubtle}
-                  tintColor={active ? theme.accents[accent].wash : undefined}
-                  style={styles.chip}
+
+          <Text style={styles.sectionLabel}>MOOD</Text>
+          <View style={styles.chipRow}>
+            {MOODS.map((m) => {
+              const active = mood === m;
+              return (
+                <Pressable
+                  key={m}
+                  onPress={() => setMood(m)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  style={[styles.chip, active && styles.chipActive]}
                 >
-                  <Text style={[styles.chipText, { color: active ? solid : theme.light.inkMuted }]}>{m.toUpperCase()}</Text>
-                </GlassSurface>
-              </Pressable>
-            );
-          })}
-        </View>
-        <Text style={[theme.glassType.caption, styles.sectionLabel]}>INSTRUMENT</Text>
-        <View style={styles.chipRow}>
-          {INSTRUMENTS.map((ins) => {
-            const active = instrument === ins;
-            return (
-              <Pressable key={ins} onPress={() => setInstrument(ins)} accessibilityRole="button" accessibilityState={{ selected: active }}>
-                <GlassSurface
-                  radius={glassRadius.pill}
-                  intensity={active ? 'thick' : 'regular'}
-                  fill={active ? theme.glass.fillStrong : theme.glass.fillSubtle}
-                  tintColor={active ? theme.accents[accent].wash : undefined}
-                  style={styles.chip}
+                  <Text style={[styles.chipText, active && styles.chipTextActive]}>{m.toUpperCase()}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Text style={styles.sectionLabel}>INSTRUMENT</Text>
+          <View style={styles.chipRow}>
+            {INSTRUMENTS.map((ins) => {
+              const active = instrument === ins;
+              return (
+                <Pressable
+                  key={ins}
+                  onPress={() => setInstrument(ins)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  style={[styles.chip, active && styles.chipActive]}
                 >
-                  <Text style={[styles.chipText, { color: active ? solid : theme.light.inkMuted }]}>{ins.toUpperCase()}</Text>
-                </GlassSurface>
-              </Pressable>
-            );
-          })}
+                  <Text style={[styles.chipText, active && styles.chipTextActive]}>{ins.toUpperCase()}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <Pressable
+            onPress={handleGenerate}
+            disabled={generating}
+            accessibilityRole="button"
+            style={({ pressed }) => [
+              styles.generateBtn,
+              generating && styles.generateBtnDisabled,
+              pressed && !generating && { opacity: 0.9 },
+            ]}
+          >
+            {!generating ? <Icon icon={Sparkles} size={15} color="#FFF" strokeWidth={2.2} /> : null}
+            <Text style={styles.generateBtnText}>{generating ? 'Generating...' : 'Generate'}</Text>
+          </Pressable>
         </View>
-      </GlassCard>
 
-      {error ? (
-        <GlassCard style={styles.errorCard}>
-          <View style={styles.errorRow}>
-            <Icon icon={AlertCircle} size={18} color={theme.accents.data.solid} />
-            <Text style={[styles.errorText, { color: theme.accents.data.solid }]}>{error}</Text>
+        {error ? (
+          <View style={[styles.card, styles.errorCard]}>
+            <Icon icon={AlertCircle} size={18} color="#D97B66" />
+            <Text style={styles.errorText}>{error}</Text>
           </View>
-        </GlassCard>
-      ) : null}
+        ) : null}
 
-      {activeTrack ? (
-        <GlassCard style={styles.nowPlaying}>
-          <View style={styles.nowPlayingTop}>
-            <View style={[styles.cover, { backgroundColor: solid }]}>
-              <Icon icon={Music} size={22} color="#FFF" />
+        {/* Now playing */}
+        {activeTrack ? (
+          <View style={[styles.card, styles.nowPlaying]}>
+            <View style={styles.nowPlayingTop}>
+              <View style={styles.cover}>
+                <Icon icon={Music} size={22} color="#FFF" />
+              </View>
+              <View style={styles.nowPlayingInfo}>
+                <Text style={styles.nowPlayingTitle} numberOfLines={1}>{activeTrack.title}</Text>
+                <Text style={styles.nowPlayingMeta}>
+                  {activeTrack.mood && activeTrack.instrument
+                    ? `${activeTrack.mood} • ${activeTrack.instrument} • Generated ${timeAgo(activeTrack.created_at)}`
+                    : 'Aether Original'}
+                </Text>
+                <Text style={styles.nowPlayingMeta}>
+                  {status.isLoaded && status.duration ? `${Math.floor(status.currentTime)}s / ${Math.floor(status.duration)}s` : 'Loading audio…'}
+                </Text>
+              </View>
             </View>
-            <View style={styles.nowPlayingInfo}>
-              <Text style={styles.nowPlayingTitle} numberOfLines={1}>{activeTrack.title}</Text>
-              <Text style={styles.nowPlayingMeta}>
-                {activeTrack.mood && activeTrack.instrument
-                  ? `${activeTrack.mood} • ${activeTrack.instrument} • Generated ${timeAgo(activeTrack.created_at)}`
-                  : 'Aether Original'}
-              </Text>
-              <Text style={styles.nowPlayingMeta}>
-                {status.isLoaded && status.duration ? `${Math.floor(status.currentTime)}s / ${Math.floor(status.duration)}s` : 'Loading audio…'}
-              </Text>
+            <View style={styles.controls}>
+              <Pressable
+                onPress={() => {
+                  const idx = tracks.findIndex((t) => t.id === activeTrack.id);
+                  const prev = tracks[idx - 1] ?? tracks[tracks.length - 1];
+                  if (prev) playTrack(prev);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Previous track"
+                style={({ pressed }) => [styles.controlBtn, pressed && { opacity: 0.7 }]}
+              >
+                <Icon icon={SkipBack} size={18} color="#333" />
+              </Pressable>
+              <Pressable
+                onPress={togglePlay}
+                disabled={generating}
+                accessibilityRole="button"
+                accessibilityLabel={status.playing ? 'Pause' : 'Play'}
+                style={({ pressed }) => [styles.playBtn, generating && { opacity: 0.5 }, pressed && !generating && { opacity: 0.85 }]}
+              >
+                <Icon icon={generating ? Loader : status.playing ? Pause : Play} size={22} color="#FFF" />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  const idx = tracks.findIndex((t) => t.id === activeTrack.id);
+                  const next = tracks[idx + 1] ?? tracks[0];
+                  if (next) playTrack(next);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Next track"
+                style={({ pressed }) => [styles.controlBtn, pressed && { opacity: 0.7 }]}
+              >
+                <Icon icon={SkipForward} size={18} color="#333" />
+              </Pressable>
             </View>
           </View>
-          <View style={styles.controls}>
-            <GlassIconButton icon={SkipBack} onPress={() => {
-              const idx = tracks.findIndex((t) => t.id === activeTrack.id);
-              const prev = tracks[idx - 1] ?? tracks[tracks.length - 1];
-              if (prev) playTrack(prev);
-            }} />
-            <GlassIconButton icon={generating ? Loader : status.playing ? Pause : Play} large onPress={togglePlay} accent={accent} disabled={generating} />
-            <GlassIconButton icon={SkipForward} onPress={() => {
-              const idx = tracks.findIndex((t) => t.id === activeTrack.id);
-              const next = tracks[idx + 1] ?? tracks[0];
-              if (next) playTrack(next);
-            }} />
-          </View>
-        </GlassCard>
-      ) : null}
+        ) : null}
 
-      <View style={styles.sectionRow}>
-        <Text style={theme.glassType.subtitle}>Your Library</Text>
-      </View>
+        <Text style={styles.libraryTitle}>Your Library</Text>
 
-      {loading ? (
-        <GlassCard><Text style={theme.glassType.body}>Loading tracks...</Text></GlassCard>
-      ) : tracks.length === 0 ? (
-        <GlassCard>
-          <View style={styles.empty}>
-            <Icon icon={Music} size={30} color={theme.light.inkFaint} />
-            <Text style={theme.glassType.subtitle}>No tracks yet</Text>
-            <Text style={theme.glassType.body}>Generate your first AI track above — describe a scene, pick a mood, and hit Generate.</Text>
+        {loading ? (
+          <View style={styles.card}>
+            <Text style={styles.emptyDesc}>Loading tracks...</Text>
           </View>
-        </GlassCard>
-      ) : (
-        tracks.map((t) => {
-          const isActive = activeTrack?.id === t.id;
-          return (
-            <GlassCard key={t.id || t.created_at} style={styles.trackCard}>
-              <Pressable onPress={() => playTrack(t)} accessibilityRole="button">
-                <View style={styles.trackRow}>
-                  <View style={[styles.trackCover, { backgroundColor: isActive ? solid : theme.inkEdge(0.08) }]}>
+        ) : tracks.length === 0 ? (
+          <View style={[styles.card, styles.emptyCard]}>
+            <Icon icon={Music} size={30} color="#CCC" />
+            <Text style={styles.emptyTitle}>No tracks yet</Text>
+            <Text style={styles.emptyDesc}>
+              Generate your first AI track above — describe a scene, pick a mood, and hit Generate.
+            </Text>
+          </View>
+        ) : (
+          tracks.map((t) => {
+            const isActive = activeTrack?.id === t.id;
+            return (
+              <View key={t.id || t.created_at} style={[styles.card, styles.trackCard]}>
+                <Pressable onPress={() => playTrack(t)} accessibilityRole="button" style={styles.trackRow}>
+                  <View style={[styles.trackCover, isActive && styles.trackCoverActive]}>
                     {isActive && status.playing ? (
                       <Icon icon={Pause} size={16} color="#FFF" />
                     ) : (
-                      <Icon icon={Play} size={16} color={isActive ? '#FFF' : theme.light.inkMuted} />
+                      <Icon icon={Play} size={16} color={isActive ? '#FFF' : '#999'} />
                     )}
                   </View>
                   <View style={styles.trackInfo}>
-                    <Text style={[styles.trackTitle, { color: isActive ? solid : theme.light.ink }]} numberOfLines={1}>{t.title}</Text>
+                    <Text style={[styles.trackTitle, isActive && { color: GREEN }]} numberOfLines={1}>{t.title}</Text>
                     <Text style={styles.trackMeta}>
                       {t.mood && t.instrument ? `${t.mood} • ${t.instrument}` : 'Aether Original'} • {timeAgo(t.created_at)}
                     </Text>
                   </View>
                   <Pressable onPress={() => deleteTrack(t.id)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Delete track">
-                    <Icon icon={Trash2} size={16} color={theme.light.inkFaint} />
+                    <Icon icon={Trash2} size={16} color="#CCC" />
                   </Pressable>
-                </View>
-              </Pressable>
-            </GlassCard>
-          );
-        })
-      )}
-    </GlassScreen>
+                </Pressable>
+              </View>
+            );
+          })
+        )}
+
+        <View style={{ height: 120 }} />
+      </ScrollView>
+      <BottomNav />
+    </View>
   );
 }
 
-function GlassIconButton({ icon, onPress, large, accent, disabled }: {
-  icon: React.ComponentType<{ size?: number; color?: string }>;
-  onPress: () => void;
-  large?: boolean;
-  accent?: AccentKey;
-  disabled?: boolean;
-}) {
-  const { theme } = useTheme();
-  const styles = useMemo(() => makeStyles(theme), [theme]);
-  const size = large ? 56 : 44;
-  return (
-    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={styles.iconBtnWrap}>
-      <GlassSurface
-        radius={large ? 28 : 22}
-        intensity="thick"
-        fill={theme.glass.fillStrong}
-        tintColor={accent ? theme.accents[accent].wash : undefined}
-        style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Icon icon={icon} size={large ? 22 : 18} color={accent ? theme.accents[accent].solid : theme.light.ink} />
-      </GlassSurface>
-    </Pressable>
-  );
-}
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#FDFBF7' },
+  scroll: { flex: 1, paddingHorizontal: 24, paddingTop: 60 },
+  pageTitle: { fontSize: 28, fontWeight: '700', color: '#333', marginBottom: 20 },
 
-const makeStyles = (theme: GlassTheme) => StyleSheet.create({
-  inputWrap: {
-    marginTop: spacing.sm,
-    borderRadius: glassRadius.card,
-    backgroundColor: theme.inkEdge(0.05),
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+  card: {
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  input: { color: theme.light.ink, fontSize: 15, minHeight: 40, maxHeight: 90 },
-  sectionLabel: { marginTop: spacing.md, marginBottom: spacing.xs },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  chip: { paddingHorizontal: spacing.lg, paddingVertical: spacing.sm },
-  chipText: { ...theme.glassType.label, fontSize: 12 },
-  errorCard: { marginTop: spacing.md },
-  errorRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  errorText: { ...theme.glassType.body, flex: 1 },
-  nowPlaying: { marginTop: spacing.md },
-  nowPlayingTop: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
-  cover: { width: 52, height: 52, borderRadius: glassRadius.card, alignItems: 'center', justifyContent: 'center' },
-  nowPlayingInfo: { flex: 1 },
-  nowPlayingTitle: { ...theme.glassType.subtitle, fontSize: 16 },
-  nowPlayingMeta: { ...theme.glassType.caption, color: theme.light.inkMuted, marginTop: 2 },
-  controls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.lg, marginTop: spacing.md },
-  iconBtnWrap: { marginHorizontal: spacing.xs },
-  sectionRow: { marginTop: spacing.lg, marginBottom: spacing.md },
-  empty: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg },
-  trackCard: { marginBottom: spacing.md },
-  trackRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  trackCover: { width: 40, height: 40, borderRadius: glassRadius.lozenge, alignItems: 'center', justifyContent: 'center' },
-  trackInfo: { flex: 1 },
-  trackTitle: { ...theme.glassType.label, fontSize: 14 },
-  trackMeta: { ...theme.glassType.caption, color: theme.light.inkMuted, marginTop: 2 },
+
+  // Generate card
+  generateCard: { borderRadius: 28, padding: 20, marginBottom: 16 },
+  input: {
+    marginTop: 10,
+    borderRadius: 16,
+    backgroundColor: '#F9F6F0',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: '#333',
+    fontSize: 15,
+    minHeight: 44,
+    maxHeight: 100,
+  },
+  sectionLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#BBB',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    backgroundColor: '#FFF',
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  chipActive: { backgroundColor: GREEN_SOFT, borderColor: GREEN },
+  chipText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, color: '#999' },
+  chipTextActive: { color: GREEN },
+  generateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: GREEN,
+    borderRadius: 999,
+    paddingVertical: 14,
+    marginTop: 20,
+  },
+  generateBtnDisabled: { opacity: 0.6 },
+  generateBtnText: { fontSize: 14, fontWeight: '700', color: '#FFF' },
+
+  // Error
+  errorCard: {
+    borderRadius: 20,
+    padding: 14,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  errorText: { flex: 1, fontSize: 14, color: '#D97B66', lineHeight: 20 },
+
+  // Now playing
+  nowPlaying: { borderRadius: 24, padding: 18, marginBottom: 24 },
+  nowPlayingTop: { flexDirection: 'row', gap: 14, alignItems: 'center' },
+  cover: {
+    width: 52,
+    height: 52,
+    borderRadius: 18,
+    backgroundColor: GREEN,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nowPlayingInfo: { flex: 1, gap: 2 },
+  nowPlayingTitle: { fontSize: 16, fontWeight: '700', color: '#333' },
+  nowPlayingMeta: { fontSize: 12, color: '#999' },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24,
+    marginTop: 18,
+  },
+  controlBtn: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: '#F3EDE3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playBtn: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: GREEN,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: GREEN,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+
+  // Library
+  libraryTitle: { fontSize: 18, fontWeight: '700', color: '#333', marginBottom: 14 },
+  emptyCard: { borderRadius: 24, padding: 32, alignItems: 'center' },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: '#333', marginTop: 12 },
+  emptyDesc: { fontSize: 14, color: '#999', textAlign: 'center', lineHeight: 20 },
+
+  trackCard: { borderRadius: 20, padding: 14, marginBottom: 12 },
+  trackRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  trackCover: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#F3EDE3',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  trackCoverActive: { backgroundColor: GREEN },
+  trackInfo: { flex: 1, gap: 2 },
+  trackTitle: { fontSize: 14, fontWeight: '700', color: '#333' },
+  trackMeta: { fontSize: 12, color: '#999' },
 });

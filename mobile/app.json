@@ -8,7 +8,7 @@
     "userInterfaceStyle": "dark",
     "scheme": "aether",
     "android": {
-      "package": "com.aether.app",
+      "package": "trillion_game.start",
       "adaptiveIcon": {
         "backgroundColor": "#0B0B10",
         "foregroundImage": "./assets/android-icon-foreground.png",

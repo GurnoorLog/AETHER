@@ -1,3 +1,377 @@
 Starting project at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile
 Starting Metro Bundler
 
+Waiting on http://localhost:8081
+
+An update for expo is available: 57.0.13 → ~57.0.15
+9 other packages may need updating. Run npx expo install --check for details.
+Logs for your project will appear below.
+Android Bundling failed 48240ms node_modules\expo-router\entry.js (3455 modules)
+Unable to resolve "@/assets/design/bg.jpg" from "app\index.tsx"
+[0m [90m 20 |[39m [36mimport[39m { supabase } [36mfrom[39m [32m'@/lib/supabase'[39m[33m;[39m
+ [90m 21 |[39m
+[31m[1m>[22m[39m[90m 22 |[39m [36mconst[39m [33mBG[39m [33m=[39m require([32m'@/assets/design/bg.jpg'[39m)[33m;[39m
+ [90m    |[39m                     [31m[1m^[22m[39m
+ [90m 23 |[39m [36mconst[39m [33mLOGO[39m [33m=[39m require([32m'@/assets/design/logo.png'[39m)[33m;[39m
+ [90m 24 |[39m
+ [90m 25 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mIndex[39m() {[0m
+
+Import stack:
+
+ app\index.tsx
+ | import "@/assets/design/bg.jpg"
+
+ app (require.context)
+
+Android Bundled 2414ms node_modules\expo-router\entry.js (3486 modules)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+Android Bundled 81ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+Android Bundled 3122ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+ ERROR  SyntaxError: C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\app\auth.tsx: Expected corresponding JSX closing tag for <KeyboardAvoidingView>. (357:6)
+
+  355 |           <View style={styles.homeIndicator} />
+  356 |         </View>
+> 357 |       </ImageBackground>
+      |       ^
+  358 |     </KeyboardAvoidingView>
+  359 |   );
+  360 | }
+    at constructor (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6620:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4743:16)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4765:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4775:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:39
+    at TypeScriptParserMixin.tryParse (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6928:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12455:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12522:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11701:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11357:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4780:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9807:20)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10805:23)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12450:16)
+    at TypeScriptParserMixin.parseExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:17)
+    at TypeScriptParserMixin.parseReturnStatement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13171:28)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12827:21)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9529:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12796:17)
+    at TypeScriptParserMixin.parseStatementListItem (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12776:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13345:61)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13338:10)
+    at TypeScriptParserMixin.parseBlock (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13326:10)
+    at TypeScriptParserMixin.parseFunctionBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12129:24)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12115:10)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9193:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13474:12
+    at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12432:14)
+    at TypeScriptParserMixin.parseFunction (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13473:10)
+ ERROR  SyntaxError: C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\app\auth.tsx: Expected corresponding JSX closing tag for <KeyboardAvoidingView>. (357:6)
+
+  355 |           <View style={styles.homeIndicator} />
+  356 |         </View>
+> 357 |       </ImageBackground>
+      |       ^
+  358 |     </KeyboardAvoidingView>
+  359 |   );
+  360 | }
+    at constructor (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6620:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4743:16)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4765:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4775:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:39
+    at TypeScriptParserMixin.tryParse (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6928:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12455:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12522:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11701:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11357:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4780:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9807:20)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10805:23)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12450:16)
+    at TypeScriptParserMixin.parseExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:17)
+    at TypeScriptParserMixin.parseReturnStatement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13171:28)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12827:21)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9529:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12796:17)
+    at TypeScriptParserMixin.parseStatementListItem (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12776:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13345:61)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13338:10)
+    at TypeScriptParserMixin.parseBlock (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13326:10)
+    at TypeScriptParserMixin.parseFunctionBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12129:24)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12115:10)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9193:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13474:12
+    at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12432:14)
+    at TypeScriptParserMixin.parseFunction (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13473:10)
+ ERROR  SyntaxError: C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\app\auth.tsx: Expected corresponding JSX closing tag for <KeyboardAvoidingView>. (357:6)
+
+  355 |           <View style={styles.homeIndicator} />
+  356 |         </View>
+> 357 |       </ImageBackground>
+      |       ^
+  358 |     </KeyboardAvoidingView>
+  359 |   );
+  360 | }
+    at constructor (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6620:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4743:16)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4765:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4775:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:39
+    at TypeScriptParserMixin.tryParse (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6928:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12455:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12522:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11701:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11357:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4780:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9807:20)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10805:23)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12450:16)
+    at TypeScriptParserMixin.parseExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:17)
+    at TypeScriptParserMixin.parseReturnStatement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13171:28)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12827:21)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9529:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12796:17)
+    at TypeScriptParserMixin.parseStatementListItem (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12776:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13345:61)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13338:10)
+    at TypeScriptParserMixin.parseBlock (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13326:10)
+    at TypeScriptParserMixin.parseFunctionBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12129:24)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12115:10)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9193:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13474:12
+    at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12432:14)
+    at TypeScriptParserMixin.parseFunction (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13473:10)
+Android Bundled 168ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+ ERROR  SyntaxError: C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\app\auth.tsx: Expected corresponding JSX closing tag for <ScrollView>. (360:8)
+
+  358 |
+  359 |           <View style={styles.homeIndicator} />
+> 360 |         </View>
+      |         ^
+  361 |     </KeyboardAvoidingView>
+  362 |   );
+  363 | }
+    at constructor (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:369:19)
+    at TypeScriptParserMixin.raise (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6620:19)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4743:16)
+    at TypeScriptParserMixin.jsxParseElementAt (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4714:32)
+    at TypeScriptParserMixin.jsxParseElement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4765:17)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4775:19)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:39
+    at TypeScriptParserMixin.tryParse (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:6928:20)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9796:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12455:12)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10821:17)
+    at TypeScriptParserMixin.parseMaybeAssignAllowInOrVoidPattern (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12522:17)
+    at TypeScriptParserMixin.parseParenAndDistinguishExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11701:28)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11357:23)
+    at TypeScriptParserMixin.parseExprAtom (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:4780:20)
+    at TypeScriptParserMixin.parseExprSubscripts (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11102:23)
+    at TypeScriptParserMixin.parseUpdate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11087:21)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:11067:23)
+    at TypeScriptParserMixin.parseMaybeUnary (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9858:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10920:61)
+    at TypeScriptParserMixin.parseExprOps (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10925:23)
+    at TypeScriptParserMixin.parseMaybeConditional (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10902:23)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10852:21)
+    at TypeScriptParserMixin.parseMaybeAssign (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9807:20)
+    at TypeScriptParserMixin.parseExpressionBase (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10805:23)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:39
+    at TypeScriptParserMixin.allowInAnd (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12450:16)
+    at TypeScriptParserMixin.parseExpression (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:10801:17)
+    at TypeScriptParserMixin.parseReturnStatement (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13171:28)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12827:21)
+    at TypeScriptParserMixin.parseStatementContent (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9529:18)
+    at TypeScriptParserMixin.parseStatementLike (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12796:17)
+    at TypeScriptParserMixin.parseStatementListItem (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12776:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13345:61)
+    at TypeScriptParserMixin.parseBlockBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13338:10)
+    at TypeScriptParserMixin.parseBlock (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13326:10)
+    at TypeScriptParserMixin.parseFunctionBody (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12129:24)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12115:10)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:9193:18)
+    at C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:13474:12
+    at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (C:\Users\tambe\Desktop\hacktons\Prometheus July AI Challenge\mobile\node_modules\@babel\parser\lib\index.js:12432:14)
+Android Bundled 908ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+Android Bundled 69ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+ ERROR  [ReferenceError: Property 'KOALA' doesn't exist] 
+
+Code: index.tsx
+[0m [90m 73 |[39m           {[90m/* Koala character */[39m}
+ [90m 74 |[39m           [33m<[39m[33mView[39m style[33m=[39m{styles[33m.[39mkoalaWrap} pointerEvents[33m=[39m[32m"none"[39m[33m>[39m
+[31m[1m>[22m[39m[90m 75 |[39m             [33m<[39m[33mImageBackground[39m source[33m=[39m{[33mKOALA[39m} style[33m=[39m{styles[33m.[39mkoala} [33m/[39m[33m>[39m
+ [90m    |[39m                                      [31m[1m^[22m[39m
+ [90m 76 |[39m           [33m<[39m[33m/[39m[33mView[39m[33m>[39m
+ [90m 77 |[39m
+ [90m 78 |[39m           {[90m/* Bottom glass sheet */[39m}[0m
+Call Stack
+  Index (app\index.tsx:75:38) 
+
+Code: _layout.tsx
+[0m [90m 11 |[39m         [33m<[39m[33mAuthProvider[39m[33m>[39m
+ [90m 12 |[39m           [33m<[39m[33mStatusBar[39m style[33m=[39m[32m"auto"[39m [33m/[39m[33m>[39m
+[31m[1m>[22m[39m[90m 13 |[39m           [33m<[39m[33mStack[39m screenOptions[33m=[39m{{ headerShown[33m:[39m [36mfalse[39m }}[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 14 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"index"[39m [33m/[39m[33m>[39m
+ [90m 15 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"login"[39m [33m/[39m[33m>[39m
+ [90m 16 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"auth"[39m options[33m=[39m{{ presentation[33m:[39m [32m'transparentModal'[39m[33m,[39m animation[33m:[39m [32m'slide_from_bottom'[39m }} [33m/[39m[33m>[39m[0m
+Call Stack
+  RootLayout (app\_layout.tsx:13:11)
+Android Bundled 71ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+Android Bundled 122ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+Android Bundled 410ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+Android Bundled 73ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+ ERROR  [ReferenceError: Property 'Image' doesn't exist] 
+
+Code: onboarding.tsx
+[0m [90m 340 |[39m         [33m<[39m[33mText[39m style[33m=[39m{styles[33m.[39mheadline}[33m>[39m[33mLet[39m[33m&[39mapos[33m;[39ms [36mget[39m to{[32m'\n'[39m}know you[33m![39m 💚[33m<[39m[33m/[39m[33mText[39m[33m>[39m
+ [90m 341 |[39m         [33m<[39m[33mText[39m style[33m=[39m{styles[33m.[39mheadlineSub}[33m>[39m[33mA[39m few quick questions so [33mI[39m can personalize your learning experience[33m.[39m[33m<[39m[33m/[39m[33mText[39m[33m>[39m
+[31m[1m>[22m[39m[90m 342 |[39m         [33m<[39m[33mImage[39m source[33m=[39m{[33mKOALA[39m} style[33m=[39m{styles[33m.[39mkoala} [33m/[39m[33m>[39m
+ [90m     |[39m          [31m[1m^[22m[39m
+ [90m 343 |[39m       [33m<[39m[33m/[39m[33mView[39m[33m>[39m
+ [90m 344 |[39m
+ [90m 345 |[39m       {[90m/* Bottom card */[39m}[0m
+Call Stack
+  OnboardingScreen (app\onboarding.tsx:342:10) 
+
+Code: _layout.tsx
+[0m [90m 11 |[39m         [33m<[39m[33mAuthProvider[39m[33m>[39m
+ [90m 12 |[39m           [33m<[39m[33mStatusBar[39m style[33m=[39m[32m"auto"[39m [33m/[39m[33m>[39m
+[31m[1m>[22m[39m[90m 13 |[39m           [33m<[39m[33mStack[39m screenOptions[33m=[39m{{ headerShown[33m:[39m [36mfalse[39m }}[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 14 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"index"[39m [33m/[39m[33m>[39m
+ [90m 15 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"login"[39m [33m/[39m[33m>[39m
+ [90m 16 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"auth"[39m options[33m=[39m{{ presentation[33m:[39m [32m'transparentModal'[39m[33m,[39m animation[33m:[39m [32m'slide_from_bottom'[39m }} [33m/[39m[33m>[39m[0m
+Call Stack
+  RootLayout (app\_layout.tsx:13:11)
+ ERROR  [ReferenceError: Property 'Image' doesn't exist] 
+
+Code: onboarding.tsx
+[0m [90m 340 |[39m         [33m<[39m[33mText[39m style[33m=[39m{styles[33m.[39mheadline}[33m>[39m[33mLet[39m[33m&[39mapos[33m;[39ms [36mget[39m to{[32m'\n'[39m}know you[33m![39m 💚[33m<[39m[33m/[39m[33mText[39m[33m>[39m
+ [90m 341 |[39m         [33m<[39m[33mText[39m style[33m=[39m{styles[33m.[39mheadlineSub}[33m>[39m[33mA[39m few quick questions so [33mI[39m can personalize your learning experience[33m.[39m[33m<[39m[33m/[39m[33mText[39m[33m>[39m
+[31m[1m>[22m[39m[90m 342 |[39m         [33m<[39m[33mImage[39m source[33m=[39m{[33mKOALA[39m} style[33m=[39m{styles[33m.[39mkoala} [33m/[39m[33m>[39m
+ [90m     |[39m          [31m[1m^[22m[39m
+ [90m 343 |[39m       [33m<[39m[33m/[39m[33mView[39m[33m>[39m
+ [90m 344 |[39m
+ [90m 345 |[39m       {[90m/* Bottom card */[39m}[0m
+Call Stack
+  OnboardingScreen (app\onboarding.tsx:342:10) 
+
+Code: _layout.tsx
+[0m [90m 11 |[39m         [33m<[39m[33mAuthProvider[39m[33m>[39m
+ [90m 12 |[39m           [33m<[39m[33mStatusBar[39m style[33m=[39m[32m"auto"[39m [33m/[39m[33m>[39m
+[31m[1m>[22m[39m[90m 13 |[39m           [33m<[39m[33mStack[39m screenOptions[33m=[39m{{ headerShown[33m:[39m [36mfalse[39m }}[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 14 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"index"[39m [33m/[39m[33m>[39m
+ [90m 15 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"login"[39m [33m/[39m[33m>[39m
+ [90m 16 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"auth"[39m options[33m=[39m{{ presentation[33m:[39m [32m'transparentModal'[39m[33m,[39m animation[33m:[39m [32m'slide_from_bottom'[39m }} [33m/[39m[33m>[39m[0m
+Call Stack
+  RootLayout (app\_layout.tsx:13:11)
+Android Bundled 71ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
+ ERROR  [ReferenceError: Property 'LOGO' doesn't exist] 
+
+Code: onboarding.tsx
+[0m [90m 330 |[39m         [33m<[39m[33mView[39m style[33m=[39m{styles[33m.[39mbrand}[33m>[39m
+ [90m 331 |[39m           [33m<[39m[33mView[39m style[33m=[39m{styles[33m.[39mlogoWrap}[33m>[39m
+[31m[1m>[22m[39m[90m 332 |[39m             [33m<[39m[33mImageBackground[39m source[33m=[39m{[33mLOGO[39m} style[33m=[39m{styles[33m.[39mlogo} imageStyle[33m=[39m{styles[33m.[39mlogoRound} [33m/[39m[33m>[39m
+ [90m     |[39m                                      [31m[1m^[22m[39m
+ [90m 333 |[39m           [33m<[39m[33m/[39m[33mView[39m[33m>[39m
+ [90m 334 |[39m           [33m<[39m[33mView[39m[33m>[39m
+ [90m 335 |[39m             [33m<[39m[33mText[39m style[33m=[39m{styles[33m.[39mbrandName}[33m>[39m[33mAETHER[39m[33m<[39m[33m/[39m[33mText[39m[33m>[39m[0m
+Call Stack
+  OnboardingScreen (app\onboarding.tsx:332:38) 
+
+Code: _layout.tsx
+[0m [90m 11 |[39m         [33m<[39m[33mAuthProvider[39m[33m>[39m
+ [90m 12 |[39m           [33m<[39m[33mStatusBar[39m style[33m=[39m[32m"auto"[39m [33m/[39m[33m>[39m
+[31m[1m>[22m[39m[90m 13 |[39m           [33m<[39m[33mStack[39m screenOptions[33m=[39m{{ headerShown[33m:[39m [36mfalse[39m }}[33m>[39m
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 14 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"index"[39m [33m/[39m[33m>[39m
+ [90m 15 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"login"[39m [33m/[39m[33m>[39m
+ [90m 16 |[39m             [33m<[39m[33mStack[39m[33m.[39m[33mScreen[39m name[33m=[39m[32m"auth"[39m options[33m=[39m{{ presentation[33m:[39m [32m'transparentModal'[39m[33m,[39m animation[33m:[39m [32m'slide_from_bottom'[39m }} [33m/[39m[33m>[39m[0m
+Call Stack
+  RootLayout (app\_layout.tsx:13:11)
+Android Bundled 74ms node_modules\expo-router\entry.js (1 module)
+ LOG  [auth] REDIRECT_URI = aether://oauth2redirect
