@@ -342,20 +342,20 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
         {/* AI Response (Right) */}
         {lastAgentMsg && (
           <section className="absolute right-16 top-1/2 -translate-y-1/2 w-[320px] max-lg:hidden">
-            <div className="glass-warm rounded-[32px] p-8 border-l-4 border-[#6B8E61] text-stream-fade max-h-[400px] overflow-y-auto">
+            <div className="glass-warm rounded-[32px] p-8 border-l-4 border-[#6B8E61] text-stream-fade text-[#2D3436] max-h-[400px] overflow-y-auto">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#6B8E61] flex items-center justify-center text-black shadow-lg">
+                <div className="w-10 h-10 rounded-xl bg-[#6B8E61] flex items-center justify-center text-white shadow-lg">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#6B8E61]">Aether Response</span>
               </div>
-              <div className="text-sm leading-relaxed text-white/90 whitespace-pre-wrap">
+              <div className="text-sm leading-relaxed text-[#2D3436] whitespace-pre-wrap">
                 {lastAgentMsg.content.split("\n\n").map((para, i) => {
                   const rendered = para
-                    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white font-bold'>$1</strong>")
-                    .replace(/`(.*?)`/g, '<code class="text-[#6B8E61] bg-black/30 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
+                    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-[#2D3436] font-bold'>$1</strong>")
+                    .replace(/`(.*?)`/g, '<code class="text-[#6B8E61] bg-[#2D3436]/10 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>')
                     .replace(/\*(.*?)\*/g, "<em class='italic text-warm-ink-soft'>$1</em>");
                   return <p key={i} className="mb-3 last:mb-0" dangerouslySetInnerHTML={{ __html: rendered }} />;
                 })}

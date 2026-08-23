@@ -406,7 +406,7 @@ export default function SessionProgressPage() {
                   </div>
                   <p className="text-sm font-bold mb-2 group-hover:text-sage transition-colors">{strengths[0].name} Review</p>
                   <p className="text-xs text-warm-ink-muted mb-6">Review your recent notes summarized by Aether.</p>
-                  <a href="#" className="inline-block px-6 py-2 bg-warm-ink/[0.04] text-white text-[10px] font-bold rounded-full uppercase tracking-tighter">Read Notes</a>
+                  <a href="#" className="inline-block px-6 py-2 bg-warm-ink/[0.04] text-warm-ink-soft text-[10px] font-bold rounded-full uppercase tracking-tighter">Read Notes</a>
                 </div>
               )}
               {nextModuleName && (
@@ -421,7 +421,7 @@ export default function SessionProgressPage() {
                 </div>
                 <p className="text-sm font-bold mb-2 group-hover:text-cyan-400 transition-colors">{nextModuleName}</p>
                 <p className="text-xs text-warm-ink-muted mb-6">Unlock the next module in your customized learning roadmap.</p>
-                <a href="#" className="inline-block px-6 py-2 bg-warm-ink/[0.04] text-white text-[10px] font-bold rounded-full uppercase tracking-tighter">Unlock Module</a>
+                <a href="#" className="inline-block px-6 py-2 bg-warm-ink/[0.04] text-warm-ink-soft text-[10px] font-bold rounded-full uppercase tracking-tighter">Unlock Module</a>
               </div>
               )}
             </div>

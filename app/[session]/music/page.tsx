@@ -551,7 +551,7 @@ export default function SessionMusicPage() {
                   </div>
                   <h4 className="font-bold mb-1">{amb.label}</h4>
                   <p className="text-[10px] text-warm-ink-muted uppercase tracking-wider mb-6">{amb.tags}</p>
-                  <button className="mt-auto bg-warm-ink/[0.03] border border-hairline-warm text-xs font-bold py-2 rounded-full group-hover:bg-sage group-hover:text-white transition-all cursor-pointer">Start</button>
+                  <button                   className="mt-auto bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft text-xs font-bold py-2 rounded-full group-hover:bg-sage group-hover:text-white transition-all cursor-pointer">Start</button>
                 </div>
               ))}
             </div>
@@ -634,7 +634,7 @@ export default function SessionMusicPage() {
             </div>
             <div className="bg-white/70 rounded-[32px] border border-hairline-warm p-8 flex flex-col justify-center items-center text-center space-y-6 relative overflow-hidden group cursor-pointer">
               <div className="absolute inset-0 bg-gradient-to-t from-sage/5 to-transparent pointer-events-none" />
-              <div className="w-24 h-24 rounded-full bg-warm-ink/[0.03] border border-hairline-warm flex items-center justify-center group-hover:scale-110 transition-all group-hover:bg-sage group-hover:text-white">
+              <div className="w-24 h-24 rounded-full bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft flex items-center justify-center group-hover:scale-110 transition-all group-hover:bg-sage group-hover:text-white">
                 <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-8.159-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.18-1.14-.6-.12-.48.18-1.02.6-1.14 4.2-1.32 9.54-.66 13.14 1.56.36.24.48.78.301 1.2v.06zm.12-3.36c-3.84-2.28-10.14-2.52-13.8-1.38-.48.12-1.02-.18-1.14-.6-.12-.48.18-1.02.6-1.14 4.2-1.26 11.28-1.02 15.66 1.56.54.3.66 1.02.36 1.56-.24.48-.96.66-1.56.36z" />
                 </svg>
@@ -662,7 +662,7 @@ export default function SessionMusicPage() {
               </button>
               <input type="text" placeholder="Describe the track you want..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleGenerate(); }} className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-xs sm:text-sm py-2 sm:py-4 text-warm-ink placeholder-warm-ink-faint outline-none" />
               <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                <button className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-warm-ink/[0.03] border border-hairline-warm hover:bg-warm-ink/[0.05] flex items-center justify-center text-white cursor-pointer">
+                <button className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-warm-ink/[0.03] border border-hairline-warm hover:bg-warm-ink/[0.05] flex items-center justify-center text-warm-ink-soft cursor-pointer">
                   <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
                   </svg>
