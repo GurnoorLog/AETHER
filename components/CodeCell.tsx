@@ -28,8 +28,8 @@ export default function CodeCell({ language = "python", defaultCode = "", readOn
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] overflow-hidden bg-black/40">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/[0.04]">
+    <div className="rounded-2xl border border-hairline-warm overflow-hidden bg-[#2A2438]">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-hairline-warm">
         <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">{language}</span>
         <div className="flex items-center gap-2">
           {readOnly ? null : (
@@ -56,7 +56,7 @@ export default function CodeCell({ language = "python", defaultCode = "", readOn
         spellCheck={false}
       />
       {(output || error) && (
-        <div className={`border-t ${error ? "border-red-400/20 bg-red-400/[0.03]" : "border-white/[0.04] bg-white/[0.02]"}`}>
+        <div className={`border-t ${error ? "border-red-400/20 bg-red-400/[0.03]" : "border-hairline-warm bg-white/[0.02]"}`}>
           {output && (
             <pre className="p-4 text-xs font-mono text-white/70 whitespace-pre-wrap">{output}</pre>
           )}

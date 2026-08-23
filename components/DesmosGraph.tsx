@@ -33,5 +33,5 @@ export default function DesmosGraph({ expressions = [] }: { expressions?: string
     });
   }, [expressions]);
 
-  return <div ref={ref} className="w-full h-[450px] rounded-2xl overflow-hidden border border-white/[0.06]" />;
+  return <div ref={ref} className="w-full h-[450px] rounded-2xl overflow-hidden border border-hairline-warm" />;
 }

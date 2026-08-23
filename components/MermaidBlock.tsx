@@ -24,5 +24,5 @@ export default function MermaidBlock({ chart }: { chart: string }) {
 
   if (!svg) return null;
 
-  return <div className="glass-card rounded-[28px] p-4 overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;
+  return <div className="glass-card-warm rounded-[28px] p-4 overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;
 }

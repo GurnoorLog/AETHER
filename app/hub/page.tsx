@@ -95,6 +95,7 @@ export default function HubPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+  const [greeting, setGreeting] = useState("Hello");
 
   const fetchHubData = useCallback(async () => {
     if (!user) return;
@@ -115,6 +116,10 @@ export default function HubPage() {
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+  }, []);
 
   useEffect(() => {
     if (user) fetchHubData();
@@ -210,7 +215,7 @@ export default function HubPage() {
         {/* Greeting */}
         <div className="px-6 pt-16 relative">
           <h1 className="text-[28px] font-bold text-[#333] tracking-tight leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            {getGreeting()},<br />
+            {greeting},<br />
             <span style={{ color: "#6B8E61" }}>{firstName} 👋</span>
           </h1>
           <p className="text-[15px] mt-1 opacity-80" style={{ color: "#666" }}>
@@ -420,8 +425,8 @@ export default function HubPage() {
       </main>
 
       {/* Bottom Nav */}
-      <footer className="shrink-0 z-40 bg-white border-t px-6 pb-2" style={{ borderColor: "#F3EDE3" }}>
-        <nav className="flex justify-between items-center h-[72px]">
+      <footer className="shrink-0 z-40 bg-white border-t px-6 py-2" style={{ borderColor: "#F3EDE3" }}>
+        <nav className="flex justify-between items-center h-[64px] max-w-xl mx-auto">
           {[
             { label: "Hub", icon: "M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25", active: true },
             { label: "Subjects", icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" },
@@ -431,7 +436,7 @@ export default function HubPage() {
           ].map((item) => (
             <button
               key={item.label}
-              className="flex flex-col items-center gap-1.5"
+              className="flex flex-col items-center gap-1 cursor-pointer"
             >
               {item.active ? (
                 <div className="px-4 py-1.5 rounded-full" style={{ backgroundColor: "#E8F0E5" }}>
@@ -440,9 +445,11 @@ export default function HubPage() {
                   </svg>
                 </div>
               ) : (
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#999" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                </svg>
+                <div className="px-4 py-1.5">
+                  <svg className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="#999" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                  </svg>
+                </div>
               )}
               <span
                 className="text-[11px] font-bold"
@@ -453,8 +460,6 @@ export default function HubPage() {
             </button>
           ))}
         </nav>
-        {/* Home indicator */}
-        <div className="w-[134px] h-[5px] rounded-full mx-auto mb-2" style={{ backgroundColor: "rgba(0,0,0,0.1)" }} />
       </footer>
 
       <CreateSessionModal

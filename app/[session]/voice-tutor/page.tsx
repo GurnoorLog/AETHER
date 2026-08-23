@@ -330,7 +330,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
                 <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-warm-ink-muted">Session Ended</p>
                 <button
                   onClick={() => { if (activeConversation) start(activeConversation); }}
-                  className="bg-[#6B8E61] text-black font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(107,142,97,0.3)] cursor-pointer"
+                  className="bg-[#6B8E61] text-white font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(107,142,97,0.3)] cursor-pointer"
                 >
                   Reconnect
                 </button>
@@ -374,7 +374,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
               onClick={() => setMicMuted(!micActive)}
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
                 micActive
-                  ? "bg-[#6B8E61] text-black shadow-[0_0_15px_rgba(107,142,97,0.3)]"
+                  ? "bg-[#6B8E61] text-white shadow-[0_0_15px_rgba(107,142,97,0.3)]"
                   : "bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]"
               }`}
             >
@@ -424,7 +424,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
               className={`w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer ${
                 outputMuted
                   ? "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-muted"
-                  : "bg-[#6B8E61] text-black shadow-lg"
+                  : "bg-[#6B8E61] text-white shadow-lg"
               }`}
               title="Volume Control - Arriving Soon"
             >

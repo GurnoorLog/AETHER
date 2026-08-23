@@ -54,6 +54,7 @@ export default function SessionDashboardPage() {
   const { session } = useSession();
   const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [greeting, setGreeting] = useState("Hello");
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
@@ -80,6 +81,10 @@ export default function SessionDashboardPage() {
   useEffect(() => {
     if (user) fetchModules();
   }, [user, fetchModules]);
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+  }, []);
 
   const startModule = (moduleId: string) => {
     router.push(`/${session?.slug}/chat?module=${moduleId}`);
@@ -113,7 +118,7 @@ export default function SessionDashboardPage() {
       {/* Greeting overlay */}
       <div className="absolute top-0 left-0 right-0 z-[3] px-6 lg:px-12 pt-14 pointer-events-none">
         <p className="text-[28px] lg:text-[32px] font-bold leading-tight" style={{ color: "#2D3436" }}>
-          {getGreeting()}
+          {greeting}
         </p>
         <p className="text-[28px] lg:text-[32px] font-bold leading-tight" style={{ color: GREEN }}>
           {session.subject || "Student"}
