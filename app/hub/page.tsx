@@ -403,6 +403,7 @@ export default function HubPage() {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 }
