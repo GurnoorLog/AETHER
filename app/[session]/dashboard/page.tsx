@@ -23,7 +23,7 @@ interface RoadmapModule {
 }
 
 const SUBJECT_IMAGES: Record<string, string> = {
-  physics: "/design/physics.jpg",
+  physics: "/design/hero-koala.png",
   maths: "/design/maths.jpg",
   math: "/design/maths.jpg",
   mathematics: "/design/maths.jpg",
@@ -106,55 +106,54 @@ export default function SessionDashboardPage() {
   }
 
   return (
-    <div className="h-screen overflow-y-auto no-scrollbar" style={{ backgroundColor: "#FDFBF7" }}>
+    <div className="h-screen overflow-y-auto no-scrollbar p-6" style={{ backgroundColor: "#FDFBF7" }}>
 
       {/* ── Header image & greeting ── */}
       <div
-        className="relative h-[420px] lg:h-[500px] w-full p-6 lg:p-12"
+        className="relative h-[420px] lg:h-[520px] w-full"
         style={{
           backgroundImage: `linear-gradient(rgba(253, 251, 247, 0.02), rgba(253, 251, 247, 0.02)), url('${getSubjectImage(session.subject)}')`,
           backgroundSize: "cover",
-          backgroundPosition: "center 10%",
-          borderBottomLeftRadius: 48,
-          borderBottomRightRadius: 48,
+          backgroundPosition: "center 30%",
+          borderRadius: 40,
         }}
       >
         {/* Back to hub */}
         <button
           onClick={() => router.push("/hub")}
           aria-label="Back to hub"
-          className="absolute top-8 left-8 bg-white/90 hover:bg-white p-2 rounded-full cursor-pointer shadow-sm transition-colors z-10"
+          className="absolute top-8 left-8 bg-white/95 hover:bg-white p-2 rounded-full cursor-pointer shadow-sm transition-colors z-20"
         >
           <svg className="w-5 h-5 text-[#555E61]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
         </button>
 
-        <div className="mt-8 lg:mt-4">
-          <h1 className="text-[32px] lg:text-[48px] font-bold leading-tight text-[#2D3436]">
+        <div className="p-8 lg:p-12">
+          <h1 className="text-[32px] lg:text-[48px] font-bold leading-[1.2] tracking-tight text-[#2D3436]">
             {greeting} <br />
-            <span style={{ color: SAGE }}>{session.subject || "Student"}</span>
+            {session.subject || "Student"}
           </h1>
-          <p className="text-[#555E61] text-base lg:text-lg font-medium mt-2">
-            Ready to learn something amazing today?
+          <p className="text-[#7C8082] text-base lg:text-lg font-medium mt-3">
+            Let&apos;s continue your learning journey.
           </p>
         </div>
 
-        {/* ── Hero course card (overlapping) ── */}
+        {/* ── Hero course card (overlapping, half below hero) ── */}
         <div
-          className="absolute left-6 right-6 lg:left-12 lg:right-12 bottom-[-90px] rounded-[36px] lg:rounded-[48px] p-6 lg:p-10 border border-white/80"
-          style={{ backgroundColor: "rgba(255,255,255,0.95)", backdropFilter: "blur(10px)", boxShadow: CARD_SHADOW }}
+          className="absolute left-8 right-8 bottom-0 translate-y-1/2 rounded-[40px] p-6 lg:p-10 border border-white/80"
+          style={{ backgroundColor: "rgba(255,255,255,0.98)", backdropFilter: "blur(8px)", boxShadow: "0 20px 50px -15px rgba(0,0,0,0.18)" }}
         >
-          <div className="flex items-center gap-3 mb-4 flex-wrap">
-            <div className="text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-tight uppercase max-w-[320px] truncate" style={{ backgroundColor: "#2D3436" }}>
+          <div className="flex items-center gap-3 mb-5 flex-wrap">
+            <div className="text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase max-w-[320px] truncate" style={{ backgroundColor: "#2D3436" }}>
               {session.title}
             </div>
-            <div className="px-3 py-1.5 rounded-full text-xs font-bold" style={{ backgroundColor: "#F1E9DE", color: "#8B7E6B" }}>
+            <div className="px-3 py-1.5 rounded-full text-[11px] font-bold" style={{ backgroundColor: "#F1E9DE", color: "#8B7E6B" }}>
               {modules.length} Modules
             </div>
           </div>
 
-          <h2 className="text-xl lg:text-3xl font-bold mb-6 text-[#2D3436] truncate">
+          <h2 className="text-xl lg:text-[36px] font-bold mb-6 lg:mb-8 tracking-tight text-[#2D3436] truncate">
             {currentModule
               ? `Continue "${currentModule.title}"`
               : completedCount === modules.length && modules.length > 0
@@ -169,84 +168,112 @@ export default function SessionDashboardPage() {
                 style={{ width: `${progress}%`, backgroundColor: SAGE }}
               />
             </div>
-            <span className="text-lg lg:text-xl font-bold text-[#2D3436]">{progress}%</span>
+            <span className="text-xl lg:text-2xl font-bold text-[#2D3436]">{progress}%</span>
           </div>
         </div>
       </div>
 
       {/* ── Quick actions ── */}
-      <div className="mt-28 lg:mt-32 px-6 lg:px-12 pb-12">
-        <h3 className="text-sm font-bold uppercase tracking-widest mb-6" style={{ color: MUTED }}>
-          Quick Actions
+      <div className="mt-28 lg:mt-32 px-2 pb-12">
+        <h3 className="text-[13px] font-bold tracking-[0.2em] uppercase mb-6 px-2" style={{ color: MUTED }}>
+          Start Learning
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
           {currentModule && (
             <button
               onClick={() => startModule(currentModule.id)}
-              className="bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
+              className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
               style={{ boxShadow: CARD_SHADOW }}
             >
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E8F1E6" }}>
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E8F1E6" }}>
+                <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 2v8l3-3 3 3V2" />
                 </svg>
               </div>
-              <p className="text-xs font-bold uppercase" style={{ color: MUTED }}>Continue</p>
-              <h4 className="font-bold text-lg text-[#2D3436] truncate">{currentModule.title}</h4>
-              <p className="text-sm" style={{ color: MUTED }}>Resume this module</p>
+              <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: MUTED }}>Continue</p>
+              <h4 className="font-bold text-[17px] text-[#2D3436] truncate">{currentModule.title}</h4>
+              <p className="text-xs mt-1" style={{ color: MUTED }}>Resume this module</p>
+              <div className="absolute bottom-6 right-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: SAGE }}>
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6 7l7-7-7-7" />
+                </svg>
+              </div>
             </button>
           )}
 
           <button
             onClick={() => router.push(`/${session?.slug}/chat`)}
-            className="bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
+            className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
             style={{ boxShadow: CARD_SHADOW }}
           >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E8F1E6" }}>
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E8F1E6" }}>
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
               </svg>
             </div>
-            <p className="text-xs font-bold uppercase" style={{ color: MUTED }}>Tutor</p>
-            <h4 className="font-bold text-lg text-[#2D3436]">Chat with Aether</h4>
-            <p className="text-sm" style={{ color: MUTED }}>Ask anything about this subject</p>
+            <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: MUTED }}>Tutor</p>
+            <h4 className="font-bold text-[17px] text-[#2D3436] truncate">Chat with Aether</h4>
+            <p className="text-xs mt-1" style={{ color: MUTED }}>Ask anything about this subject</p>
+            <div className="absolute bottom-6 right-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: SAGE }}>
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6 7l7-7-7-7" />
+              </svg>
+            </div>
           </button>
 
           <button
             onClick={() => router.push(`/${session?.slug}/progress`)}
-            className="bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
+            className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
             style={{ boxShadow: CARD_SHADOW }}
           >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#F1E9DE" }}>
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#8B7E6B" strokeWidth="1.8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#FBEFF0" }}>
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#D65F5F" strokeWidth="1.8">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
               </svg>
             </div>
-            <p className="text-xs font-bold uppercase" style={{ color: MUTED }}>Progress</p>
-            <h4 className="font-bold text-lg text-[#2D3436]">Check In</h4>
-            <p className="text-sm" style={{ color: MUTED }}>Mastery &amp; milestones</p>
+            <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: MUTED }}>Progress</p>
+            <h4 className="font-bold text-[17px] text-[#2D3436] truncate">Check In</h4>
+            <p className="text-xs mt-1" style={{ color: MUTED }}>Mastery &amp; milestones</p>
+            <div className="absolute bottom-6 right-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: SAGE }}>
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6 7l7-7-7-7" />
+              </svg>
+            </div>
           </button>
 
           <button
             onClick={() => router.push(`/${session?.slug}/quizzes`)}
-            className="bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
+            className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
             style={{ boxShadow: CARD_SHADOW }}
           >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E1EAF4" }}>
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#5E7DA3" strokeWidth="1.8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E1EAF4" }}>
+              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#5E7DA3" strokeWidth="1.8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 22h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
               </svg>
             </div>
-            <p className="text-xs font-bold uppercase" style={{ color: MUTED }}>Quizzes</p>
-            <h4 className="font-bold text-lg text-[#2D3436]">Test Knowledge</h4>
-            <p className="text-sm" style={{ color: MUTED }}>Quiz on any module</p>
+            <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: MUTED }}>Quizzes</p>
+            <h4 className="font-bold text-[17px] text-[#2D3436] truncate">Test Knowledge</h4>
+            <p className="text-xs mt-1" style={{ color: MUTED }}>Quiz on any module</p>
+            <div className="absolute bottom-6 right-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: SAGE }}>
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-6 7l7-7-7-7" />
+              </svg>
+            </div>
           </button>
         </div>
       </div>
 
       {/* ── Modules ── */}
-      <div className="px-6 lg:px-12 pb-16">
+      <div className="px-2 pb-12">
         <h3 className="text-sm font-bold uppercase tracking-widest mb-6" style={{ color: MUTED }}>
           Modules
         </h3>

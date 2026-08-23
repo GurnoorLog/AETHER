@@ -89,7 +89,7 @@ export default function SidebarRight() {
   const readyDocs = documents.filter((d) => d.status === "READY" || !d.status);
   const displayTrack = currentTrack || latestTrack;
 
-  const circumference = 2 * Math.PI * 80;
+  const circumference = 2 * Math.PI * 88;
   const dashOffset = circumference - (circumference * masteryTotal / 100);
 
   const sidebarContent = (
@@ -104,12 +104,12 @@ export default function SidebarRight() {
         <div className="flex flex-col h-full space-y-10">
           {/* ── Daily Mastery ── */}
           <div>
-            <p className="text-center text-xs font-bold tracking-widest uppercase mb-6 text-[#A0A5A8]">Daily Mastery</p>
+            <p className="text-center text-[11px] font-bold tracking-[0.25em] uppercase mb-8 text-[#A0A5A8]">Daily Mastery</p>
             <div className="relative flex items-center justify-center">
-              <svg className="w-44 h-44 -rotate-90">
-                <circle cx="88" cy="88" r="80" stroke="#EFEBE5" strokeWidth="4" fill="transparent" />
+              <svg className="w-52 h-52 -rotate-90">
+                <circle cx="104" cy="104" r="88" stroke="#F1E9DE" strokeWidth="4" fill="transparent" />
                 <circle
-                  cx="88" cy="88" r="80"
+                  cx="104" cy="104" r="88"
                   fill="transparent"
                   stroke={SAGE}
                   strokeWidth="4"
@@ -118,21 +118,22 @@ export default function SidebarRight() {
                   strokeDashoffset={dashOffset}
                   className="transition-all duration-1000"
                 />
+                <circle cx="104" cy="16" r="4.5" fill={SAGE} />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <span className="text-4xl font-bold text-[#2D3436]">{masteryTotal}%</span>
-                <span className="text-[#A0A5A8] text-[11px] font-bold tracking-widest mt-1">MASTERY</span>
+                <span className="text-[56px] font-bold leading-none text-[#2D3436]">{masteryTotal}%</span>
+                <span className="text-[#A0A5A8] text-[11px] font-bold tracking-[0.1em] mt-1">MASTERY</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-8 text-center">
+            <div className="grid grid-cols-2 gap-8 mt-12 text-center">
               <div>
                 <p className="text-[#A0A5A8] text-[10px] font-bold uppercase tracking-widest mb-1">Study</p>
-                <p className="text-xl font-bold text-[#2D3436]">{studyHours}h</p>
+                <p className="text-[24px] font-bold text-[#2D3436]">{studyHours}h</p>
               </div>
               <div>
                 <p className="text-[#A0A5A8] text-[10px] font-bold uppercase tracking-widest mb-1">XP</p>
-                <p className="text-xl font-bold" style={{ color: SAGE }}>+{estimatedXP}</p>
+                <p className="text-[24px] font-bold" style={{ color: SAGE }}>+{estimatedXP}</p>
               </div>
             </div>
           </div>
@@ -143,8 +144,8 @@ export default function SidebarRight() {
               <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8]">Memory Log</p>
               <div className="space-y-3">
                 {memories.map((m, i) => (
-                  <div key={i} className="bg-white rounded-[24px] p-4 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-4">
-                    <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#E8F1E6" }}>
+                  <div key={i} className="bg-white rounded-[32px] p-5 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-4">
+                    <div className="w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "#E8F1E6" }}>
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                       </svg>
@@ -165,8 +166,8 @@ export default function SidebarRight() {
               <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8]">Recent Files</p>
               <div className="space-y-3">
                 {indexingDocs.slice(0, 2).map((doc) => (
-                  <div key={doc.id} className="bg-white rounded-[20px] p-4 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-3">
-                    <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#E1EAF4" }}>
+                  <div key={doc.id} className="bg-white rounded-[32px] p-5 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-3">
+                    <div className="w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "#E1EAF4" }}>
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#5E7DA3" strokeWidth="1.8">
                         <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                       </svg>
@@ -180,8 +181,8 @@ export default function SidebarRight() {
                   </div>
                 ))}
                 {readyDocs.slice(0, 2).map((doc) => (
-                  <div key={doc.id} className="bg-white rounded-[20px] p-4 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-3">
-                    <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#E8F1E6" }}>
+                  <div key={doc.id} className="bg-white rounded-[32px] p-5 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-3">
+                    <div className="w-11 h-11 shrink-0 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "#E8F1E6" }}>
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
                         <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                       </svg>
@@ -198,14 +199,8 @@ export default function SidebarRight() {
 
           {/* ── Focus Music ── */}
           <div className="flex-1 flex flex-col min-h-[220px]">
-            <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8] flex justify-between items-center">
-              {displayTrack ? "Now Playing" : "Focus Music"}
-              <svg className="w-4 h-4 text-[#A0A5A8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-              </svg>
-            </p>
             {displayTrack ? (
-              <div className="bg-white rounded-[32px] p-6 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex-1 flex flex-col justify-center">
+              <div className="bg-white rounded-[40px] p-8 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex-1 flex flex-col justify-center">
                 <button onClick={() => play(displayTrack)} className="text-left cursor-pointer mb-6">
                   <p className="text-sm font-bold text-[#2D3436] truncate">{displayTrack.title}</p>
                   <p className="text-xs text-[#A0A5A8]">{displayTrack.mood} · {displayTrack.instrument}</p>
@@ -239,19 +234,24 @@ export default function SidebarRight() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-[32px] p-6 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex-1 flex flex-col items-center justify-center text-center">
-                <svg className="w-12 h-12 mb-5 opacity-20" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.5">
+              <a
+                href="/music"
+                className="bg-white rounded-[40px] p-8 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex-1 flex flex-col items-center justify-center text-center hover:border-[#DDE7DB] transition-colors"
+              >
+                <svg className="w-14 h-14 mb-5 opacity-10" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
                 </svg>
-                <p className="text-sm font-bold text-[#2D3436] mb-5">Generate focus music</p>
-                <a
-                  href="/music"
-                  className="w-full block text-center text-white font-bold py-3 px-6 rounded-2xl hover:brightness-105 transition-all"
+                <p className="text-lg font-bold text-[#2D3436] mb-10">Generate focus music</p>
+                <span
+                  className="w-full flex items-center justify-center gap-2 text-white font-bold py-4 rounded-2xl hover:brightness-105 transition-all"
                   style={{ backgroundColor: SAGE, boxShadow: "0 10px 24px rgba(107,142,97,0.25)" }}
                 >
-                  Open Music
-                </a>
-              </div>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                  </svg>
+                  Generate
+                </span>
+              </a>
             )}
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function SidebarRight() {
   return (
     <>
       {/* Desktop */}
-      <aside className="sidebar-desktop w-[320px] shrink-0 h-screen p-8 overflow-y-auto border-l border-[#EFEBE5] text-[#2D3436]" style={{ backgroundColor: "#FDFBF7" }}>
+      <aside className="sidebar-desktop w-[340px] shrink-0 h-screen p-10 overflow-y-auto text-[#2D3436]" style={{ backgroundColor: "#FDFBF7" }}>
         {sidebarContent}
       </aside>
 

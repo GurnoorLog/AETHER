@@ -37,7 +37,7 @@ export default function SidebarNav({ collapsed }: { collapsed: boolean }) {
   const hasChallenges = session && SHOW_CHALLENGES.test(session.subject || "");
 
   return (
-    <nav className="space-y-1 overflow-y-auto flex-1">
+    <nav className="space-y-1.5 overflow-y-auto flex-1 no-scrollbar">
       {navItems
         .filter((item) => !("challenges" in item) || !(item as any).challenges || hasChallenges)
         .map((item) => {
