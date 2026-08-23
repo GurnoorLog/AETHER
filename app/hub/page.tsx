@@ -74,10 +74,10 @@ function extractSubjectColor(subject: string): string {
 }
 
 const STAT_COLORS = [
-  { bg: "#F0EEFA", icon: "#7C69A2", value: "#7C69A2" },
-  { bg: "#FFF5E6", icon: "#EAB308", value: "#EAB308" },
-  { bg: "#EBF1FF", icon: "#6366F1", value: "#6366F1" },
-  { bg: "#EBF7F2", icon: "#6B8E61", value: "#6B8E61" },
+  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
 ];
 
 function getGreeting(): string {
@@ -203,9 +203,9 @@ export default function HubPage() {
         subjects={subjects.map((s) => s.subject)}
       />
 
-      <div className="mx-auto max-w-7xl px-6 py-10 flex flex-col lg:flex-row gap-10">
-        {/* Left content */}
-        <main className="flex-1 min-w-0 relative z-10">
+      <div className="mx-auto max-w-4xl px-6 py-10">
+        {/* Content */}
+        <main className="relative z-10">
 
         {/* Header */}
         <div className="pt-10 pb-2 flex items-start justify-between gap-4">
@@ -249,7 +249,7 @@ export default function HubPage() {
               <div
                 key={i}
                 className="flex flex-col gap-3 p-4 rounded-[20px]"
-                style={{ backgroundColor: "#fff", border: "1px solid #F3EDE3", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
+                style={{ backgroundColor: "#FFFDF9", border: "1px solid #EFEBE5", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
               >
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -403,25 +403,6 @@ export default function HubPage() {
           </div>
         </div>
       </main>
-
-      {/* Right: hero image panel */}
-      <aside className="hidden lg:block w-[360px] xl:w-[420px] shrink-0">
-        <div
-          className="sticky top-10 rounded-[36px] overflow-hidden h-[600px] relative"
-          style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.25)" }}
-        >
-          <img src="/design/hub-hero.jpeg" alt="" className="w-full h-full object-cover" />
-          <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(to top, rgba(45,52,54,0.45), rgba(45,52,54,0) 50%)" }}
-          />
-          <div className="absolute bottom-6 left-6 right-6 text-white">
-            <p className="text-[15px] font-semibold leading-snug drop-shadow-sm">Your cozy corner to learn 🐨</p>
-            <p className="text-[13px] opacity-90 mt-1 drop-shadow-sm">Pick up where you left off, or start something new.</p>
-          </div>
-        </div>
-      </aside>
-      </div>
     </div>
   );
 }
