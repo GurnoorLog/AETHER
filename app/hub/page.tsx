@@ -196,78 +196,59 @@ export default function HubPage() {
   ];
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#FDFBF7" }}>
-
-      {/* Background illustration */}
-      <div
-        className="absolute top-0 left-0 right-0 z-0"
-        style={{
-          height: 420,
-          backgroundImage: "url('https://vgbujcuwptvheqijyjbe.supabase.co/storage/v1/object/public/hmac-uploads/uploads/c9a76f2a-6a29-4173-94bf-f86d6b31e11e/1787316199228-51b2f98a/Gemini_Generated_Image_252l7z252l7z252l.jpeg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-        }}
+    <div className="min-h-screen mx-auto w-full max-w-7xl flex flex-col lg:flex-row" style={{ backgroundColor: "#FDFBF7" }}>
+      <CreateSessionModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        subjects={subjects.map((s) => s.subject)}
       />
 
-      {/* Main scrollable area */}
-      <main className="flex-1 overflow-y-auto relative z-10">
+      {/* Left content */}
+      <main className="flex-1 min-w-0 relative z-10">
 
-        {/* Greeting */}
-        <div className="px-6 pt-16 relative">
-          <h1 className="text-[28px] font-bold text-[#333] tracking-tight leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            {greeting},<br />
-            <span style={{ color: "#6B8E61" }}>{firstName} 👋</span>
-          </h1>
-          <p className="text-[15px] mt-1 opacity-80" style={{ color: "#666" }}>
-            Ready to learn something amazing today?
-          </p>
-
-          {/* Avatar */}
-          <div className="absolute top-12 right-6 w-12 h-12 rounded-full border-2 border-white shadow-sm overflow-hidden">
-            <div className="w-full h-full rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: "#F9F6F0" }}>
-              🐨
+        {/* Header */}
+        <div className="px-6 pt-10 pb-2 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-[28px] font-bold text-[#333] tracking-tight leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              {greeting},<br />
+              <span style={{ color: "#6B8E61" }}>{firstName} 👋</span>
+            </h1>
+            <p className="text-[15px] mt-1 opacity-80" style={{ color: "#666" }}>
+              Ready to learn something amazing today?
+            </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {/* New button */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="h-11 px-5 rounded-full flex items-center gap-1.5 shadow-lg text-white font-bold text-[15px] cursor-pointer"
+              style={{ backgroundColor: "#6B8E61", boxShadow: "0 8px 20px rgba(107,142,97,0.25)", transition: "transform 0.2s" }}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              New
+            </button>
+            {/* Avatar */}
+            <div className="w-12 h-12 rounded-full border-2 border-white shadow-sm overflow-hidden">
+              <div className="w-full h-full rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: "#F9F6F0" }}>
+                🐨
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Floating buttons area */}
-        <div className="relative h-[180px] px-6">
-          {/* Heart bubble */}
-          <div className="absolute left-1/2 top-[15%] -translate-x-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-            <svg className="w-5 h-5" fill="#6B8E61" viewBox="0 0 24 24">
-              <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-            </svg>
-          </div>
-          {/* New button */}
-          <button
-            onClick={() => setShowModal(true)}
-            className="absolute right-6 top-[20%] h-10 px-4 rounded-xl flex items-center gap-1.5 shadow-lg text-white font-bold text-[15px]"
-            style={{ backgroundColor: "#6B8E61", transition: "transform 0.2s, opacity 0.2s" }}
-            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            New
-          </button>
-        </div>
-
-        {/* White card area */}
-        <div
-          className="relative z-20 -mt-8 mx-0 px-6 pt-10 pb-6 rounded-t-[40px]"
-          style={{
-            backgroundColor: "#fff",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.04)",
-          }}
-        >
+        {/* Content column */}
+        <div className="px-6 pt-8 pb-12">
           {/* Stat cards */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className="flex flex-col gap-3 p-3.5 rounded-[20px]"
-                style={{ border: "1.5px solid #FDFBF7", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
+                className="flex flex-col gap-3 p-4 rounded-[20px]"
+                style={{ backgroundColor: "#fff", border: "1px solid #F3EDE3", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
               >
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -420,53 +401,25 @@ export default function HubPage() {
             )}
           </div>
         </div>
-
-        <div className="h-24" />
       </main>
 
-      {/* Bottom Nav */}
-      <footer className="shrink-0 z-40 bg-white border-t px-6 py-2" style={{ borderColor: "#F3EDE3" }}>
-        <nav className="flex justify-between items-center h-[64px] max-w-xl mx-auto">
-          {[
-            { label: "Hub", icon: "M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25", active: true },
-            { label: "Subjects", icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" },
-            { label: "Sessions", icon: "M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" },
-            { label: "Progress", icon: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" },
-            { label: "More", icon: "M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" },
-          ].map((item) => (
-            <button
-              key={item.label}
-              className="flex flex-col items-center gap-1 cursor-pointer"
-            >
-              {item.active ? (
-                <div className="px-4 py-1.5 rounded-full" style={{ backgroundColor: "#E8F0E5" }}>
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#6B8E61" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                  </svg>
-                </div>
-              ) : (
-                <div className="px-4 py-1.5">
-                  <svg className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="#999" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                  </svg>
-                </div>
-              )}
-              <span
-                className="text-[11px] font-bold"
-                style={{ color: item.active ? "#6B8E61" : "#999" }}
-              >
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </nav>
-      </footer>
-
-      <CreateSessionModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        subjects={subjects.map((s) => s.subject)}
-      />
+      {/* Right: hero image panel */}
+      <aside className="hidden lg:block w-[360px] xl:w-[420px] shrink-0">
+        <div
+          className="sticky top-10 rounded-[36px] overflow-hidden h-[calc(100vh-5rem)] relative"
+          style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.25)" }}
+        >
+          <img src="/design/hub-hero.jpeg" alt="" className="w-full h-full object-cover" />
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(to top, rgba(45,52,54,0.45), rgba(45,52,54,0) 50%)" }}
+          />
+          <div className="absolute bottom-6 left-6 right-6 text-white">
+            <p className="text-[15px] font-semibold leading-snug drop-shadow-sm">Your cozy corner to learn 🐨</p>
+            <p className="text-[13px] opacity-90 mt-1 drop-shadow-sm">Pick up where you left off, or start something new.</p>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 }
