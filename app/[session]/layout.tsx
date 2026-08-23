@@ -82,7 +82,7 @@ export default function SessionLayout({
 
   if (authLoading || loading) {
     return (
-      <div className="h-screen bg-cream text-warm-ink flex max-lg:flex-col max-lg:w-full overflow-hidden">
+      <div className="h-screen bg-[#FDFBF7] text-[#2D3436] flex max-lg:flex-col max-lg:w-full overflow-hidden">
         <div className="w-[15%] shrink-0 p-6 space-y-4 max-lg:hidden">
           <div className="animate-pulse bg-warm-ink/[0.04] rounded-2xl w-10 h-10" />
           <div className="animate-pulse bg-warm-ink/[0.04] rounded-full h-10" />
@@ -109,7 +109,7 @@ export default function SessionLayout({
 
   return (
     <SessionContext.Provider value={{ session, loading }}>
-      <div className="h-screen bg-cream text-warm-ink flex max-lg:flex-col max-lg:w-full overflow-hidden">
+      <div className="h-screen bg-[#FDFBF7] text-[#2D3436] flex max-lg:flex-col max-lg:w-full overflow-hidden">
         <SidebarLeft currentPage={currentPage} />
         <div className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
           {children}

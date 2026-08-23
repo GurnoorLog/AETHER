@@ -350,38 +350,26 @@
   opacity: 0.8;
 }
 
-/* Warm nav variant for cream sidebars */
+/* Warm nav variant — Aether desktop design */
 .nav-item-warm {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  border-radius: 12px;
-  font-size: 0.8125rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: rgba(24, 20, 37, 0.45);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
+  color: #A0A5A8;
+  border-left: 4px solid transparent;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 .nav-item-warm:hover {
-  color: #181425;
-  background: rgba(24, 20, 37, 0.04);
+  color: #6B8E61;
 }
 .nav-item-warm.active {
-  color: #6B8E61;
-  background: rgba(107, 142, 97, 0.1);
-}
-.nav-item-warm.active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 60%;
-  background: #6B8E61;
-  border-radius: 0 2px 2px 0;
-  opacity: 0.8;
+  background-color: #E8F1E6;
+  color: #6B8E61 !important;
+  border-left-color: #6B8E61;
+  font-weight: 600;
 }
 
 /* ── Tooltip ── */

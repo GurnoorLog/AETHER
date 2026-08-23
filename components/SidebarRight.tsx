@@ -5,8 +5,10 @@ import { useAuth } from "@/providers/AuthProvider";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { useSession } from "@/app/[session]/layout";
 import { createClient } from "@/lib/supabase/client";
-import { PanelRightClose } from "lucide-react";
+import { X } from "lucide-react";
 import type { GeneratedTrack } from "@/types/database";
+
+const SAGE = "#6B8E61";
 
 export default function SidebarRight() {
   const { user } = useAuth();
@@ -87,138 +89,138 @@ export default function SidebarRight() {
   const readyDocs = documents.filter((d) => d.status === "READY" || !d.status);
   const displayTrack = currentTrack || latestTrack;
 
-  const circumference = 2 * Math.PI * 56;
+  const circumference = 2 * Math.PI * 80;
   const dashOffset = circumference - (circumference * masteryTotal / 100);
 
   const sidebarContent = (
     <>
       {loading ? (
         <>
-          <div className="animate-pulse bg-warm-ink/[0.03] rounded-[24px] h-64" />
-          <div className="animate-pulse bg-warm-ink/[0.03] rounded-2xl h-28" />
-          <div className="animate-pulse bg-warm-ink/[0.03] rounded-2xl h-28" />
+          <div className="animate-pulse bg-white rounded-[24px] border border-[#EFEBE5] h-64" />
+          <div className="animate-pulse bg-white rounded-[24px] border border-[#EFEBE5] h-28" />
+          <div className="animate-pulse bg-white rounded-[24px] border border-[#EFEBE5] h-28" />
         </>
       ) : (
-        <>
-          {/* Mastery Ring */}
-          <div className="glass-card-warm rounded-[24px] p-5 text-center">
-            <p className="label-micro text-warm-ink-muted mb-4">Daily Mastery</p>
-            <div className="relative w-28 h-28 mx-auto flex items-center justify-center mb-4">
-              <svg className="w-full h-full -rotate-90">
-                <circle cx="56" cy="56" r="56" fill="transparent" stroke="rgba(24,20,37,0.06)" strokeWidth="7" />
+        <div className="flex flex-col h-full space-y-10">
+          {/* ── Daily Mastery ── */}
+          <div>
+            <p className="text-center text-xs font-bold tracking-widest uppercase mb-6 text-[#A0A5A8]">Daily Mastery</p>
+            <div className="relative flex items-center justify-center">
+              <svg className="w-44 h-44 -rotate-90">
+                <circle cx="88" cy="88" r="80" stroke="#EFEBE5" strokeWidth="4" fill="transparent" />
                 <circle
-                  cx="56" cy="56" r="56"
+                  cx="88" cy="88" r="80"
                   fill="transparent"
-                  stroke="#6B8E61"
-                  strokeWidth="7"
+                  stroke={SAGE}
+                  strokeWidth="4"
+                  strokeLinecap="round"
                   strokeDasharray={circumference}
                   strokeDashoffset={dashOffset}
-                  strokeLinecap="round"
-                  className="transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                  className="transition-all duration-1000"
                 />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <span className="text-2xl font-bold tracking-tight">{masteryTotal}%</span>
-                <span className="text-[8px] uppercase tracking-widest text-warm-ink-faint">mastery</span>
+                <span className="text-4xl font-bold text-[#2D3436]">{masteryTotal}%</span>
+                <span className="text-[#A0A5A8] text-[11px] font-bold tracking-widest mt-1">MASTERY</span>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-warm-ink/[0.03] rounded-xl p-3 text-center">
-                <p className="text-[9px] text-warm-ink-muted uppercase tracking-wider mb-0.5">Study</p>
-                <p className="text-sm font-semibold">{studyHours}h</p>
+
+            <div className="grid grid-cols-2 gap-4 mt-8 text-center">
+              <div>
+                <p className="text-[#A0A5A8] text-[10px] font-bold uppercase tracking-widest mb-1">Study</p>
+                <p className="text-xl font-bold text-[#2D3436]">{studyHours}h</p>
               </div>
-              <div className="bg-warm-ink/[0.03] rounded-xl p-3 text-center">
-                <p className="text-[9px] text-warm-ink-muted uppercase tracking-wider mb-0.5">XP</p>
-                <p className="text-sm font-semibold text-sage">+{estimatedXP}</p>
+              <div>
+                <p className="text-[#A0A5A8] text-[10px] font-bold uppercase tracking-widest mb-1">XP</p>
+                <p className="text-xl font-bold" style={{ color: SAGE }}>+{estimatedXP}</p>
               </div>
             </div>
           </div>
 
-          {/* Memory Log */}
+          {/* ── Memory Log ── */}
           {memories.length > 0 && (
-            <div className="space-y-2.5">
-              <p className="label-micro text-warm-ink-faint pl-1">Memory Log</p>
-              {memories.map((m, i) => (
-                <div key={i} className="glass-card-warm rounded-2xl p-3.5 flex gap-3 items-start">
-                  <div className="w-7 h-7 rounded-lg bg-warm-ink/[0.03] flex items-center justify-center shrink-0 mt-0.5">
-                    <svg className="w-3.5 h-3.5 text-warm-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-medium text-warm-ink-soft leading-snug">{m.content}</p>
-                    <p className="text-[9px] text-sage/60 mt-1">{m.context}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Files */}
-          {(indexingDocs.length > 0 || readyDocs.length > 0) && (
-            <div className="space-y-2.5">
-              <p className="label-micro text-warm-ink-faint pl-1">Recent Files</p>
-              {indexingDocs.slice(0, 2).map((doc) => (
-                <div key={doc.id} className="glass-card-warm rounded-xl p-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#EBF1FF] flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-[#6366F1]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-medium truncate">{doc.filename}</p>
-                    <div className="w-full h-1 bg-warm-ink/[0.05] rounded-full mt-1.5 overflow-hidden">
-                      <div className="h-full bg-sage/60 rounded-full shimmer" style={{ width: "60%" }} />
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8]">Memory Log</p>
+              <div className="space-y-3">
+                {memories.map((m, i) => (
+                  <div key={i} className="bg-white rounded-[24px] p-4 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-4">
+                    <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#E8F1E6" }}>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm leading-snug text-[#2D3436]"><span className="font-bold">{m.content}</span></p>
+                      <p className="text-[10px] font-bold uppercase tracking-wide mt-0.5" style={{ color: SAGE }}>{m.context}</p>
                     </div>
                   </div>
-                </div>
-              ))}
-              {readyDocs.slice(0, 2).map((doc) => (
-                <div key={doc.id} className="glass-card-warm rounded-xl p-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#EBF7F2] flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-medium truncate">{doc.filename}</p>
-                    <p className="text-[9px] text-warm-ink-faint">Ready</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Music Player */}
-          <div className="glass-card-warm rounded-[24px] p-5 mt-auto">
-            <div className="flex items-center justify-between mb-4">
-              <p className="label-micro text-warm-ink-muted">
-                {displayTrack ? "Now Playing" : "Focus Music"}
-              </p>
-              <svg className="w-4 h-4 text-warm-ink-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-              </svg>
+          {/* ── Recent Files ── */}
+          {(indexingDocs.length > 0 || readyDocs.length > 0) && (
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8]">Recent Files</p>
+              <div className="space-y-3">
+                {indexingDocs.slice(0, 2).map((doc) => (
+                  <div key={doc.id} className="bg-white rounded-[20px] p-4 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-3">
+                    <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#E1EAF4" }}>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#5E7DA3" strokeWidth="1.8">
+                        <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate text-[#2D3436]">{doc.filename}</p>
+                      <div className="w-full h-1 bg-[#EFEBE5] rounded-full mt-2 overflow-hidden">
+                        <div className="h-full rounded-full shimmer" style={{ width: "60%", backgroundColor: SAGE }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {readyDocs.slice(0, 2).map((doc) => (
+                  <div key={doc.id} className="bg-white rounded-[20px] p-4 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-3">
+                    <div className="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#E8F1E6" }}>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
+                        <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate text-[#2D3436]">{doc.filename}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-[#A0A5A8] mt-0.5">Ready</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+          )}
+
+          {/* ── Focus Music ── */}
+          <div className="flex-1 flex flex-col min-h-[220px]">
+            <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8] flex justify-between items-center">
+              {displayTrack ? "Now Playing" : "Focus Music"}
+              <svg className="w-4 h-4 text-[#A0A5A8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
+              </svg>
+            </p>
             {displayTrack ? (
-              <>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-11 h-11 bg-sage/10 rounded-xl flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
-                    </svg>
-                  </div>
-                  <div className="cursor-pointer min-w-0" onClick={() => play(displayTrack)}>
-                    <p className="text-[11px] font-semibold truncate">{displayTrack.title}</p>
-                    <p className="text-[9px] text-warm-ink-muted">{displayTrack.mood} · {displayTrack.instrument}</p>
-                  </div>
-                </div>
+              <div className="bg-white rounded-[32px] p-6 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex-1 flex flex-col justify-center">
+                <button onClick={() => play(displayTrack)} className="text-left cursor-pointer mb-6">
+                  <p className="text-sm font-bold text-[#2D3436] truncate">{displayTrack.title}</p>
+                  <p className="text-xs text-[#A0A5A8]">{displayTrack.mood} · {displayTrack.instrument}</p>
+                </button>
                 <div className="flex items-center justify-center gap-6">
-                  <button className="text-warm-ink-muted hover:text-warm-ink transition-colors cursor-pointer">
+                  <button className="text-[#A0A5A8] hover:text-[#2D3436] transition-colors cursor-pointer">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path d="M21 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953l7.108-4.062A1.125 1.125 0 0121 8.688v8.123zM11.25 16.811c0 .864-.933 1.405-1.683.977l-7.108-4.062a1.125 1.125 0 010-1.953L9.567 7.71a1.125 1.125 0 011.683.977v8.123z" />
                     </svg>
                   </button>
-                  <button onClick={togglePlay} className="w-10 h-10 rounded-full bg-sage flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                  <button
+                    onClick={togglePlay}
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+                    style={{ backgroundColor: SAGE, boxShadow: "0 10px 24px rgba(107,142,97,0.35)" }}
+                  >
                     {isPlaying ? (
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" />
@@ -229,45 +231,45 @@ export default function SidebarRight() {
                       </svg>
                     )}
                   </button>
-                  <button className="text-warm-ink-muted hover:text-warm-ink transition-colors cursor-pointer">
+                  <button className="text-[#A0A5A8] hover:text-[#2D3436] transition-colors cursor-pointer">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                       <path d="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.811V8.688zM12.75 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z" />
                     </svg>
                   </button>
                 </div>
-              </>
+              </div>
             ) : (
-              <a href="/music" className="block group">
-                <div className="flex flex-col items-center gap-2.5 py-4">
-                  <div className="w-11 h-11 bg-sage/10 rounded-xl flex items-center justify-center group-hover:bg-sage/15 transition-colors">
-                    <svg className="w-5 h-5 text-sage/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-                    </svg>
-                  </div>
-                  <p className="text-[11px] font-medium text-warm-ink-muted text-center">Generate focus music</p>
-                  <span className="text-[9px] font-bold px-4 py-1.5 rounded-full bg-[#E8F0E5] text-sage">Open Music</span>
-                </div>
-              </a>
+              <div className="bg-white rounded-[32px] p-6 border border-[#EFEBE5] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex-1 flex flex-col items-center justify-center text-center">
+                <svg className="w-12 h-12 mb-5 opacity-20" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
+                </svg>
+                <p className="text-sm font-bold text-[#2D3436] mb-5">Generate focus music</p>
+                <a
+                  href="/music"
+                  className="w-full block text-center text-white font-bold py-3 px-6 rounded-2xl hover:brightness-105 transition-all"
+                  style={{ backgroundColor: SAGE, boxShadow: "0 10px 24px rgba(107,142,97,0.25)" }}
+                >
+                  Open Music
+                </a>
+              </div>
             )}
           </div>
-        </>
+        </div>
       )}
     </>
   );
 
   return (
     <>
-      {/* Desktop — exact same layout and behavior */}
-      <div className="sidebar-desktop w-[20%] shrink-0 h-screen">
-        <aside className="h-full flex flex-col p-5 space-y-5 border-l border-hairline-warm bg-deep-onyx overflow-y-auto">
-          {sidebarContent}
-        </aside>
-      </div>
+      {/* Desktop */}
+      <aside className="sidebar-desktop w-[320px] shrink-0 h-screen p-8 overflow-y-auto border-l border-[#EFEBE5] text-[#2D3436]" style={{ backgroundColor: "#FDFBF7" }}>
+        {sidebarContent}
+      </aside>
 
       {/* Mobile backdrop overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-[#2D3436]/30 z-40 lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
@@ -277,19 +279,20 @@ export default function SidebarRight() {
         className={[
           "sidebar-mobile",
           "fixed top-0 right-0 h-full w-[85vw] max-w-sm z-50",
-          "bg-cream border-l border-hairline-warm",
+          "border-l border-[#EFEBE5] text-[#2D3436]",
           "transform transition-transform duration-300 ease-in-out",
           "overflow-y-auto",
           isMobileOpen ? "translate-x-0" : "translate-x-full",
         ].join(" ")}
+        style={{ backgroundColor: "#FDFBF7" }}
       >
         <button
           onClick={() => setIsMobileOpen(false)}
-          className="absolute top-3 right-3 z-10 p-2 text-warm-ink-muted hover:text-warm-ink transition-colors cursor-pointer"
+          className="absolute top-3 right-3 z-10 p-2 text-[#A0A5A8] hover:text-[#2D3436] transition-colors cursor-pointer"
         >
-          <PanelRightClose className="w-5 h-5" />
+          <X className="w-5 h-5" />
         </button>
-        <aside className="h-full flex flex-col p-5 space-y-5 overflow-y-auto">
+        <aside className="h-full flex flex-col p-6 space-y-8 overflow-y-auto pt-10">
           {sidebarContent}
         </aside>
       </div>
