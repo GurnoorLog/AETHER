@@ -196,18 +196,19 @@ export default function HubPage() {
   ];
 
   return (
-    <div className="min-h-screen mx-auto w-full max-w-7xl flex flex-col lg:flex-row" style={{ backgroundColor: "#FDFBF7" }}>
+    <div className="min-h-screen w-full" style={{ backgroundColor: "#FDFBF7" }}>
       <CreateSessionModal
         open={showModal}
         onClose={() => setShowModal(false)}
         subjects={subjects.map((s) => s.subject)}
       />
 
-      {/* Left content */}
-      <main className="flex-1 min-w-0 relative z-10">
+      <div className="mx-auto max-w-7xl px-6 py-10 flex flex-col lg:flex-row gap-10">
+        {/* Left content */}
+        <main className="flex-1 min-w-0 relative z-10">
 
         {/* Header */}
-        <div className="px-6 pt-10 pb-2 flex items-start justify-between gap-4">
+        <div className="pt-10 pb-2 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-[28px] font-bold text-[#333] tracking-tight leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
               {greeting},<br />
@@ -241,7 +242,7 @@ export default function HubPage() {
         </div>
 
         {/* Content column */}
-        <div className="px-6 pt-8 pb-12">
+        <div className="pt-8 pb-12">
           {/* Stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {stats.map((stat, i) => (
@@ -406,7 +407,7 @@ export default function HubPage() {
       {/* Right: hero image panel */}
       <aside className="hidden lg:block w-[360px] xl:w-[420px] shrink-0">
         <div
-          className="sticky top-10 rounded-[36px] overflow-hidden h-[calc(100vh-5rem)] relative"
+          className="sticky top-10 rounded-[36px] overflow-hidden h-[600px] relative"
           style={{ boxShadow: "0 30px 60px -20px rgba(0,0,0,0.25)" }}
         >
           <img src="/design/hub-hero.jpeg" alt="" className="w-full h-full object-cover" />
@@ -420,6 +421,7 @@ export default function HubPage() {
           </div>
         </div>
       </aside>
+      </div>
     </div>
   );
 }
