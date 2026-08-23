@@ -23,7 +23,7 @@ interface RoadmapModule {
 }
 
 const SUBJECT_IMAGES: Record<string, string> = {
-  physics: "/design/hero-koala.png",
+  physics: "/design/physics.jpg",
   maths: "/design/maths.jpg",
   math: "/design/maths.jpg",
   mathematics: "/design/maths.jpg",
@@ -132,7 +132,7 @@ export default function SessionDashboardPage() {
         <div className="p-8 lg:p-12">
           <h1 className="text-[32px] lg:text-[48px] font-bold leading-[1.2] tracking-tight text-[#2D3436]">
             {greeting} <br />
-            {session.subject || "Student"}
+            {user?.user_metadata?.full_name?.split(" ")[0] || session.subject || "Student"}
           </h1>
           <p className="text-[#7C8082] text-base lg:text-lg font-medium mt-3">
             Let&apos;s continue your learning journey.
