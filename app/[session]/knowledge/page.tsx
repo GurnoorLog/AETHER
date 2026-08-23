@@ -250,7 +250,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
   if (authLoading || !user || !session) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-sage border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -258,19 +258,19 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
   return (
     <>
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-sage text-white liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute top-4 right-4 sm:top-10 sm:right-10 flex gap-4">
-            <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
-            <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{stats.total} Files</div>
+            <div className="bg-black text-warm-ink px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
+            <div className="bg-white/15 border border-white/25 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{stats.total} Files</div>
           </div>
           <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
             {!expanded && (
               <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">STUDENT BRAIN</div>
-                <span className="text-[10px] font-bold text-black/40">{stats.total} Files</span>
+                <div className="bg-black text-warm-ink px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">STUDENT BRAIN</div>
+                <span className="text-[10px] font-bold text-white/70">{stats.total} Files</span>
               </div>
             )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-white leading-tight transition-all duration-[800ms] ${expanded ? "text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Knowledge Base</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
@@ -289,36 +289,36 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
               onClick={() => fileInputRef.current?.click()}
-              className={`glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 border-2 border-dashed flex flex-col items-center justify-center text-center group cursor-pointer transition-all ${
-                dragOver ? "border-cyber-yellow/40 bg-cyber-yellow/[0.03]" : "border-white/10 hover:border-cyber-yellow/30"
+              className={`glass-card-warm rounded-[32px] p-4 sm:p-6 lg:p-8 border-2 border-dashed flex flex-col items-center justify-center text-center group cursor-pointer transition-all ${
+                dragOver ? "border-sage/40 bg-sage/[0.03]" : "border-hairline-warm hover:border-sage/30"
               }`}
             >
-              <div className="w-16 h-16 bg-cyber-yellow rounded-full flex items-center justify-center text-black mb-4 shadow-[0_0_30px_rgba(253,224,71,0.2)] group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 bg-sage rounded-full flex items-center justify-center text-white mb-4 shadow-[0_0_30px_rgba(107,142,97,0.2)] group-hover:scale-110 transition-transform">
                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
                 </svg>
               </div>
               <h3 className="text-lg font-bold">Drop files here</h3>
-              <p className="text-sm text-white/40 mt-1">PDF, PPTX, PNG, JPG, WebP</p>
+              <p className="text-sm text-warm-ink-muted mt-1">PDF, PPTX, PNG, JPG, WebP</p>
               <input ref={fileInputRef} type="file" multiple accept=".pdf,.pptx,.png,.jpg,.jpeg,.webp" className="hidden" onChange={onFileSelect} />
-              <button type="button" className="mt-6 bg-white/5 border border-white/10 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all">
+              <button type="button" className="mt-6 bg-warm-ink/[0.03] border border-hairline-warm px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-warm-ink/[0.05] transition-all">
                 Browse Files
               </button>
             </div>
 
-            <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col justify-between">
+            <div className="glass-card-warm rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col justify-between">
               <div className="space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-cyber-yellow mb-4">Indexing Stats</h4>
-                <div className="flex justify-between items-center py-2 border-b border-white/5">
-                  <span className="text-xs text-white/60">Indexing</span>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-sage mb-4">Indexing Stats</h4>
+                <div className="flex justify-between items-center py-2 border-b border-hairline-warm">
+                  <span className="text-xs text-warm-ink-soft">Indexing</span>
                   <span className="text-sm font-bold">{stats.indexing}</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-white/5">
-                  <span className="text-xs text-white/60">Ready</span>
+                <div className="flex justify-between items-center py-2 border-b border-hairline-warm">
+                  <span className="text-xs text-warm-ink-soft">Ready</span>
                   <span className="text-sm font-bold text-green-400">{stats.ready}</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-xs text-white/60">Failed</span>
+                  <span className="text-xs text-warm-ink-soft">Failed</span>
                   <span className="text-sm font-bold text-red-400">{stats.failed}</span>
                 </div>
               </div>
@@ -327,17 +327,17 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
 
           {uploads.filter((u) => u.status !== "done" && u.status !== "cancelled").length > 0 && (
             <div className="space-y-3">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow/60 pl-2">Processing</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-sage/60 pl-2">Processing</h4>
               {uploads.map((u, i) => {
                 if (u.status === "done" || u.status === "cancelled") return null;
                 const statusLabel: Record<string, string> = {
                   pending: "Queued", uploading: "Uploading to storage", extracting: "Extracting text content", chunking: "Splitting into chunks", embedding: "Generating embeddings", error: "Failed",
                 };
                 const statusColor: Record<string, string> = {
-                  pending: "text-white/40", uploading: "text-blue-400", extracting: "text-amber-400", chunking: "text-purple-400", embedding: "text-cyan-400", error: "text-red-400",
+                  pending: "text-warm-ink-muted", uploading: "text-blue-400", extracting: "text-amber-400", chunking: "text-purple-400", embedding: "text-cyan-400", error: "text-red-400",
                 };
                 return (
-                  <div key={i} className="glass-card rounded-[28px] p-4 sm:p-5 flex items-center justify-between">
+                  <div key={i} className="glass-card-warm rounded-[28px] p-4 sm:p-5 flex items-center justify-between">
                     <div className="flex items-center gap-5">
                       <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 border border-blue-500/20">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -346,7 +346,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                       </div>
                       <div>
                         <h4 className="text-sm font-bold">{u.filename}</h4>
-                        <p className={`text-[10px] uppercase tracking-widest mt-1 ${statusColor[u.status] || "text-white/40"}`}>{statusLabel[u.status] || u.status}</p>
+                        <p className={`text-[10px] uppercase tracking-widest mt-1 ${statusColor[u.status] || "text-warm-ink-muted"}`}>{statusLabel[u.status] || u.status}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -357,7 +357,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                         </>
                       )}
                       {u.status === "pending" && (
-                        <button onClick={() => cancelUpload(i)} className="text-[10px] font-bold uppercase text-white/40 hover:text-red-400 cursor-pointer transition-colors">Cancel</button>
+                        <button onClick={() => cancelUpload(i)} className="text-[10px] font-bold uppercase text-warm-ink-muted hover:text-red-400 cursor-pointer transition-colors">Cancel</button>
                       )}
                       {u.status === "error" && (
                         <span className="text-[10px] font-bold uppercase text-red-400">{u.error || "Failed"}</span>
@@ -380,7 +380,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                   key={f.key}
                   onClick={() => setFilter(f.key)}
                   className={`px-3 sm:px-6 py-2 rounded-full text-[10px] font-bold uppercase transition-all cursor-pointer ${
-                    filter === f.key ? "bg-cyber-yellow text-black" : "bg-white/5 text-white/60 hover:bg-white/10"
+                    filter === f.key ? "bg-sage text-white" : "bg-warm-ink/[0.04] text-warm-ink-soft hover:bg-warm-ink/[0.05]"
                   }`}
                 >
                   {f.label}
@@ -392,12 +392,12 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card rounded-[28px] p-4 sm:p-5 flex items-center justify-between animate-pulse">
+                <div key={i} className="glass-card-warm rounded-[28px] p-4 sm:p-5 flex items-center justify-between animate-pulse">
                   <div className="flex items-center gap-5">
-                    <div className="w-14 h-14 bg-white/5 rounded-2xl" />
+                    <div className="w-14 h-14 bg-warm-ink/[0.04] rounded-2xl" />
                     <div className="space-y-2">
-                      <div className="w-48 h-4 bg-white/5 rounded" />
-                      <div className="w-32 h-3 bg-white/5 rounded" />
+                      <div className="w-48 h-4 bg-warm-ink/[0.04] rounded" />
+                      <div className="w-32 h-3 bg-warm-ink/[0.04] rounded" />
                     </div>
                   </div>
                 </div>
@@ -408,14 +408,14 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
               <svg className="w-16 h-16 mx-auto text-white/10 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
                 <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
-              <p className="text-white/30 text-sm font-medium">No documents yet. Drop your files above.</p>
+              <p className="text-warm-ink-faint text-sm font-medium">No documents yet. Drop your files above.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {filteredDocs.map((doc) => {
                 const icon = FILE_ICONS[doc.file_type] || FILE_ICONS.default;
                 return (
-                  <div key={doc.id} onClick={() => setViewingDoc(doc)} className="glass-card rounded-[28px] p-4 sm:p-5 flex items-center justify-between group transition-all hover:border-cyber-yellow/20 cursor-pointer">
+                  <div key={doc.id} onClick={() => setViewingDoc(doc)} className="glass-card-warm rounded-[28px] p-4 sm:p-5 flex items-center justify-between group transition-all hover:border-sage/20 cursor-pointer">
                     <div className="flex items-center gap-5">
                       <div className={`w-14 h-14 ${icon.bg} rounded-2xl flex items-center justify-center ${icon.text} border ${icon.border}`}>
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -424,7 +424,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                       </div>
                       <div>
                         <h4 className="text-sm font-bold">{doc.filename}</h4>
-                        <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1">
+                        <p className="text-[10px] text-warm-ink-muted uppercase tracking-widest mt-1">
                           {formatSize(doc.file_size)} &bull; {timeAgo(doc.uploaded_at)}
                         </p>
                       </div>
@@ -442,7 +442,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                       )}
                       <button
                         onClick={(e) => { e.stopPropagation(); deleteDocument(doc); }}
-                        className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-warm-ink/[0.04] flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all cursor-pointer"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                           <path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -461,8 +461,8 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
       {viewingDoc && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setViewingDoc(null)} />
-          <div className="relative glass-card rounded-[32px] max-w-4xl w-full mx-4 z-10 flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between p-6 border-b border-white/5">
+          <div className="relative glass-card-warm rounded-[32px] max-w-4xl w-full mx-4 z-10 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between p-6 border-b border-hairline-warm">
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 ${(FILE_ICONS[viewingDoc.file_type] || FILE_ICONS.default).bg} rounded-xl flex items-center justify-center ${(FILE_ICONS[viewingDoc.file_type] || FILE_ICONS.default).text} border ${(FILE_ICONS[viewingDoc.file_type] || FILE_ICONS.default).border}`}>
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -471,12 +471,12 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                 </div>
                 <div>
                   <h3 className="text-sm font-bold">{viewingDoc.filename}</h3>
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest">{formatSize(viewingDoc.file_size)} &bull; {viewingDoc.file_type}</p>
+                  <p className="text-[10px] text-warm-ink-muted uppercase tracking-widest">{formatSize(viewingDoc.file_size)} &bull; {viewingDoc.file_type}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <a href={getFileUrl(viewingDoc)} target="_blank" rel="noopener noreferrer" className="bg-white/5 border border-white/10 text-white px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Open in Tab</a>
-                <button onClick={() => setViewingDoc(null)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer">
+                <a href={getFileUrl(viewingDoc)} target="_blank" rel="noopener noreferrer" className="bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-warm-ink/[0.05] transition-all">Open in Tab</a>
+                <button onClick={() => setViewingDoc(null)} className="w-8 h-8 rounded-full bg-warm-ink/[0.04] flex items-center justify-center hover:bg-warm-ink/[0.05] transition-colors cursor-pointer">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
@@ -491,8 +491,8 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
                   <svg className="w-16 h-16 text-white/10 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
                     <path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                   </svg>
-                  <p className="text-white/30 text-sm mb-2">Preview not available for {viewingDoc.file_type}</p>
-                  <a href={getFileUrl(viewingDoc)} target="_blank" rel="noopener noreferrer" className="bg-cyber-yellow text-black px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all">Download to View</a>
+                  <p className="text-warm-ink-faint text-sm mb-2">Preview not available for {viewingDoc.file_type}</p>
+                  <a href={getFileUrl(viewingDoc)} target="_blank" rel="noopener noreferrer" className="bg-sage text-white px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all">Download to View</a>
                 </div>
               )}
             </div>

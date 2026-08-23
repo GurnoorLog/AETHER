@@ -48,8 +48,8 @@ export default function MathChallengePage() {
 
   if (!challenge) {
     return (
-      <div className="min-h-screen bg-deep-onyx text-white flex items-center justify-center">
-        <p className="text-sm text-white/30">Loading challenge...</p>
+      <div className="min-h-screen bg-[#FBF7F0] text-warm-ink flex items-center justify-center">
+        <p className="text-sm text-warm-ink-faint">Loading challenge...</p>
       </div>
     );
   }
@@ -58,20 +58,20 @@ export default function MathChallengePage() {
     challenge.difficulty === "easy"
       ? "text-green-400 bg-green-400/10"
       : challenge.difficulty === "medium"
-        ? "text-cyber-yellow bg-cyber-yellow/10"
+        ? "text-sage bg-sage/10"
         : "text-red-400 bg-red-400/10";
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white flex flex-col">
+    <div className="min-h-screen bg-[#FBF7F0] text-warm-ink flex flex-col">
       {/* Top bar */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-white/[0.04]">
+      <header className="flex items-center justify-between px-6 py-3 border-b border-hairline-warm">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push(`/${sid}/challenges`)}
-            className="w-8 h-8 rounded-lg hover:bg-white/5 flex items-center justify-center cursor-pointer"
+            className="w-8 h-8 rounded-lg hover:bg-warm-ink/[0.05] flex items-center justify-center cursor-pointer"
             title="Back to challenges"
           >
-            <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg className="w-4 h-4 text-warm-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -81,7 +81,7 @@ export default function MathChallengePage() {
               <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full ${diffColor}`}>
                 {challenge.difficulty}
               </span>
-              <span className="text-[9px] font-bold uppercase text-white/20 px-1.5 py-0.5 rounded-full bg-white/5">Math</span>
+              <span className="text-[9px] font-bold uppercase text-warm-ink-faint px-1.5 py-0.5 rounded-full bg-warm-ink/[0.04]">Math</span>
             </div>
           </div>
         </div>
@@ -91,35 +91,35 @@ export default function MathChallengePage() {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto p-6 space-y-6">
           {/* Description */}
-          <div className="glass-card rounded-3xl p-5">
-            <p className="text-sm text-white/70 leading-relaxed">{challenge.description}</p>
+          <div className="glass-card-warm rounded-3xl p-5">
+            <p className="text-sm text-warm-ink-soft leading-relaxed">{challenge.description}</p>
             {challenge.latex && (
               <div className="mt-4 p-4 bg-black/40 rounded-2xl text-center">
-                <code className="text-lg text-cyber-yellow/90 font-mono">{challenge.latex}</code>
+                <code className="text-lg text-sage/90 font-mono">{challenge.latex}</code>
               </div>
             )}
           </div>
 
           {/* Desmos */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Graphing Calculator</h3>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-warm-ink-faint mb-2">Graphing Calculator</h3>
             <DesmosGraph expressions={challenge.latex ? [challenge.latex] : []} />
           </div>
 
           {/* Answer */}
-          <div className="glass-card rounded-3xl p-5">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Your Answer</h3>
+          <div className="glass-card-warm rounded-3xl p-5">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-warm-ink-faint mb-3">Your Answer</h3>
             <div className="flex items-center gap-3">
               <input
                 value={userAnswer}
                 onChange={(e) => { setUserAnswer(e.target.value); setResult(null); }}
                 onKeyDown={(e) => e.key === "Enter" && checkAnswer()}
                 placeholder="Enter your answer (e.g. 2x + 3)..."
-                className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-cyber-yellow/50 font-mono"
+                className="flex-1 bg-warm-ink/[0.03] border border-hairline-warm rounded-full px-4 py-2.5 text-sm text-warm-ink placeholder-warm-ink-faint outline-none focus:border-sage/50 font-mono"
               />
               <button
                 onClick={checkAnswer}
-                className="shrink-0 bg-cyber-yellow text-black px-6 py-2.5 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                className="shrink-0 bg-sage text-white px-6 py-2.5 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
                 Check
               </button>
@@ -131,7 +131,7 @@ export default function MathChallengePage() {
               <div>
                 <p className="mt-3 text-xs font-bold text-red-400">Not quite. Try again!</p>
                 {challenge.hint && (
-                  <p className="mt-1 text-xs text-white/40">Hint: {challenge.hint}</p>
+                  <p className="mt-1 text-xs text-warm-ink-muted">Hint: {challenge.hint}</p>
                 )}
               </div>
             )}

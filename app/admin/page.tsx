@@ -203,14 +203,14 @@ export default function AdminPage() {
             </div>
 
             <div className="glass-card rounded-[28px] overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-hairline-warm flex items-center justify-between">
                 <h3 className="font-bold">All Users</h3>
                 <span className="text-xs text-white/40">{data.users.length} users</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="text-[10px] uppercase tracking-widest text-white/40 border-b border-white/[0.04]">
+                    <tr className="text-[10px] uppercase tracking-widest text-white/40 border-b border-hairline-warm">
                       <th className="px-6 py-3">User</th>
                       <th className="px-6 py-3">Joined</th>
                       <th className="px-6 py-3 text-center">Chats</th>
@@ -223,7 +223,7 @@ export default function AdminPage() {
                   </thead>
                   <tbody>
                     {data.users.map((u) => (
-                      <tr key={u.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                      <tr key={u.id} className="border-b border-hairline-warm hover:bg-warm-ink/[0.04] transition-colors">
                         <td className="px-6 py-3">
                           <p className="font-semibold">{u.full_name || "—"}</p>
                           <p className="text-xs text-white/40">{u.email || "no email"}</p>
@@ -252,14 +252,14 @@ export default function AdminPage() {
             </div>
 
             <div className="glass-card rounded-[28px] overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/[0.04] flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-hairline-warm flex items-center justify-between">
                 <h3 className="font-bold">Access Log</h3>
                 <span className="text-xs text-white/40">last {data.audit.length} events</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="text-[10px] uppercase tracking-widest text-white/40 border-b border-white/[0.04]">
+                    <tr className="text-[10px] uppercase tracking-widest text-white/40 border-b border-hairline-warm">
                       <th className="px-6 py-3">Event</th>
                       <th className="px-6 py-3">Email</th>
                       <th className="px-6 py-3">IP</th>
@@ -268,7 +268,7 @@ export default function AdminPage() {
                   </thead>
                   <tbody>
                     {data.audit.map((a, i) => (
-                      <tr key={i} className="border-b border-white/[0.03]">
+                      <tr key={i} className="border-b border-hairline-warm">
                         <td className="px-6 py-3">
                           <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${a.action === "verify_failed" || a.action === "token_rejected" ? "bg-red-500/10 text-red-400" : "bg-cyber-yellow/10 text-cyber-yellow"}`}>
                             {ACTION_LABELS[a.action] || a.action}

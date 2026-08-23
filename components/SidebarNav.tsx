@@ -49,7 +49,7 @@ export default function SidebarNav({ collapsed }: { collapsed: boolean }) {
             <a
               key={item.key}
               href={href}
-              className={`nav-item ${collapsed ? "justify-center px-0" : ""} ${isActive ? "active" : ""}`}
+              className={`nav-item-warm ${collapsed ? "justify-center px-0" : ""} ${isActive ? "active" : ""}`}
               title={collapsed ? item.label : undefined}
             >
               <svg className="w-[18px] h-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">

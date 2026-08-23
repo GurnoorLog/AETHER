@@ -34,18 +34,18 @@ export default function PricingPage() {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <div className="fixed top-[-15%] right-[-10%] w-[800px] h-[800px] bg-cyber-yellow/10 rounded-full blur-[160px] pointer-events-none z-0" />
+      <div className="fixed top-[-15%] right-[-10%] w-[800px] h-[800px] bg-sage/10 rounded-full blur-[160px] pointer-events-none z-0" />
       <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none z-0" />
 
       <Nav />
       <section className="py-28 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <span className="text-cyber-yellow text-xs font-black tracking-[0.25em] uppercase">Pricing</span>
-            <h1 className="text-4xl md:text-6xl font-black text-white mt-4 mb-4 tracking-tight">
-              Simple Plans for <span className="text-cyber-yellow">Serious Learning</span>
+            <span className="text-sage text-xs font-black tracking-[0.25em] uppercase">Pricing</span>
+            <h1 className="text-4xl md:text-6xl font-black text-warm-ink mt-4 mb-4 tracking-tight">
+              Simple Plans for <span className="text-sage">Serious Learning</span>
             </h1>
-            <p className="text-white/40 text-sm font-bold max-w-xl mx-auto">
+            <p className="text-warm-ink-muted text-sm font-bold max-w-xl mx-auto">
               Start free, upgrade when you outgrow it. No hidden fees, cancel anytime.
             </p>
           </div>
@@ -62,30 +62,30 @@ export default function PricingPage() {
                 key={plan.name}
                 className={`relative rounded-2xl p-6 flex flex-col ${
                   plan.popular
-                    ? "bg-white/5 border-2 border-cyber-yellow/40 shadow-[0_0_40px_rgba(253,224,71,0.08)]"
-                    : "bg-white/[0.03] border border-white/10"
+                    ? "bg-warm-ink/[0.04] border-2 border-sage/40 shadow-[0_0_40px_rgba(107,142,97,0.08)]"
+                    : "bg-warm-ink/[0.04] border border-hairline-warm"
                 }`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyber-yellow text-black text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-sage text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest">
                     Most Popular
                   </span>
                 )}
                 <div className="mb-6">
-                  <h2 className="text-white text-lg font-black mb-1">{plan.name}</h2>
-                  <p className="text-white/30 text-xs font-bold mb-4">{plan.desc}</p>
+                  <h2 className="text-warm-ink text-lg font-black mb-1">{plan.name}</h2>
+                  <p className="text-warm-ink-faint text-xs font-bold mb-4">{plan.desc}</p>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-white text-4xl font-black">{plan.price}</span>
-                    <span className="text-white/20 text-sm font-bold">{plan.period}</span>
+                    <span className="text-warm-ink text-4xl font-black">{plan.price}</span>
+                    <span className="text-warm-ink-faint text-sm font-bold">{plan.period}</span>
                   </div>
                 </div>
                 <ul className="space-y-2.5 mb-8 flex-1">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5">
-                      <svg className="w-4 h-4 mt-0.5 text-cyber-yellow shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg className="w-4 h-4 mt-0.5 text-sage shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
-                      <span className="text-white/60 text-xs font-bold leading-relaxed">{f}</span>
+                      <span className="text-warm-ink-soft text-xs font-bold leading-relaxed">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -94,8 +94,8 @@ export default function PricingPage() {
                   disabled={loading !== null}
                   className={`block w-full text-center text-sm font-black py-3.5 rounded-xl transition-all cursor-pointer ${
                     plan.popular
-                      ? "bg-cyber-yellow text-black hover:bg-cyber-yellow/90 hover:shadow-[0_0_30px_rgba(253,224,71,0.25)]"
-                      : "bg-white/5 text-white/80 border border-white/10 hover:bg-white/10 hover:text-white"
+                      ? "bg-sage text-white hover:bg-sage/90 hover:shadow-[0_0_30px_rgba(107,142,97,0.25)]"
+                      : "bg-warm-ink/[0.04] text-warm-ink-soft border border-hairline-warm hover:bg-warm-ink/[0.05] hover:text-warm-ink"
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {loading !== null && loading === plan.tier ? "Loading..." : plan.cta}
@@ -104,7 +104,7 @@ export default function PricingPage() {
             ))}
           </div>
 
-          <p className="text-center text-white/25 text-xs font-bold mt-10">
+          <p className="text-center text-warm-ink-faint text-xs font-bold mt-10">
             Prices in USD. Subscriptions billed monthly and managed through Stripe. Cancel anytime.
           </p>
         </div>

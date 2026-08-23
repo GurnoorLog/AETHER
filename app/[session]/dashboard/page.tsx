@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
-import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import type { Lesson } from "@/types/database";
+
+const GREEN = "#6B8E61";
 
 interface RoadmapModule {
   id: string;
@@ -18,11 +19,39 @@ interface RoadmapModule {
   completed_at: string | null;
 }
 
+const SUBJECT_IMAGES: Record<string, string> = {
+  physics: "/design/physics.jpg",
+  maths: "/design/maths.jpg",
+  math: "/design/maths.jpg",
+  mathematics: "/design/maths.jpg",
+  biology: "/design/biology.jpg",
+  chemistry: "/design/chemistry.jpg",
+  "computer science": "/design/cs.jpg",
+  cs: "/design/cs.jpg",
+  history: "/design/history.jpg",
+  literature: "/design/literature.jpg",
+  english: "/design/literature.jpg",
+};
+
+const DEFAULT_IMAGE = "/design/physics.jpg";
+
+function getSubjectImage(subject?: string | null): string {
+  if (!subject) return DEFAULT_IMAGE;
+  const key = subject.toLowerCase().trim();
+  return SUBJECT_IMAGES[key] || DEFAULT_IMAGE;
+}
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning,";
+  if (h < 18) return "Good afternoon,";
+  return "Good evening,";
+}
+
 export default function SessionDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
-  const expanded = useAutoCollapse(2000);
   const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,163 +92,202 @@ export default function SessionDashboardPage() {
   if (authLoading || !user || !session) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-5 h-5 border-2 border-cyber-yellow/40 border-t-cyber-yellow rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-sage/40 border-t-sage rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <>
-        {/* Hero */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 lg:py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute inset-0 noise-texture" />
-          <div className="absolute top-4 right-4 lg:top-8 lg:right-8 flex gap-2 lg:gap-3">
-            <div className="bg-black text-white px-2 lg:px-3.5 py-0.5 lg:py-1 rounded-full text-[8px] lg:text-[9px] font-semibold uppercase tracking-wider shadow-lg">{session.title}</div>
-            <div className="bg-black/5 border border-black/10 backdrop-blur-sm px-2 lg:px-3.5 py-0.5 lg:py-1 rounded-full text-[8px] lg:text-[9px] font-semibold uppercase tracking-wider text-black/60">{modules.length} Modules</div>
+    <div className="h-screen overflow-y-auto relative" style={{ backgroundColor: "#FDFBF7" }}>
+      {/* Hero subject image */}
+      <div
+        className="absolute top-0 left-0 right-0 z-0"
+        style={{
+          height: 360,
+          backgroundImage: `url('${getSubjectImage(session.subject)}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+        }}
+      />
+
+      {/* Greeting overlay */}
+      <div className="absolute top-0 left-0 right-0 z-[3] px-6 lg:px-12 pt-14 pointer-events-none">
+        <p className="text-[28px] lg:text-[32px] font-bold leading-tight" style={{ color: "#2D3436" }}>
+          {getGreeting()}
+        </p>
+        <p className="text-[28px] lg:text-[32px] font-bold leading-tight" style={{ color: GREEN }}>
+          {session.subject || "Student"}
+        </p>
+        <p className="text-[15px] lg:text-base font-medium mt-1" style={{ color: "#636E72" }}>
+          Ready to learn something amazing today?
+        </p>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 pt-[240px] px-4 sm:px-6 lg:px-12 pb-10 space-y-8">
+
+        {/* Hero card */}
+        <div
+          className="rounded-[32px] p-6 lg:p-8"
+          style={{ backgroundColor: "rgba(255,255,255,0.95)", border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}
+        >
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="rounded-full px-3 py-1 text-[11px] font-semibold text-white max-w-[260px] truncate" style={{ backgroundColor: "#333" }}>
+              {session.title}
+            </span>
+            <span className="rounded-full px-3 py-1 text-[11px] font-semibold" style={{ backgroundColor: "#F3EDE3", color: "#999" }}>
+              {modules.length} Modules
+            </span>
           </div>
-          <div className={`relative z-10 transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
-            {!expanded && (
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">{session.title}</div>
-                <span className="text-[10px] font-bold text-black/40">{progress}%</span>
-              </div>
-            )}
-            {expanded && <p className="label-micro text-black/50 mb-4">Session Dashboard</p>}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "heading-display mb-5" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
-              <span className="block truncate">{currentModule
-                ? `Continue "${currentModule.title}"`
-                : completedCount === modules.length && modules.length > 0
-                  ? "All Complete!"
-                  : `Welcome to ${session.subject || "your session"}`}</span>
-            </h1>
-            <div className={`flex items-center gap-5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-20 opacity-100 mt-5" : "max-h-0 opacity-0 mt-0 overflow-hidden"}`}>
-              <div className="flex-1 h-2 bg-black/10 rounded-full overflow-hidden">
-                <div className="h-full bg-black rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `${progress}%` }} />
-              </div>
-              <span className="text-xl font-bold tracking-tight">{progress}%</span>
+          <h1 className="text-xl lg:text-2xl font-bold leading-snug mb-5" style={{ color: "#333" }}>
+            {currentModule
+              ? `Continue "${currentModule.title}"`
+              : completedCount === modules.length && modules.length > 0
+                ? "All Complete!"
+                : `Welcome to ${session.subject || "your session"}`}
+          </h1>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
+              <div
+                className="h-full rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                style={{ width: `${progress}%`, backgroundColor: GREEN }}
+              />
             </div>
+            <span className="text-base font-bold" style={{ color: "#333" }}>{progress}%</span>
           </div>
-          <div className="absolute bottom-0 right-0 w-[350px] h-[350px] bg-black/[0.03] rounded-full -mb-36 -mr-16" />
         </div>
 
-        {/* Content */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-8 overflow-y-auto space-y-8 relative z-10 pt-8">
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 stagger-children">
+        {/* Quick Actions */}
+        <section>
+          <p className="text-[13px] font-bold uppercase tracking-wide mb-3" style={{ color: "#999" }}>Quick Actions</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {currentModule && (
               <button
                 onClick={() => startModule(currentModule.id)}
-                className="glass-card rounded-[20px] p-6 text-left cursor-pointer group"
+                className="bg-white rounded-[24px] p-5 text-left cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md"
+                style={{ border: "1px solid #F3EDE3" }}
               >
-                <div className="flex items-center gap-2.5 mb-3">
-                  <div className="w-8 h-8 bg-cyber-yellow/10 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                    </svg>
-                  </div>
-                  <span className="label-micro text-cyber-yellow/70">Continue Learning</span>
+                <div className="w-10 h-10 rounded-[14px] flex items-center justify-center mb-3" style={{ backgroundColor: "#E8F0E5" }}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="1.8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
+                  </svg>
                 </div>
-                <h3 className="text-sm font-semibold group-hover:text-cyber-yellow transition-colors">{currentModule.title}</h3>
-                <p className="text-[11px] text-white/30 mt-1">Start or resume this module</p>
+                <p className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: "#BBB" }}>Continue</p>
+                <h3 className="text-[15px] font-bold truncate" style={{ color: "#333" }}>{currentModule.title}</h3>
+                <p className="text-xs mt-0.5" style={{ color: "#999" }}>Resume this module</p>
               </button>
             )}
 
             <button
-              onClick={() => router.push(`/${session?.slug}/roadmap`)}
-              className="glass-card rounded-[20px] p-6 text-left cursor-pointer group"
+              onClick={() => router.push(`/${session?.slug}/chat`)}
+              className="bg-white rounded-[24px] p-5 text-left cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md"
+              style={{ border: "1px solid #F3EDE3" }}
             >
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 bg-blue-400/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
-                  </svg>
-                </div>
-                <span className="label-micro text-white/30">View Roadmap</span>
+              <div className="w-10 h-10 rounded-[14px] flex items-center justify-center mb-3" style={{ backgroundColor: "#E8F0E5" }}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="1.8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                </svg>
               </div>
-              <h3 className="text-sm font-semibold group-hover:text-blue-400 transition-colors">Learning Roadmap</h3>
-              <p className="text-[11px] text-white/30 mt-1">{modules.length} modules, {completedCount} completed</p>
+              <p className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: "#BBB" }}>Tutor</p>
+              <h3 className="text-[15px] font-bold" style={{ color: "#333" }}>Chat with Aether</h3>
+              <p className="text-xs mt-0.5" style={{ color: "#999" }}>Ask anything about this subject</p>
+            </button>
+
+            <button
+              onClick={() => router.push(`/${session?.slug}/progress`)}
+              className="bg-white rounded-[24px] p-5 text-left cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md"
+              style={{ border: "1px solid #F3EDE3" }}
+            >
+              <div className="w-10 h-10 rounded-[14px] flex items-center justify-center mb-3" style={{ backgroundColor: "#F3E8E8" }}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#C05050" strokeWidth="1.8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: "#BBB" }}>Progress</p>
+              <h3 className="text-[15px] font-bold" style={{ color: "#333" }}>Check In</h3>
+              <p className="text-xs mt-0.5" style={{ color: "#999" }}>Mastery &amp; milestones</p>
             </button>
 
             <button
               onClick={() => router.push(`/${session?.slug}/quizzes`)}
-              className="glass-card rounded-[20px] p-6 text-left cursor-pointer group"
+              className="bg-white rounded-[24px] p-5 text-left cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-md"
+              style={{ border: "1px solid #F3EDE3" }}
             >
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 bg-green-400/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-                  </svg>
-                </div>
-                <span className="label-micro text-white/30">Test Knowledge</span>
+              <div className="w-10 h-10 rounded-[14px] flex items-center justify-center mb-3" style={{ backgroundColor: "#E8EEF3" }}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#5080B0" strokeWidth="1.8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-6m2.25-9m-3.75 3.75h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
               </div>
-              <h3 className="text-sm font-semibold group-hover:text-green-400 transition-colors">Quizzes</h3>
-              <p className="text-[11px] text-white/30 mt-1">Take a quiz on any module</p>
+              <p className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: "#BBB" }}>Quizzes</p>
+              <h3 className="text-[15px] font-bold" style={{ color: "#333" }}>Test Knowledge</h3>
+              <p className="text-xs mt-0.5" style={{ color: "#999" }}>Quiz on any module</p>
             </button>
           </div>
+        </section>
 
-          {/* Module Overview */}
-          <section>
-            <p className="label-micro text-white/25 mb-5 pl-1">Module Overview</p>
-            {loading ? (
-              <div className="space-y-2.5">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="glass-card rounded-[16px] p-4 animate-pulse">
-                    <div className="w-40 h-3.5 bg-white/[0.04] rounded" />
-                  </div>
-                ))}
-              </div>
-            ) : modules.length === 0 ? (
-              <div className="text-center py-12 glass-card rounded-[24px]">
-                <p className="text-white/25 text-sm">No modules yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {modules.map((mod) => {
-                  const isCompleted = mod.status === "completed";
-                  const isCurrent = mod.status === "current";
-                  const lessonCount = mod.lessons?.length || 0;
+        {/* Module Overview */}
+        <section>
+          <p className="text-[13px] font-bold uppercase tracking-wide mb-3" style={{ color: "#999" }}>Modules</p>
+          {loading ? (
+            <div className="space-y-2.5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-[20px] p-4 animate-pulse" style={{ border: "1px solid #F3EDE3" }}>
+                  <div className="w-40 h-3.5 bg-warm-ink/[0.04] rounded" />
+                </div>
+              ))}
+            </div>
+          ) : modules.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-[24px]" style={{ border: "1px solid #F3EDE3" }}>
+              <p className="text-sm" style={{ color: "#999" }}>No modules yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {modules.map((mod) => {
+                const isCompleted = mod.status === "completed";
+                const isCurrent = mod.status === "current";
+                const lessonCount = mod.lessons?.length || 0;
 
-                  return (
+                return (
+                  <div
+                    key={mod.id}
+                    onClick={() => isCurrent ? startModule(mod.id) : undefined}
+                    className={`bg-white rounded-[20px] p-4 flex items-center gap-3 transition-all ${isCurrent ? "cursor-pointer hover:shadow-md" : ""}`}
+                    style={{ border: "1px solid #F3EDE3", opacity: isCurrent ? 1 : isCompleted ? 0.65 : 0.45 }}
+                  >
                     <div
-                      key={mod.id}
-                      onClick={() => isCurrent ? startModule(mod.id) : undefined}
-                      className={`glass-card rounded-[16px] p-4 flex items-center gap-4 transition-all ${
-                        isCurrent ? "cursor-pointer hover:bg-white/[0.06]" : isCompleted ? "opacity-50" : "opacity-20"
-                      }`}
+                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold"
+                      style={{
+                        backgroundColor: isCompleted ? "#E8F0E5" : isCurrent ? "#F3EDE3" : "#F5F5F5",
+                        color: isCompleted ? GREEN : isCurrent ? GREEN : "#CCC",
+                      }}
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${
-                        isCompleted ? "bg-green-500/10 text-green-400" :
-                        isCurrent ? "bg-cyber-yellow/10 text-cyber-yellow" :
-                        "bg-white/[0.03] text-white/20"
-                      }`}>
-                        {isCompleted ? (
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                        ) : (
-                          mod.module_index + 1
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-[13px] font-semibold truncate">{mod.title}</h4>
-                        <p className="text-[10px] text-white/25">{lessonCount} lessons{isCompleted && " · Completed"}</p>
-                      </div>
-                      {isCurrent && (
-                        <span className="bg-cyber-yellow/10 text-cyber-yellow text-[9px] font-semibold px-2.5 py-1 rounded-full">Current</span>
-                      )}
-                      {isCurrent && (
-                        <svg className="w-3.5 h-3.5 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      {isCompleted ? (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
+                      ) : (
+                        mod.module_index + 1
                       )}
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-        </div>
-    </>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold truncate" style={{ color: isCurrent ? "#333" : isCompleted ? "#999" : "#CCC" }}>{mod.title}</h4>
+                      <p className="text-[11px]" style={{ color: "#BBB" }}>{lessonCount} lessons{isCompleted && " · Done"}</p>
+                    </div>
+                    {isCurrent && (
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: "#E8F0E5", color: GREEN }}>CURRENT</span>
+                    )}
+                    {isCurrent && (
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#CCC" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

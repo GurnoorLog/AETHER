@@ -6,8 +6,10 @@ import { use } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
-import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import type { QuizQuestion, SessionQuiz } from "@/types/database";
+
+const GREEN = "#6B8E61";
+const RED = "#C05050";
 
 interface ModuleInfo {
   id: string;
@@ -26,7 +28,6 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
-  const expanded = useAutoCollapse(2000);
 
   const [modules, setModules] = useState<ModuleInfo[]>([]);
   const [quizzes, setQuizzes] = useState<SessionQuiz[]>([]);
@@ -175,317 +176,308 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
 
   if (authLoading || !user || !session) {
     return (
-      <div className="min-h-screen bg-deep-onyx flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
-          <span className="text-white/40 text-sm font-bold uppercase tracking-widest">Loading...</span>
-        </div>
+      <div className="h-full flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-sage/40 border-t-sage rounded-full animate-spin" />
       </div>
     );
   }
 
+  const cardStyle = { backgroundColor: "#FFF", border: "1px solid #F3EDE3", boxShadow: "0 4px 14px rgba(0,0,0,0.03)" };
+
   return (
-    <>
-        {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
-            <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{session.title}</div>
-          </div>
-          <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
-            {!expanded && (
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">{session.title}</div>
+    <div className="h-screen overflow-y-auto px-4 sm:px-8 lg:px-16 py-10 lg:py-14" style={{ backgroundColor: "#FDFBF7" }}>
+      <div className="max-w-4xl mx-auto">
+
+        {/* ── TAKING ── */}
+        {view === "taking" && activeQuiz && (
+          <div className="space-y-5">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3">
+              <h1 className="text-xl lg:text-2xl font-bold truncate" style={{ color: "#333" }}>{activeQuiz.title}</h1>
+              <button
+                onClick={goToList}
+                className="flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-2xl shrink-0 cursor-pointer hover:brightness-95 transition-all"
+                style={{ backgroundColor: "#F3EDE3", color: "#999", letterSpacing: "0.05em" }}
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="#999" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                EXIT
+              </button>
+            </div>
+
+            {/* Progress */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{ width: `${(currentQuestion / activeQuiz.questions.length) * 100}%`, backgroundColor: GREEN }}
+                />
               </div>
-            )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
-              <span className="block truncate">
-                {view === "taking" ? "Quiz in Progress" : view === "results" ? "Quiz Results" : "Quiz Your Knowledge"}
-              </span>
-            </h1>
-            <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
-              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Challenge</p>
-              <p className="text-xl font-medium opacity-80">
-                {view === "taking"
-                  ? `Question ${currentQuestion + 1} of ${activeQuiz?.questions.length || 0}`
-                  : view === "results"
-                    ? `You scored ${score}%`
-                    : "AI-generated quizzes from your study modules."}
+              <span className="text-xs font-bold" style={{ color: "#999" }}>{currentQuestion + 1} / {activeQuiz.questions.length}</span>
+            </div>
+
+            {/* Question card */}
+            <div className="rounded-[20px] p-5 lg:p-7" style={cardStyle}>
+              <p className="text-[10px] font-bold uppercase mb-2" style={{ color: GREEN, letterSpacing: "0.12em" }}>
+                QUESTION {currentQuestion + 1} OF {activeQuiz.questions.length}
+              </p>
+              <h2 className="text-lg lg:text-xl font-semibold leading-relaxed" style={{ color: "#333" }}>
+                {activeQuiz.questions[currentQuestion]?.question}
+              </h2>
+            </div>
+
+            {/* Answers */}
+            <div className="space-y-2.5">
+              {activeQuiz.questions[currentQuestion]?.options.map((opt, i) => {
+                const selected = selectedAnswers[currentQuestion] === i;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => selectAnswer(currentQuestion, i)}
+                    className="w-full flex items-center gap-3 text-left p-4 rounded-[20px] transition-all cursor-pointer"
+                    style={{
+                      backgroundColor: selected ? "#FBFCF9" : "#FFF",
+                      border: selected ? `1.5px solid ${GREEN}` : "1px solid #F3EDE3",
+                      boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+                    }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0"
+                      style={{ backgroundColor: selected ? GREEN : "#F3EDE3", color: selected ? "#FFF" : "#999" }}
+                    >
+                      {String.fromCharCode(65 + i)}
+                    </div>
+                    <span className={`flex-1 text-sm ${selected ? "font-semibold" : ""}`} style={{ color: selected ? "#333" : "#666" }}>{opt}</span>
+                    {selected && (
+                      <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Nav */}
+            <div className="flex items-center justify-between gap-3 pt-1">
+              <button
+                onClick={() => setCurrentQuestion((p) => Math.max(0, p - 1))}
+                disabled={currentQuestion === 0}
+                className="px-5 py-3 rounded-full text-sm font-semibold transition-all disabled:opacity-30 cursor-pointer"
+                style={{ backgroundColor: "#F3EDE3", color: "#666" }}
+              >
+                Previous
+              </button>
+              <button
+                onClick={() =>
+                  currentQuestion < activeQuiz.questions.length - 1
+                    ? setCurrentQuestion((c) => c + 1)
+                    : submitQuiz()
+                }
+                disabled={selectedAnswers[currentQuestion] === -1}
+                className="text-white text-xs font-bold py-3.5 px-8 rounded-full transition-all cursor-pointer disabled:opacity-40 hover:brightness-105 active:scale-[0.98]"
+                style={{ backgroundColor: GREEN, letterSpacing: "0.08em" }}
+              >
+                {currentQuestion === activeQuiz.questions.length - 1 ? "SUBMIT QUIZ" : "NEXT QUESTION"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── RESULTS ── */}
+        {view === "results" && activeQuiz && (
+          <div className="space-y-5">
+            <div className="flex flex-col items-center py-6">
+              <div
+                className="w-[130px] h-[130px] rounded-full bg-white flex items-center justify-center mb-4"
+                style={{ borderWidth: 6, borderStyle: "solid", borderColor: (score ?? 0) >= 70 ? GREEN : RED, boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}
+              >
+                <span className="text-4xl font-extrabold" style={{ color: (score ?? 0) >= 70 ? GREEN : RED }}>{score}%</span>
+              </div>
+              <h1 className="text-xl font-bold" style={{ color: "#333" }}>
+                {(score ?? 0) >= 70 ? "Great work!" : "Keep practicing!"}
+              </h1>
+              <p className="text-sm mt-1" style={{ color: "#999" }}>
+                You got {activeQuiz.questions.filter((q: QuizQuestion, i: number) => selectedAnswers[i] === q.correct_index).length} of {activeQuiz.questions.length} correct.
               </p>
             </div>
+
+            {/* Review */}
+            <div className="space-y-3">
+              {activeQuiz.questions.map((q: QuizQuestion, qi: number) => {
+                const correct = selectedAnswers[qi] === q.correct_index;
+                const picked = selectedAnswers[qi];
+                return (
+                  <div key={qi} className="rounded-[20px] p-5 space-y-2" style={cardStyle}>
+                    <p className="text-[13px] font-bold leading-snug" style={{ color: "#333" }}>{qi + 1}. {q.question}</p>
+                    <div className="flex items-center gap-1.5">
+                      {correct ? (
+                        <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                      ) : (
+                        <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={RED} strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                      )}
+                      <span className="text-xs font-semibold" style={{ color: correct ? GREEN : RED }}>
+                        {correct ? "Correct" : `Correct answer: ${q.options[q.correct_index]}`}
+                      </span>
+                    </div>
+                    {!correct && picked >= 0 && (
+                      <div className="flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={RED} strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                        <span className="text-xs font-semibold" style={{ color: RED }}>Your pick: {q.options[picked]}</span>
+                      </div>
+                    )}
+                    {q.explanation && <p className="text-xs leading-relaxed pt-1" style={{ color: "#999" }}>{q.explanation}</p>}
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={goToList}
+              className="w-full flex items-center justify-center gap-2 text-white text-xs font-bold py-4 rounded-full cursor-pointer hover:brightness-105 active:scale-[0.99] transition-all"
+              style={{ backgroundColor: GREEN, letterSpacing: "0.08em" }}
+            >
+              BACK TO QUIZZES
+            </button>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
-        </div>
+        )}
 
-        {/* Content Layer */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 overflow-y-auto relative z-10">
-          {view === "list" && (
-            <div className="space-y-8 pt-8">
-              {/* Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Total Quizzes</p>
-                  <p className="text-2xl sm:text-3xl font-bold">{quizzes.length}</p>
-                </div>
-                <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Completed</p>
-                  <p className="text-2xl sm:text-3xl font-bold">{completedQuizzes.length}</p>
-                </div>
-                <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Avg. Score</p>
-                  <p className="text-2xl sm:text-3xl font-bold">{avgScore}%</p>
-                </div>
-                <div className="glass-card p-6 rounded-[32px] flex flex-col justify-center">
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Modules</p>
-                  <p className="text-2xl sm:text-3xl font-bold">{modules.length}</p>
-                </div>
-              </div>
-
-              {/* Generate New Quiz */}
-              <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
-                <h3 className="text-base sm:text-lg font-bold mb-4">Generate New Quiz</h3>
-                <p className="text-sm text-white/40 mb-4">Select a module or generate a general quiz on the subject.</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <button
-                    onClick={() => setSelectedModule("")}
-                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                      !selectedModule ? "bg-cyber-yellow text-black" : "bg-white/5 text-white/60 hover:bg-white/10"
-                    }`}
-                  >
-                    General Quiz
-                  </button>
-                  {modules.map((mod) => (
-                    <button
-                      key={mod.id}
-                      onClick={() => setSelectedModule(mod.id)}
-                      className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                        selectedModule === mod.id ? "bg-cyber-yellow text-black" : "bg-white/5 text-white/60 hover:bg-white/10"
-                      }`}
-                    >
-                      {mod.title}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() => handleGenerateQuiz()}
-                  disabled={generating}
-                  className="bg-cyber-yellow text-black px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  {generating ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                      Generating...
-                    </span>
-                  ) : (
-                    "Generate Quiz"
-                  )}
-                </button>
-              </div>
-
-              {/* Quiz List */}
+        {/* ── LIST ── */}
+        {view === "list" && (
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-end justify-between gap-4">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 mb-6">Your Quizzes</h3>
-                {quizzes.length === 0 ? (
-                  <div className="text-center py-16 glass-card rounded-[32px]">
-                    <p className="text-white/30 text-sm">No quizzes yet. Generate your first one above!</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
-                    {quizzes.map((quiz) => {
-                      const moduleTitle = modules.find((m) => m.id === quiz.module_id)?.title || "General";
-                      return (
-                        <div key={quiz.id} className="glass-card p-4 sm:p-6 rounded-[32px] group hover:border-cyber-yellow/20 transition-all">
-                          <div className="flex justify-between items-start mb-4">
-                            <div>
-                              <span className="px-3 py-1 bg-white/5 text-white/60 text-[10px] font-black uppercase rounded-full">{moduleTitle}</span>
-                              <h4 className="text-base sm:text-lg font-bold mt-2">{quiz.title}</h4>
-                            </div>
-                            {quiz.completed && quiz.score !== null && (
-                              <div className={`text-xl sm:text-2xl font-black ${
-                                quiz.score >= 80 ? "text-green-400" : quiz.score >= 50 ? "text-yellow-400" : "text-red-400"
-                              }`}>
-                                {quiz.score}%
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-4 text-xs text-white/40 mb-4">
-                            <span>{quiz.total_questions} questions</span>
-                            <span>{quiz.completed ? "Completed" : "Not started"}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => startQuiz(quiz)}
-                              className="flex-1 bg-cyber-yellow text-black font-bold py-3 rounded-full text-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                            >
-                              {quiz.completed ? "Retake Quiz" : "Start Quiz"}
-                            </button>
-                            <button
-                              onClick={() => deleteQuiz(quiz.id)}
-                              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-400/10 hover:text-red-400 transition-all cursor-pointer opacity-0 group-hover:opacity-100"
-                            >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <p className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: GREEN }}>Test Yourself</p>
+                <h1 className="text-2xl lg:text-[28px] font-bold" style={{ color: "#333" }}>Quizzes</h1>
               </div>
-            </div>
-          )}
-
-          {view === "taking" && activeQuiz && (
-            <div className="max-w-3xl mx-auto py-8 space-y-8">
-              {/* Progress bar */}
-              <div className="glass-card rounded-full p-2 flex items-center gap-4">
-                <button onClick={goToList} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              <button
+                onClick={() => handleGenerateQuiz()}
+                disabled={generating}
+                className="flex items-center gap-1.5 text-white text-[11px] font-bold px-4 py-3 rounded-[20px] cursor-pointer transition-all disabled:opacity-55 hover:brightness-105 active:scale-[0.98]"
+                style={{ backgroundColor: GREEN, letterSpacing: "0.05em" }}
+              >
+                {!generating && (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="#FFF" strokeWidth="2.2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                   </svg>
-                </button>
-                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-cyber-yellow rounded-full transition-all"
-                    style={{ width: `${((currentQuestion + 1) / activeQuiz.questions.length) * 100}%` }}
-                  />
-                </div>
-                <span className="text-xs font-bold text-white/40">{currentQuestion + 1}/{activeQuiz.questions.length}</span>
-              </div>
-
-              {/* Question */}
-              {activeQuiz.questions[currentQuestion] && (
-              <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8">
-                  <h2 className="text-base sm:text-lg lg:text-xl font-bold mb-4 lg:mb-8">
-                    {activeQuiz.questions[currentQuestion].question}
-                  </h2>
-                  <div className="space-y-3">
-                    {activeQuiz.questions[currentQuestion].options.map((option, i) => {
-                      const isSelected = selectedAnswers[currentQuestion] === i;
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => selectAnswer(currentQuestion, i)}
-                          className={`w-full text-left p-3 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-cyber-yellow bg-cyber-yellow/10"
-                              : "border-white/10 hover:border-white/20 hover:bg-white/5"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 sm:gap-4">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-                              isSelected ? "bg-cyber-yellow text-black" : "bg-white/5 text-white/40"
-                            }`}>
-                              {String.fromCharCode(65 + i)}
-                            </div>
-                            <span className="text-sm">{option}</span>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  onClick={() => setCurrentQuestion((p) => Math.max(0, p - 1))}
-                  disabled={currentQuestion === 0}
-                  className="px-4 sm:px-6 py-3 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 transition-all disabled:opacity-30 cursor-pointer"
-                >
-                  Previous
-                </button>
-                {currentQuestion === activeQuiz.questions.length - 1 ? (
-                  <button
-                    onClick={submitQuiz}
-                    disabled={selectedAnswers.includes(-1)}
-                    className="bg-cyber-yellow text-black px-4 sm:px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-                  >
-                    Submit Quiz
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setCurrentQuestion((p) => Math.min(activeQuiz.questions.length - 1, p + 1))}
-                    className="bg-cyber-yellow text-black px-4 sm:px-8 py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                  >
-                    Next
-                  </button>
                 )}
-              </div>
+                {generating ? "GENERATING..." : "GENERATE"}
+              </button>
             </div>
-          )}
 
-          {view === "results" && activeQuiz && (
-            <div className="max-w-3xl mx-auto py-8 space-y-8">
-              {/* Score card */}
-              <div className="glass-card rounded-[32px] p-4 sm:p-6 lg:p-8 text-center">
-                <div className={`text-5xl sm:text-6xl lg:text-8xl font-black mb-4 ${
-                  (score || 0) >= 80 ? "text-green-400" : (score || 0) >= 50 ? "text-yellow-400" : "text-red-400"
-                }`}>
-                  {score}%
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { label: "Total Quizzes", value: String(quizzes.length), fg: "#7C69A2", bg: "#F0EEFA" },
+                { label: "Completed", value: String(completedQuizzes.length), fg: "#EAB308", bg: "#FFF5E6" },
+                { label: "Avg. Score", value: `${avgScore}%`, fg: "#6366F1", bg: "#EBF1FF" },
+                { label: "Modules", value: String(modules.length), fg: GREEN, bg: "#EBF7F2" },
+              ].map((s) => (
+                <div key={s.label} className="rounded-[20px] p-4" style={cardStyle}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2.5" style={{ backgroundColor: s.bg }}>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={s.fg} strokeWidth="1.8">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-6m2.25-9m-3.75 3.75h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                  </div>
+                  <p className="text-xl font-bold leading-none" style={{ color: s.fg }}>{s.value}</p>
+                  <p className="text-[11px] font-medium mt-1.5" style={{ color: "#999" }}>{s.label}</p>
                 </div>
-                <p className="text-lg font-bold mb-2">
-                  {(score || 0) >= 80 ? "Excellent work!" : (score || 0) >= 50 ? "Good effort!" : "Keep practicing!"}
-                </p>
-                <p className="text-sm text-white/40">
-                  You got {activeQuiz.questions.filter((q: QuizQuestion, i: number) => selectedAnswers[i] === q.correct_index).length} out of {activeQuiz.questions.length} correct
+              ))}
+            </div>
+
+            {/* Module chips */}
+            {modules.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button
+                  onClick={() => setSelectedModule("")}
+                  className="shrink-0 text-xs font-bold px-3.5 py-2.5 rounded-full cursor-pointer transition-colors"
+                  style={selectedModule === "" ? { backgroundColor: GREEN, color: "#FFF" } : { backgroundColor: "#F3EDE3", color: "#666" }}
+                >
+                  General
+                </button>
+                {modules.map((mod) => (
+                  <button
+                    key={mod.id}
+                    onClick={() => setSelectedModule(mod.id)}
+                    className="shrink-0 max-w-[200px] truncate text-xs font-bold px-3.5 py-2.5 rounded-full cursor-pointer transition-colors"
+                    style={selectedModule === mod.id ? { backgroundColor: GREEN, color: "#FFF" } : { backgroundColor: "#F3EDE3", color: "#666" }}
+                  >
+                    {mod.title}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Quiz list */}
+            {loading ? (
+              <div className="rounded-[24px] p-8 text-center" style={cardStyle}>
+                <p className="text-sm" style={{ color: "#999" }}>Loading quizzes...</p>
+              </div>
+            ) : quizzes.length === 0 ? (
+              <div className="rounded-[24px] p-10 flex flex-col items-center text-center" style={cardStyle}>
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: "#F9F6F0" }}>
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#CCC" strokeWidth="1.8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-6m2.25-9m-3.75 3.75h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                  </svg>
+                </div>
+                <h3 className="text-base font-bold mb-1" style={{ color: "#333" }}>No quizzes yet</h3>
+                <p className="text-sm max-w-[280px]" style={{ color: "#999" }}>
+                  Generate a quiz on a module (or general knowledge) to test yourself.
                 </p>
               </div>
-
-              {/* Answer review */}
-              <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Review Answers</h3>
-                {activeQuiz.questions.map((q: QuizQuestion, i: number) => {
-                  const isCorrect = selectedAnswers[i] === q.correct_index;
+            ) : (
+              <div className="space-y-3">
+                {quizzes.map((quiz) => {
+                  const pct = quiz.total_questions > 0 ? Math.round(((quiz.score ?? 0) / quiz.total_questions) * 100) : 0;
                   return (
-                    <div key={i} className="glass-card rounded-[24px] p-6">
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="text-sm font-bold flex-1 mr-4">{q.question}</h4>
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                          isCorrect ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
-                        }`}>
-                          {isCorrect ? "Correct" : "Wrong"}
+                    <div
+                      key={quiz.id}
+                      onClick={() => startQuiz(quiz)}
+                      className="rounded-[20px] p-4 lg:p-5 cursor-pointer hover:shadow-md transition-shadow group"
+                      style={cardStyle}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <h4 className="flex-1 text-[15px] font-bold leading-snug" style={{ color: "#333" }}>{quiz.title}</h4>
+                        {quiz.completed && (
+                          <span
+                            className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-xl"
+                            style={{ backgroundColor: pct >= 70 ? "#E8F0E5" : "#F3E8E8", color: pct >= 70 ? GREEN : RED }}
+                          >
+                            {pct}%
+                          </span>
+                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteQuiz(quiz.id); }}
+                          className="shrink-0 w-7 h-7 rounded-lg hidden lg:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 cursor-pointer"
+                          aria-label="Delete quiz"
+                        >
+                          <svg className="w-3.5 h-3.5 text-warm-ink-faint hover:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                        </button>
+                      </div>
+                      <p className="text-xs mt-1" style={{ color: "#999" }}>
+                        {quiz.total_questions} questions · {quiz.completed ? "Completed" : "Not taken"}
+                      </p>
+                      <div className="flex items-center justify-end gap-1.5 mt-3 pt-3" style={{ borderTop: "1px solid #F3EDE3" }}>
+                        <svg className="w-3 h-3 shrink-0" fill={GREEN} viewBox="0 0 24 24">
+                          <path d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z" />
+                        </svg>
+                        <span className="text-[10px] font-bold" style={{ color: GREEN, letterSpacing: "0.05em" }}>
+                          {quiz.completed ? "RETRY" : "START"}
                         </span>
                       </div>
-                      <div className="space-y-1 mb-3">
-                        {q.options.map((opt: string, oi: number) => (
-                          <div key={oi} className={`text-xs px-3 py-2 rounded-lg ${
-                            oi === q.correct_index
-                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                              : oi === selectedAnswers[i]
-                                ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                                : "text-white/40"
-                          }`}>
-                            {String.fromCharCode(65 + oi)}. {opt}
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-xs text-white/50">{q.explanation}</p>
                     </div>
                   );
                 })}
               </div>
+            )}
+          </div>
+        )}
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-                <button
-                  onClick={() => { startQuiz(activeQuiz); setView("taking"); }}
-                  className="w-full sm:flex-1 bg-white/5 border border-white/10 py-3 rounded-full text-sm font-bold hover:bg-white/10 transition-all cursor-pointer"
-                >
-                  Retake Quiz
-                </button>
-                <button
-                  onClick={goToList}
-                  className="w-full sm:flex-1 bg-cyber-yellow text-black py-3 rounded-full text-sm font-black uppercase hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                >
-                  Back to Quizzes
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-    </>
+      </div>
+    </div>
   );
 }

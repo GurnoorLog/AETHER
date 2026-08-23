@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
-import { useAutoCollapse } from "@/hooks/useAutoCollapse";
 import type { Lesson } from "@/types/database";
+
+const GREEN = "#6B8E61";
 
 interface RoadmapModule {
   id: string;
@@ -24,7 +25,6 @@ export default function SessionRoadmapPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { session } = useSession();
-  const expanded = useAutoCollapse(2000);
   const [modules, setModules] = useState<RoadmapModule[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
@@ -65,227 +65,178 @@ export default function SessionRoadmapPage() {
   if (authLoading || !user || !session) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-6 h-6 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-sage/40 border-t-sage rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <>
-        {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-cyber-yellow text-black liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
-          <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
-            <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">{session.title}</div>
+    <div className="h-screen overflow-y-auto px-4 sm:px-8 lg:px-16 py-10 lg:py-14" style={{ backgroundColor: "#FDFBF7" }}>
+      <div className="max-w-4xl mx-auto">
+        {/* Hero */}
+        <div
+          className="bg-white rounded-[32px] p-5 lg:p-7 mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+          style={{ border: "1px solid #F3EDE3", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}
+        >
+          <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#E8F0E5" }}>
+            <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="1.8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+            </svg>
           </div>
-          <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
-            {!expanded && (
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">{session.title}</div>
-                <span className="text-[10px] font-bold text-black/40">{progress}%</span>
-              </div>
-            )}
-            <h1 className={`text-black leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
-              <span className="block truncate">Your Learning Roadmap</span>
-            </h1>
-            <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
-              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Path</p>
-              <div className="flex items-center gap-6 mt-6">
-                <div className="flex-1 h-3 bg-black/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-black rounded-full" style={{ width: `${progress}%` }} />
-                </div>
-                <span className="text-2xl font-black tracking-tighter">{progress}%</span>
-              </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: GREEN }}>Learning Roadmap</p>
+            <h1 className="text-lg lg:text-xl font-bold truncate" style={{ color: "#333" }}>{session.title}</h1>
+          </div>
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <span className="text-base font-bold" style={{ color: "#333" }}>{progress}%</span>
+            <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, backgroundColor: GREEN }} />
             </div>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
         </div>
 
-        {/* Content Layer */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-24 overflow-y-auto space-y-6 lg:space-y-12 relative z-10">
-          <section>
-            <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40 mb-8">Module Sequence</h2>
+        {loading ? (
+          <div className="bg-white rounded-[24px] p-8 text-center" style={{ border: "1px solid #F3EDE3" }}>
+            <p className="text-sm" style={{ color: "#999" }}>Loading your roadmap...</p>
+          </div>
+        ) : modules.length === 0 ? (
+          <div className="bg-white rounded-[24px] p-10 text-center" style={{ border: "1px solid #F3EDE3" }}>
+            <p className="text-sm" style={{ color: "#999" }}>No modules yet. Create a session from the Hub.</p>
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            {modules.map((mod) => {
+              const isCompleted = mod.status === "completed";
+              const isCurrent = mod.status === "current";
+              const isExpanded = expandedModule === mod.id;
+              const lessons = Array.isArray(mod.lessons) ? mod.lessons : [];
+              const keyConcepts = (mod.key_concepts || "").split(",").map((c) => c.trim()).filter(Boolean);
 
-            {loading ? (
-              <div className="space-y-8">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-start gap-8">
-                    <div className="w-10 h-10 rounded-full bg-white/5 animate-pulse shrink-0" />
-                      <div className="flex-1 glass-card rounded-[24px] p-4 sm:p-6 animate-pulse">
-                      <div className="w-48 h-4 bg-white/5 rounded mb-2" />
-                      <div className="w-64 h-3 bg-white/5 rounded" />
+              return (
+                <div key={mod.id} className="flex gap-3 lg:gap-4">
+                  {/* Timeline rail */}
+                  <div className="flex flex-col items-center w-9 lg:w-10 shrink-0">
+                    <div
+                      className="w-9 h-9 lg:w-10 lg:h-10 rounded-full flex items-center justify-center shrink-0"
+                      style={
+                        isCompleted
+                          ? { backgroundColor: GREEN }
+                          : isCurrent
+                            ? { backgroundColor: "#E8F0E5" }
+                            : { backgroundColor: "#F3EDE3" }
+                      }
+                    >
+                      {isCompleted ? (
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#FFF" strokeWidth="3">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                      ) : isCurrent ? (
+                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: GREEN }} />
+                      ) : (
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="#CCC" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                      )}
                     </div>
+                    <div className="flex-1 w-0.5 my-1" style={{ backgroundColor: "#F3EDE3" }} />
                   </div>
-                ))}
-              </div>
-            ) : modules.length === 0 ? (
-              <div className="text-center py-10 lg:py-20">
-                <p className="text-white/30 text-sm">No roadmap modules yet. Create a session to generate one.</p>
-              </div>
-            ) : (
-              <div className="relative pl-8 lg:pl-12 space-y-8">
-                {/* Roadmap line */}
-                <div className="absolute" style={{ left: "19px", top: "32px", bottom: "32px", width: "2px", background: "rgba(255,255,255,0.1)" }} />
 
-                {modules.map((mod) => {
-                  const isCompleted = mod.status === "completed";
-                  const isCurrent = mod.status === "current";
-                  const isExpanded = expandedModule === mod.id;
-                  const lessons = mod.lessons || [];
-
-                  return (
-                    <div key={mod.id} className="flex items-start gap-4 lg:gap-8" style={{ position: "relative", zIndex: 10 }}>
-                      {/* Status dot */}
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 border-deep-onyx shrink-0 ${
-                        isCompleted
-                          ? "bg-green-500 text-black shadow-[0_0_20px_rgba(34,197,94,0.3)]"
-                          : isCurrent
-                            ? "bg-cyber-yellow text-black shadow-[0_0_30px_rgba(253,224,71,0.5)]"
-                            : "bg-white/5 text-white/20"
-                      }`}>
-                        {isCompleted ? (
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                        ) : isCurrent ? (
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                          </svg>
-                        ) : (
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                          </svg>
+                  {/* Module card */}
+                  <div
+                    onClick={() => { if (!isCompleted) setExpandedModule(isExpanded ? null : mod.id); }}
+                    className={`bg-white rounded-[20px] p-4 lg:p-5 mb-4 flex-1 min-w-0 space-y-2 ${!isCompleted ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+                    style={{ border: "1px solid #F3EDE3", opacity: isCompleted || !isCurrent ? 0.65 : 1 }}
+                  >
+                    {isCompleted ? (
+                      <>
+                        <h4 className="text-[15px] font-bold" style={{ color: "#333" }}>{mod.title}</h4>
+                        <p className="text-xs" style={{ color: "#999" }}>Successfully mastered</p>
+                        {mod.completed_at && (
+                          <p className="text-xs mt-0.5" style={{ color: GREEN }}>
+                            Completed {new Date(mod.completed_at).toLocaleDateString()}
+                          </p>
                         )}
-                      </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-[15px] font-bold leading-snug" style={{ color: isCurrent ? GREEN : "#333" }}>{mod.title}</h4>
+                          {isCurrent && (
+                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full shrink-0" style={{ backgroundColor: "#E8F0E5", color: GREEN }}>CURRENT</span>
+                          )}
+                        </div>
+                        {mod.description && <p className="text-sm leading-relaxed" style={{ color: "#999" }}>{mod.description}</p>}
 
-                      {/* Module card */}
-                      <div className={`flex-1 rounded-[24px] p-4 sm:p-6 transition-all ${
-                        isCompleted
-                          ? "glass-card opacity-60"
-                          : isCurrent
-                            ? "glass-card border-white/20"
-                            : "glass-card opacity-30"
-                      }`}>
-                        {isCompleted ? (
-                          <>
-                            <h4 className="font-bold">{mod.title}</h4>
-                            <p className="text-xs text-white/40">Successfully mastered</p>
-                            {mod.completed_at && (
-                              <p className="text-[10px] text-green-400/60 mt-1">
-                                Completed {new Date(mod.completed_at).toLocaleDateString()}
-                              </p>
+                        {isCurrent && lessons.length > 0 && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setExpandedModule(isExpanded ? null : mod.id); }}
+                            className="flex items-center gap-1 text-xs font-semibold cursor-pointer pt-1"
+                            style={{ color: GREEN }}
+                          >
+                            {isExpanded ? "Hide Details" : "More Details"}
+                            <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                          </button>
+                        )}
+
+                        {isExpanded && (
+                          <div className="space-y-4 pt-3 mt-1" style={{ borderTop: "1px solid #F3EDE3" }}>
+                            {mod.learning_objectives && (
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: "#BBB" }}>Learning Objectives</p>
+                                <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: "#666" }}>{mod.learning_objectives}</p>
+                              </div>
                             )}
-                          </>
-                        ) : isCurrent ? (
-                          <>
-                            <div className="flex justify-between items-center mb-2">
-                              <h4 className="font-black text-cyber-yellow uppercase tracking-wide">{mod.title}</h4>
-                              <span className="bg-cyber-yellow text-black text-[10px] px-2 py-0.5 rounded-full font-bold">CURRENT</span>
-                            </div>
-                            {mod.description && <p className="text-sm mb-3 text-white/60">{mod.description}</p>}
-
-                            {/* Expand/Collapse Details */}
-                            {lessons.length > 0 && (
-                              <button
-                                onClick={() => setExpandedModule(isExpanded ? null : mod.id)}
-                                className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow hover:text-white transition-colors mb-3 cursor-pointer flex items-center gap-1"
-                              >
-                                {isExpanded ? "Hide Details" : "More Details"}
-                                <svg className={`w-3 h-3 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                              </button>
-                            )}
-
-                            {/* Expanded Content */}
-                            {isExpanded && (
-                              <div className="space-y-4 mb-4 border-t border-white/10 pt-4">
-                                {/* Learning Objectives */}
-                                {mod.learning_objectives && (
-                                  <div>
-                                    <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Learning Objectives</h5>
-                                    <div className="text-sm text-white/70 whitespace-pre-line">{mod.learning_objectives}</div>
-                                  </div>
-                                )}
-
-                                {/* Key Concepts */}
-                                {mod.key_concepts && (
-                                  <div>
-                                    <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Key Concepts</h5>
-                                    <div className="flex flex-wrap gap-1.5">
-                                      {mod.key_concepts.split(",").map((concept, i) => (
-                                        <span key={i} className="bg-white/5 border border-white/10 text-white/60 text-[10px] px-2.5 py-1 rounded-full">
-                                          {concept.trim()}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Lessons */}
-                                <div>
-                                  <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Lessons</h5>
-                                  <div className="space-y-2">
-                                    {lessons.map((lesson, li) => (
-                                      <div key={li} className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                                        <div className="flex items-center justify-between mb-1">
-                                          <h6 className="text-sm font-bold">{lesson.title}</h6>
-                                          <span className="text-[10px] text-white/30 font-bold">{lesson.duration_minutes}m</span>
-                                        </div>
-                                        <p className="text-xs text-white/40">{lesson.description}</p>
-                                        {lesson.key_topics && lesson.key_topics.length > 0 && (
-                                          <div className="flex flex-wrap gap-1 mt-2">
-                                            {lesson.key_topics.map((topic, ti) => (
-                                              <span key={ti} className="text-[9px] bg-cyber-yellow/10 text-cyber-yellow px-2 py-0.5 rounded-full font-bold">
-                                                {topic}
-                                              </span>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </div>
-                                    ))}
-                                  </div>
+                            {keyConcepts.length > 0 && (
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wide mb-2" style={{ color: "#BBB" }}>Key Concepts</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {keyConcepts.map((concept, i) => (
+                                    <span key={i} className="text-[11px] px-2.5 py-1 rounded-full" style={{ backgroundColor: "#F3EDE3", color: "#666" }}>
+                                      {concept}
+                                    </span>
+                                  ))}
                                 </div>
                               </div>
                             )}
-
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => startModule(mod.id)}
-                                className="bg-cyber-yellow text-black text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-full hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                              >
-                                Start Module
-                              </button>
-                              <button
-                                onClick={() => router.push(`/${session?.slug}/quizzes?module=${mod.id}`)}
-                                className="bg-white/5 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-6 py-3 rounded-full hover:bg-white/10 transition-all cursor-pointer"
-                              >
-                                Take Quiz
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <h4 className="font-bold">{mod.title}</h4>
-                            <p className="text-xs text-white/40">Locked — complete current module to unlock</p>
-                          </>
+                            {lessons.length > 0 && (
+                              <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wide mb-2" style={{ color: "#BBB" }}>Lessons</p>
+                                <div className="space-y-2">
+                                  {lessons.map((lesson, li) => (
+                                    <div key={li} className="rounded-2xl p-3.5 space-y-1" style={{ backgroundColor: "#F9F6F0" }}>
+                                      <div className="flex items-center justify-between gap-2">
+                                        <h6 className="text-[13px] font-semibold truncate" style={{ color: "#333" }}>{lesson.title}</h6>
+                                        <span className="text-[10px] shrink-0" style={{ color: "#CCC" }}>{lesson.duration_minutes}m</span>
+                                      </div>
+                                      {lesson.description && <p className="text-xs" style={{ color: "#999" }}>{lesson.description}</p>}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <button
+                              onClick={(e) => { e.stopPropagation(); startModule(mod.id); }}
+                              className="w-full flex items-center justify-center gap-2 text-white text-xs font-bold rounded-[20px] py-3.5 cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all"
+                              style={{ backgroundColor: GREEN }}
+                            >
+                              START MODULE
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#FFF" strokeWidth="2.2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                              </svg>
+                            </button>
+                          </div>
                         )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-        </div>
-
-
-      {/* Floating Notification */}
-      <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
-        <div className="bg-black/80 backdrop-blur-xl border border-cyber-yellow/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl">
-          <div className="w-2 h-2 bg-cyber-yellow rounded-full" />
-          <span className="text-[10px] font-bold uppercase tracking-widest">Roadmap Synchronized</span>
-        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

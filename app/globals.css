@@ -219,7 +219,7 @@
 
 /* ── Liquid Shapes (yellow originals; hero is on the landing page) ── */
 .liquid-wave {
-  background-color: #FDE047;
+  background-color: #6B8E61;
   border-bottom-right-radius: clamp(60px, 8vw, 160px);
   border-bottom-left-radius: clamp(20px, 3vw, 60px);
 }

@@ -202,14 +202,14 @@ export default function OnboardingPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-deep-onyx flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyber-yellow/[0.03] via-transparent to-transparent pointer-events-none" />
+      <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-sage/[0.03] via-transparent to-transparent pointer-events-none" />
         <div className="flex items-center gap-3">
-          <svg className="w-6 h-6 text-cyber-yellow animate-spin" fill="none" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-sage animate-spin" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          <span className="text-white/40 text-sm font-bold uppercase tracking-widest">Loading...</span>
+          <span className="text-warm-ink-muted text-sm font-bold uppercase tracking-widest">Loading...</span>
         </div>
       </div>
     );
@@ -218,10 +218,10 @@ export default function OnboardingPage() {
   return (
     <>
       {phase === "welcome" && (
-        <div className="min-h-screen bg-deep-onyx flex flex-col items-center justify-center px-4 sm:px-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.08)_0%,_transparent_60%)] pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-b from-cyber-yellow/[0.02] via-transparent to-deep-onyx pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,_rgba(253,224,71,0.04)_0%,_transparent_50%)] pointer-events-none" />
+        <div className="min-h-screen bg-[#FBF7F0] flex flex-col items-center justify-center px-4 sm:px-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(107,142,97,0.08)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-sage/[0.02] via-transparent to-deep-onyx pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,_rgba(107,142,97,0.04)_0%,_transparent_50%)] pointer-events-none" />
 
           {/* Subtle ambient grid */}
           <div
@@ -243,7 +243,7 @@ export default function OnboardingPage() {
                   top: `${10 + Math.floor(i / 8) * 25}%`,
                   width: `${1.5 + (i % 4) * 2}px`,
                   height: `${1.5 + (i % 4) * 2}px`,
-                  background: i % 3 === 0 ? 'rgba(253,224,71,0.4)' : i % 3 === 1 ? 'rgba(255,255,255,0.12)' : 'rgba(6,182,212,0.15)',
+                  background: i % 3 === 0 ? 'rgba(107,142,97,0.4)' : i % 3 === 1 ? 'rgba(255,255,255,0.12)' : 'rgba(6,182,212,0.15)',
                   animation: `particleFloat ${9 + (i % 5) * 2}s ease-in-out infinite`,
                   animationDelay: `${i * 0.4}s`,
                   opacity: 0.15 + (i % 4) * 0.15,
@@ -253,10 +253,10 @@ export default function OnboardingPage() {
           </div>
 
           {/* Glow behind avatar */}
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full bg-cyber-yellow/5 blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full bg-sage/5 blur-[120px] pointer-events-none" />
 
-          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-[36px] bg-cyber-yellow/10 flex items-center justify-center mb-10 sm:mb-12 lg:mb-14 ring-1 ring-cyber-yellow/20 shadow-[0_0_80px_rgba(253,224,71,0.08)] relative z-10 avatar-breathing">
-            <svg className="w-14 h-14 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-[36px] bg-sage/10 flex items-center justify-center mb-10 sm:mb-12 lg:mb-14 ring-1 ring-sage/20 shadow-[0_0_80px_rgba(107,142,97,0.08)] relative z-10 avatar-breathing">
+            <svg className="w-14 h-14 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
             </svg>
           </div>
@@ -275,9 +275,9 @@ export default function OnboardingPage() {
       )}
 
       {phase === "conversation" && (
-        <div className="min-h-screen bg-deep-onyx flex flex-col relative">
-          <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.03)_0%,_transparent_60%)] pointer-events-none" />
-          <div className="fixed inset-0 bg-gradient-to-b from-cyber-yellow/[0.015] via-transparent to-transparent pointer-events-none" />
+        <div className="min-h-screen bg-[#FBF7F0] flex flex-col relative">
+          <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(107,142,97,0.03)_0%,_transparent_60%)] pointer-events-none" />
+          <div className="fixed inset-0 bg-gradient-to-b from-sage/[0.015] via-transparent to-transparent pointer-events-none" />
           <div
             className="fixed inset-0 opacity-[0.012] pointer-events-none"
             style={{
@@ -286,18 +286,18 @@ export default function OnboardingPage() {
             }}
           />
           {/* Header */}
-          <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-deep-onyx/80 backdrop-blur-xl border-b border-white/5">
+          <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-[#FBF7F0]/80 backdrop-blur-xl border-b border-hairline-warm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex items-center justify-center shadow-lg shadow-cyber-yellow/10">
+              <div className="w-10 h-10 rounded-xl bg-sage flex items-center justify-center shadow-lg shadow-sage/10">
                 <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                 </svg>
               </div>
               <div>
-                <span className="text-sm font-black tracking-tighter text-white">AETHER</span>
+                <span className="text-sm font-black tracking-tighter text-warm-ink">AETHER</span>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-success-green animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-                  <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Online</span>
+                  <span className="text-[10px] font-bold text-warm-ink-faint uppercase tracking-widest">Online</span>
                 </div>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function OnboardingPage() {
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                    i < stepIndex - 1 ? "bg-cyber-yellow shadow-[0_0_6px_rgba(253,224,71,0.4)]" : i === stepIndex - 1 ? "bg-cyber-yellow/60 shadow-[0_0_4px_rgba(253,224,71,0.2)] w-4" : "bg-white/10"
+                    i < stepIndex - 1 ? "bg-sage shadow-[0_0_6px_rgba(107,142,97,0.4)]" : i === stepIndex - 1 ? "bg-sage/60 shadow-[0_0_4px_rgba(107,142,97,0.2)] w-4" : "bg-warm-ink/[0.04]"
                   }`}
                 />
               ))}
@@ -331,7 +331,7 @@ export default function OnboardingPage() {
                     className="flex justify-end"
                     style={{ animation: "fadeIn 0.5s cubic-bezier(0.16, 1, 0.24, 1)" }}
                   >
-                    <div className="bg-white/10 border border-white/10 p-5 rounded-3xl rounded-tr-none max-w-[80%] shadow-lg">
+                    <div className="bg-warm-ink/[0.04] border border-hairline-warm p-5 rounded-3xl rounded-tr-none max-w-[80%] shadow-lg">
                       <p className="text-white/90 font-medium">{entry.content}</p>
                     </div>
                   </div>
@@ -355,15 +355,15 @@ export default function OnboardingPage() {
                           onChange={(e) => setNameValue(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
                           placeholder="Type your name..."
-                          className="flex-1 glass-card px-4 sm:px-6 py-4 sm:py-5 rounded-2xl text-white/90 text-base sm:text-lg font-medium
-                            placeholder:text-white/20 border border-white/10 focus:border-cyber-yellow/40
-                            outline-none focus:shadow-[0_0_30px_rgba(253,224,71,0.05)] premium-transition"
+                          className="flex-1 glass-card-warm px-4 sm:px-6 py-4 sm:py-5 rounded-2xl text-white/90 text-base sm:text-lg font-medium
+                            placeholder:text-warm-ink-faint border border-hairline-warm focus:border-sage/40
+                            outline-none focus:shadow-[0_0_30px_rgba(107,142,97,0.05)] premium-transition"
                         />
                         <button
                           onClick={handleNameSubmit}
                           disabled={!nameValue.trim()}
-                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-cyber-yellow flex items-center justify-center
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-sage flex items-center justify-center
+                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-sage/10
                             disabled:opacity-30 cursor-pointer"
                         >
                           <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -384,8 +384,8 @@ export default function OnboardingPage() {
                             onClick={() => toggleSubject(s)}
                             className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
                               selectedSubjects.includes(s)
-                                ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
-                                : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
+                                ? "bg-sage text-white shadow-lg shadow-sage/20"
+                                : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
                             }`}
                           >
                             {s}
@@ -399,16 +399,16 @@ export default function OnboardingPage() {
                           onChange={(e) => setCustomSubject(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleSubjectsSubmit()}
                           placeholder="Or type your own..."
-                          className="flex-1 glass-card px-4 sm:px-5 py-3 sm:py-4 rounded-2xl text-white/70 text-sm font-medium
-                            placeholder:text-white/20 border border-white/10 focus:border-cyber-yellow/40
+                          className="flex-1 glass-card-warm px-4 sm:px-5 py-3 sm:py-4 rounded-2xl text-warm-ink-soft text-sm font-medium
+                            placeholder:text-warm-ink-faint border border-hairline-warm focus:border-sage/40
                             outline-none premium-transition"
                         />
                       </div>
                       {(selectedSubjects.length > 0 || customSubject.trim()) && (
                         <button
                           onClick={handleSubjectsSubmit}
-                          className="px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
+                          className="px-6 sm:px-8 py-3 sm:py-4 bg-sage text-white rounded-2xl font-black text-sm
+                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-sage/10 cursor-pointer"
                         >
                           Continue
                         </button>
@@ -425,8 +425,8 @@ export default function OnboardingPage() {
                           onClick={() => setEducationLevel(level)}
                           className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
                             educationLevel === level
-                              ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
-                              : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
+                              ? "bg-sage text-white shadow-lg shadow-sage/20"
+                              : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
                           }`}
                         >
                           {level}
@@ -435,8 +435,8 @@ export default function OnboardingPage() {
                       {educationLevel && (
                         <button
                           onClick={handleEducationSubmit}
-                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-sage text-white rounded-2xl font-black text-sm
+                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-sage/10 cursor-pointer"
                         >
                           Continue
                         </button>
@@ -453,8 +453,8 @@ export default function OnboardingPage() {
                           onClick={() => toggleStyle(style.id)}
                           className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
                             selectedStyles.includes(style.id)
-                              ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
-                              : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
+                              ? "bg-sage text-white shadow-lg shadow-sage/20"
+                              : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
                           }`}
                         >
                           {style.label}
@@ -463,8 +463,8 @@ export default function OnboardingPage() {
                       {selectedStyles.length > 0 && (
                         <button
                           onClick={handleStylesSubmit}
-                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-sage text-white rounded-2xl font-black text-sm
+                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-sage/10 cursor-pointer"
                         >
                           Continue
                         </button>
@@ -482,8 +482,8 @@ export default function OnboardingPage() {
                             onClick={() => toggleGoal(g)}
                             className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
                               selectedGoals.includes(g)
-                                ? "bg-cyber-yellow text-black shadow-lg shadow-cyber-yellow/20"
-                                : "bg-white/5 border border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
+                                ? "bg-sage text-white shadow-lg shadow-sage/20"
+                                : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
                             }`}
                           >
                             {g}
@@ -493,8 +493,8 @@ export default function OnboardingPage() {
                       {selectedGoals.length > 0 && (
                         <button
                           onClick={handleGoalsSubmit}
-                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-cyber-yellow/10 cursor-pointer"
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 bg-sage text-white rounded-2xl font-black text-sm
+                            hover:scale-105 active:scale-95 premium-transition shadow-xl shadow-sage/10 cursor-pointer"
                         >
                           Continue
                         </button>
@@ -507,29 +507,29 @@ export default function OnboardingPage() {
                     <div className="flex flex-col sm:flex-row gap-4">
                       <button
                         onClick={() => handleVoiceSubmit(true)}
-                        className="flex-1 glass-card p-4 sm:p-6 rounded-3xl border border-white/10 hover:border-cyber-yellow/40
-                          hover:bg-cyber-yellow/5 premium-transition group cursor-pointer text-left"
+                        className="flex-1 glass-card-warm p-4 sm:p-6 rounded-3xl border border-hairline-warm hover:border-sage/40
+                          hover:bg-sage/5 premium-transition group cursor-pointer text-left"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cyber-yellow/20 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
-                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-sage/20 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                           </svg>
                         </div>
-                        <p className="text-base sm:text-lg font-black text-white mb-1">Yes, enable voice</p>
-                        <p className="text-sm text-white/40 font-medium">Natural voice conversations with real-time AI</p>
+                        <p className="text-base sm:text-lg font-black text-warm-ink mb-1">Yes, enable voice</p>
+                        <p className="text-sm text-warm-ink-muted font-medium">Natural voice conversations with real-time AI</p>
                       </button>
                       <button
                         onClick={() => handleVoiceSubmit(false)}
-                        className="flex-1 glass-card p-4 sm:p-6 rounded-3xl border border-white/10 hover:border-white/20
+                        className="flex-1 glass-card-warm p-4 sm:p-6 rounded-3xl border border-hairline-warm hover:border-hairline-warm
                           premium-transition group cursor-pointer text-left"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
-                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-warm-ink/[0.04] flex items-center justify-center mb-4 group-hover:scale-110 premium-transition">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-warm-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                           </svg>
                         </div>
-                        <p className="text-base sm:text-lg font-black text-white mb-1">Text only</p>
-                        <p className="text-sm text-white/40 font-medium">I prefer typing my questions</p>
+                        <p className="text-base sm:text-lg font-black text-warm-ink mb-1">Text only</p>
+                        <p className="text-sm text-warm-ink-muted font-medium">I prefer typing my questions</p>
                       </button>
                     </div>
                   )}
@@ -542,7 +542,7 @@ export default function OnboardingPage() {
           {/* Subtle hint */}
           {typingDone && stepIndex === 1 && !nameValue && (
             <div className="px-4 sm:px-6 lg:px-12 pb-6 text-center">
-              <p className="text-xs text-white/20 font-bold uppercase tracking-widest">Press Enter to send</p>
+              <p className="text-xs text-warm-ink-faint font-bold uppercase tracking-widest">Press Enter to send</p>
             </div>
           )}
         </div>
@@ -553,9 +553,9 @@ export default function OnboardingPage() {
       )}
 
       {phase === "done" && (
-        <div className="min-h-screen bg-deep-onyx flex items-center justify-center">
+        <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center">
           <div className="flex items-center gap-3">
-            <svg className="w-6 h-6 text-cyber-yellow animate-spin" fill="none" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-sage animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
