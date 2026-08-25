@@ -104,7 +104,7 @@ export default function BetaSignupForm() {
         {/* Envelope animation */}
         <div className="shrink-0">
           <div className="relative w-[240px] h-[180px] sm:w-[300px] sm:h-[210px] flex items-center justify-center">
-            <div className="absolute inset-0 bg-[#6B8E61]/10 rounded-full blur-3xl scale-150" />
+            <div className="absolute inset-0 bg-[#E5B170]/15 rounded-full blur-3xl scale-150" />
             <svg
               ref={envelopeRef}
               className="envelope relative"
@@ -115,20 +115,20 @@ export default function BetaSignupForm() {
             >
               <defs>
                 <linearGradient id="c" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#f2f2f5" />
-                  <stop offset="35%" stopColor="#9a9aa2" />
-                  <stop offset="60%" stopColor="#e4e4e8" />
-                  <stop offset="100%" stopColor="#4a4a52" />
+                  <stop offset="0%" stopColor="#FFFFFF" />
+                  <stop offset="40%" stopColor="#F6EFE2" />
+                  <stop offset="70%" stopColor="#EFE6D4" />
+                  <stop offset="100%" stopColor="#E4D8C2" />
                 </linearGradient>
                 <linearGradient id="cf" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="100%" stopColor="#8a8a92" />
+                  <stop offset="0%" stopColor="#FCF8F1" />
+                  <stop offset="100%" stopColor="#EDE2CF" />
                 </linearGradient>
               </defs>
-              <rect x="2" y="14" width="116" height="68" rx="6" fill="url(#c)" stroke="#1a1a1d" strokeWidth="1.5" />
-              <polyline points="2,16 60,58 118,16" fill="none" stroke="#1a1a1d" strokeWidth="1.5" />
+              <rect x="2" y="14" width="116" height="68" rx="6" fill="url(#c)" stroke="#C9B79B" strokeWidth="1.5" />
+              <polyline points="2,16 60,58 118,16" fill="none" stroke="#C9B79B" strokeWidth="1.5" />
               <g className="beta-flap">
-                <polygon points="2,14 60,54 118,14" fill="url(#cf)" stroke="#1a1a1d" strokeWidth="1.5" />
+                <polygon points="2,14 60,54 118,14" fill="url(#cf)" stroke="#C9B79B" strokeWidth="1.5" />
               </g>
             </svg>
             <svg ref={planeRef} className="beta-plane" viewBox="0 0 24 24" width="26" height="26">
