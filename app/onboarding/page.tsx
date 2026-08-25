@@ -220,7 +220,6 @@ export default function OnboardingPage() {
       {phase === "welcome" && (
         <div className="min-h-screen bg-[#FBF7F0] flex flex-col items-center justify-center px-4 sm:px-8 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(107,142,97,0.08)_0%,_transparent_60%)] pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-b from-sage/[0.02] via-transparent to-deep-onyx pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,_rgba(107,142,97,0.04)_0%,_transparent_50%)] pointer-events-none" />
 
           {/* Subtle ambient grid */}
@@ -352,7 +351,7 @@ export default function OnboardingPage() {
                           onChange={(e) => setNameValue(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
                           placeholder="Type your name..."
-                          className="flex-1 glass-card-warm px-4 sm:px-6 py-4 sm:py-5 rounded-2xl text-white/90 text-base sm:text-lg font-medium
+                          className="flex-1 glass-card-warm px-4 sm:px-6 py-4 sm:py-5             rounded-2xl text-warm-ink text-base sm:text-lg font-medium
                             placeholder:text-warm-ink-faint border border-hairline-warm focus:border-sage/40
                             outline-none focus:shadow-[0_0_30px_rgba(107,142,97,0.05)] premium-transition"
                         />
