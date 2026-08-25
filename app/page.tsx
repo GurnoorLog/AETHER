@@ -60,10 +60,9 @@ const features = [
 ];
 
 const stats = [
-  { value: "12k+", label: "Active learners" },
-  { value: "60+", label: "Subjects covered" },
-  { value: "4.9", label: "Average rating" },
-  { value: "1.2M", label: "Sessions completed" },
+  { value: "30", label: "Active learners" },
+  { value: "4.5", label: "Average rating" },
+  { value: "3", label: "Sessions completed" },
 ];
 
 const steps = [
@@ -205,9 +204,9 @@ export default function Home() {
               <div className="text-sm leading-tight">
                 <div className="flex items-center gap-1 text-[#2D3436] font-bold">
                   <Star size={14} className="fill-[#E5B170] text-[#E5B170]" />
-                  4.9
+                  4.5
                 </div>
-                <div className="text-[#A0A5A8]">from 2,000+ learners</div>
+                <div className="text-[#A0A5A8]">from 30 learners</div>
               </div>
             </div>
           </div>
@@ -241,7 +240,7 @@ export default function Home() {
       </section>
 
       <section className="px-6 pb-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-px rounded-3xl overflow-hidden border border-[#EFEBE5] bg-[#EFEBE5]">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-px rounded-3xl overflow-hidden border border-[#EFEBE5] bg-[#EFEBE5]">
           {stats.map((s) => (
             <div key={s.label} className="bg-[#FDFBF7] px-6 py-8 text-center">
               <div className="text-3xl font-extrabold text-[#2D3436] tracking-tight">{s.value}</div>
