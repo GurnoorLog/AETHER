@@ -16,6 +16,8 @@ import {
   Zap,
   Check,
 } from "lucide-react";
+import LandingAuthButton from "@/components/landing/LandingAuthButton";
+import BetaSignupForm from "@/components/landing/BetaSignupForm";
 
 export const metadata: Metadata = {
   title: "Aether AI | Everything You Need to Learn Faster",
@@ -37,14 +39,12 @@ export default function Home() {
           <div className="hidden lg:flex items-center gap-10">
             <a href="#features" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Features</a>
             <a href="#journey" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">How It Works</a>
-            <a href="#" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Subjects</a>
             <a href="#pricing" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Pricing</a>
-            <a href="#" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">For Schools</a>
             <a href="#showcase" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Mobile App</a>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-sm font-semibold text-[#2D3436] px-6 py-2.5 rounded-2xl hover:bg-[#F1E9DE] transition-all">Log in</a>
-            <a href="#beta" className="btn-primary text-sm font-bold px-8 py-3 rounded-2xl shadow-sm">Get Started</a>
+            <LandingAuthButton mode="login" className="text-sm font-semibold text-[#2D3436] px-6 py-2.5 rounded-2xl hover:bg-[#F1E9DE] transition-all">Log in</LandingAuthButton>
+            <LandingAuthButton mode="signup" className="btn-primary text-sm font-bold px-8 py-3 rounded-2xl shadow-sm">Get Started</LandingAuthButton>
           </div>
         </div>
       </nav>
@@ -67,12 +67,12 @@ export default function Home() {
                 Your personal AI tutor that adapts to you. Study, practice, and master any subject with confidence.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <a href="#beta" className="btn-primary px-8 py-4 rounded-full text-lg font-bold flex items-center justify-center gap-3 shadow-lg">
+                <LandingAuthButton mode="signup" className="btn-primary px-8 py-4 rounded-full text-lg font-bold flex items-center justify-center gap-3 shadow-lg">
                   Start Learning
                   <span className="bg-white/20 rounded-full p-1 flex items-center justify-center">
                     <ArrowRight className="text-white" size={18} />
                   </span>
-                </a>
+                </LandingAuthButton>
                 <a href="#" className="px-8 py-4 rounded-full text-lg font-bold bg-white border border-[#EFEBE5] hover:border-[#6B8E61] transition-all flex items-center justify-center gap-3 shadow-sm text-[#555E61]">
                   Watch Demo
                   <PlayCircle className="text-[#D9C4A9]" size={24} />
@@ -258,9 +258,9 @@ export default function Home() {
               <p className="text-lg text-[#555E61] mb-10">
                 From your first upload to total mastery, Aether guides you through a proven learning loop designed for speed and retention.
               </p>
-              <a href="#beta" className="btn-primary px-10 py-5 rounded-3xl font-bold inline-flex items-center gap-3">
+              <LandingAuthButton mode="signup" className="btn-primary px-10 py-5 rounded-3xl font-bold inline-flex items-center gap-3">
                 Get Early Access
-              </a>
+              </LandingAuthButton>
             </div>
 
             <div className="lg:w-2/3 space-y-6">
@@ -366,7 +366,20 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold">Beautiful Mobile Experience</h2>
-            <p className="text-[#555E61]">Learn on the go with our fully featured Android and iOS apps.</p>
+            <p className="text-[#555E61] max-w-2xl mx-auto">
+              Learn on the go with our fully featured Android app.
+              <span className="font-bold text-[#6B8E61]"> Coming soon to Google Play &amp; Samsung Galaxy Store.</span>
+            </p>
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8F1E6] text-[#6B8E61] text-xs font-bold">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M3.6 2.3 13 11.7l-9.4 9.4c-.5-.3-.8-1-.8-2.3V4.6c0-1.3.3-2 1.8-2.3zM16.8 8.4 13.7 5.3 4.6 14.4l3.1 3.1 9.1-9.1zM17.4 9l3.2-3.2c-.8-.6-1.9-.9-3.1-.9-.9 0-1.7.2-2.4.6L14 6.6l3.4 3.4zM4.6 1.8 14.2 11.4l1.6-1.6-9.4-9.4c-.6.3-1.4.9-2.3 1.4z"/></svg>
+                Google Play — Coming Soon
+              </span>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F1E9DE] text-[#A8763E] text-xs font-bold">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 2 4 7v10l8 5 8-5V7l-8-5zm0 2.3 6 3.75v7.9l-6 3.75-6-3.75v-7.9l6-3.75z"/></svg>
+                Galaxy Store — Coming Soon
+              </span>
+            </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             <div className="rounded-3xl border-4 border-white shadow-lg overflow-hidden card-hover">
@@ -402,11 +415,7 @@ export default function Home() {
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-8">Get Early Access</h2>
           <p className="text-lg text-[#555E61] mb-12">We're onboarding in waves. Drop your email and we'll let you know when your slot opens.</p>
-          <div className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto mb-6">
-            <input type="email" placeholder="Enter your email address" className="flex-1 px-8 py-5 rounded-3xl bg-[#FDFBF7] border border-[#EFEBE5] focus:outline-none focus:border-[#6B8E61] text-lg" />
-            <button className="btn-primary px-10 py-5 rounded-3xl font-bold text-lg whitespace-nowrap">Subscribe</button>
-          </div>
-          <p className="text-sm text-[#A0A5A8] font-medium">No spam, ever. Your privacy is our priority.</p>
+          <BetaSignupForm />
           <div className="mt-12 text-[#EFEBE5] text-[60px] md:text-[80px] font-black tracking-tighter opacity-20 pointer-events-none uppercase">Aether Closed Beta</div>
         </div>
       </section>
@@ -416,10 +425,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">Ready to Supercharge Your Learning?</h2>
           <p className="text-xl text-gray-400 leading-relaxed mb-12">Join thousands of students who have transformed the way they learn. One conversation with Aether and you'll never study the same way again.</p>
-          <a href="#beta" className="btn-primary px-12 py-6 rounded-[32px] text-xl font-bold inline-flex items-center gap-4">
+          <LandingAuthButton mode="signup" className="btn-primary px-12 py-6 rounded-[32px] text-xl font-bold inline-flex items-center gap-4">
             Join the Revolution
             <Zap className="text-white" size={22} />
-          </a>
+          </LandingAuthButton>
         </div>
       </section>
 

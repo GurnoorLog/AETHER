@@ -282,6 +282,36 @@
   to { opacity: 1; transform: scale(1); }
 }
 
+/* ── Landing beta email icon animation ── */
+.email-icon .envelope-flap {
+  transform-origin: 36px 26px;
+  transition: transform 0.45s ease;
+}
+.email-icon.is-sending .envelope-flap {
+  transform: rotateX(180deg);
+}
+.email-icon .envelope-plane {
+  transform-origin: 44px 34px;
+  opacity: 1;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.email-icon.is-sending .envelope-plane {
+  animation: plane-launch 0.9s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+@keyframes plane-launch {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+  55% { transform: translate(10px, -10px) scale(1.1) rotate(-12deg); opacity: 1; }
+  100% { transform: translate(34px, -34px) scale(0.5) rotate(-28deg); opacity: 0; }
+}
+.pop-check {
+  animation: pop-check 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes pop-check {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
 .shimmer {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
   background-size: 200% 100%;
