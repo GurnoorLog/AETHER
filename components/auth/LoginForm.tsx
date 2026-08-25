@@ -94,7 +94,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
           <button
             type="button"
             onClick={() => onSwitchView("forgot_password")}
-            className="text-[11px] font-bold text-cyber-yellow/60 hover:text-cyber-yellow premium-transition cursor-pointer"
+            className="text-[11px] font-bold text-[#6B8E61]/70 hover:text-[#6B8E61] premium-transition cursor-pointer"
           >
             Forgot Password?
           </button>
@@ -105,8 +105,8 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
         <div
           className={`w-5 h-5 rounded-md border-2 flex items-center justify-center premium-transition ${
             remember
-              ? "bg-cyber-yellow border-cyber-yellow"
-              : "border-white/20 group-hover:border-white/40"
+              ? "bg-[#6B8E61] border-[#6B8E61]"
+              : "border-[#EFEBE5] group-hover:border-[#6B8E61]/40"
           }`}
           onClick={() => setRemember(!remember)}
         >
@@ -116,7 +116,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
             </svg>
           )}
         </div>
-        <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 group-hover:text-white/60 premium-transition">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-[#555E61] group-hover:text-[#2D3436] premium-transition">
           Remember me
         </span>
       </label>
@@ -132,8 +132,8 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-5 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-cyber-yellow/10
+        className="w-full py-5 bg-[#6B8E61] text-white rounded-2xl font-black text-sm
+          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#6B8E61]/20
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
@@ -151,12 +151,12 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
 
       <SocialLogin />
 
-      <p className="text-center text-[11px] font-bold uppercase tracking-wider text-white/30">
+      <p className="text-center text-[11px] font-bold uppercase tracking-wider text-[#A0A5A8]">
         Don&apos;t have an account?{" "}
         <button
           type="button"
           onClick={() => onSwitchView("signup")}
-          className="text-cyber-yellow hover:text-cyber-yellow/80 premium-transition cursor-pointer"
+          className="text-[#6B8E61] hover:text-[#6B8E61]/80 premium-transition cursor-pointer"
         >
           Create one
         </button>

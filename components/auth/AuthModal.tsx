@@ -49,30 +49,27 @@ export default function AuthModal() {
       }}
     >
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#2D3436]/40 backdrop-blur-sm"
         style={{ animation: "fadeIn 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
       />
 
       <div
         ref={panelRef}
-        className="relative w-full max-w-[920px] flex rounded-[40px] overflow-hidden shadow-[0_100px_200px_-40px_rgba(0,0,0,0.9)] border-white/20"
+        className="relative w-full max-w-[920px] flex rounded-[40px] overflow-hidden shadow-[0_40px_120px_-30px_rgba(45,52,54,0.35)]"
         style={{ animation: "modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.24, 1)" }}
       >
         {/* Welcome Panel */}
-        <div className="hidden md:flex flex-1 bg-gradient-to-br from-cyber-yellow/10 via-deep-onyx to-deep-onyx p-10 flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex flex-1 bg-gradient-to-br from-[#6B8E61] via-[#5E7D6B] to-[#7E9A86] p-10 flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-cyber-yellow/5 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl" />
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
           </div>
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-cyber-yellow flex items-center justify-center shadow-lg">
-                <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-              </div>
-              <span className="text-lg font-black tracking-tighter text-white">AETHER</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/landing/logo.png" alt="Aether" className="w-10 h-10 rounded-xl object-cover shadow-lg" />
+              <span className="text-lg font-black tracking-tighter text-white">Aether</span>
             </div>
 
             <h3 className="text-2xl font-black text-white mb-4 leading-tight">
@@ -85,8 +82,8 @@ export default function AuthModal() {
                 "Personalized knowledge graphs",
                 "Mastery-based progression",
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm text-white/60">
-                  <svg className="w-4 h-4 text-cyber-yellow shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <li key={i} className="flex items-center gap-3 text-sm text-white/80">
+                  <svg className="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                   {item}
@@ -96,32 +93,32 @@ export default function AuthModal() {
           </div>
 
           {/* AI Avatar */}
-          <div className="relative z-10 flex items-center gap-4 p-5 rounded-3xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-xl">
-            <div className="w-14 h-14 rounded-2xl bg-cyber-yellow/20 flex items-center justify-center">
-              <svg className="w-7 h-7 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+          <div className="relative z-10 flex items-center gap-4 p-5 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-xl">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
               </svg>
             </div>
             <div>
               <p className="text-sm font-black text-white">AI Assistant</p>
-              <p className="text-xs text-white/40">Ready to help you learn</p>
+              <p className="text-xs text-white/70">Ready to help you learn</p>
             </div>
             <div className="ml-auto flex gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             </div>
           </div>
         </div>
 
         {/* Form Panel */}
-        <div className="w-full md:w-[440px] glass-card-premium p-6 sm:p-8 lg:p-12 overflow-y-auto max-h-[90vh]">
+        <div className="w-full md:w-[440px] bg-[#FDFBF7] p-6 sm:p-8 lg:p-12 overflow-y-auto max-h-[90vh]">
           <button
             type="button"
             onClick={close}
-            className="absolute top-5 right-5 w-9 h-9 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center
-              hover:bg-white/10 hover:border-white/20 premium-transition group cursor-pointer"
+            className="absolute top-5 right-5 w-9 h-9 rounded-2xl bg-[#EFEBE5] border border-[#EFEBE5] flex items-center justify-center
+              hover:bg-[#E8F1E6] hover:border-[#6B8E61]/30 premium-transition group cursor-pointer"
           >
             <svg
-              className="w-3.5 h-3.5 text-white/40 group-hover:text-white premium-transition"
+              className="w-3.5 h-3.5 text-[#2D3436]/50 group-hover:text-[#2D3436] premium-transition"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -132,8 +129,8 @@ export default function AuthModal() {
           </button>
 
           <div className="mb-8">
-            <h2 className="text-2xl lg:text-3xl font-black text-white mb-2">{heading}</h2>
-            <p className="text-white/40 text-sm font-medium">{sub}</p>
+            <h2 className="text-2xl lg:text-3xl font-black text-[#2D3436] mb-2">{heading}</h2>
+            <p className="text-[#555E61] text-sm font-medium">{sub}</p>
           </div>
 
           {view === "login" && (

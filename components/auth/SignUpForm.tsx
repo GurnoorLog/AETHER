@@ -125,8 +125,8 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-5 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-cyber-yellow/10
+        className="w-full py-5 bg-[#6B8E61] text-white rounded-2xl font-black text-sm
+          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#6B8E61]/20
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
@@ -144,12 +144,12 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
 
       <SocialLogin />
 
-      <p className="text-center text-[11px] font-bold uppercase tracking-wider text-white/30">
+      <p className="text-center text-[11px] font-bold uppercase tracking-wider text-[#A0A5A8]">
         Already have an account?{" "}
         <button
           type="button"
           onClick={() => onSwitchView("login")}
-          className="text-cyber-yellow hover:text-cyber-yellow/80 premium-transition cursor-pointer"
+          className="text-[#6B8E61] hover:text-[#6B8E61]/80 premium-transition cursor-pointer"
         >
           Sign in
         </button>

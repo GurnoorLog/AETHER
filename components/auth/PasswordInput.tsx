@@ -21,25 +21,25 @@ export default function PasswordInput({
     <div className="space-y-2">
       <label
         htmlFor={id}
-        className="block text-[11px] font-black uppercase tracking-[0.2em] text-white/40"
+        className="block text-[11px] font-black uppercase tracking-[0.2em] text-[#555E61]"
       >
         {label}
       </label>
       <div
-        className={`flex items-center w-full px-5 py-4 bg-white/5 border ${
-          error ? "border-red-500/50" : "border-white/10"
-        } rounded-2xl focus-within:border-cyber-yellow/60 focus-within:ring-1 focus-within:ring-cyber-yellow/20 premium-transition ${className}`}
+        className={`flex items-center w-full px-5 py-4 bg-white border ${
+          error ? "border-red-500/60" : "border-[#EFEBE5]"
+        } rounded-2xl focus-within:border-[#6B8E61]/60 focus-within:ring-1 focus-within:ring-[#6B8E61]/20 premium-transition ${className}`}
       >
         <input
           id={id}
           type={visible ? "text" : "password"}
-          className="flex-1 bg-transparent text-white placeholder:text-white/20 text-sm font-medium focus:outline-none"
+          className="flex-1 bg-transparent text-[#2D3436] placeholder:text-[#A0A5A8] text-sm font-medium focus:outline-none"
           {...props}
         />
         <button
           type="button"
           onClick={() => setVisible(!visible)}
-          className="text-white/30 hover:text-cyber-yellow premium-transition shrink-0 cursor-pointer"
+          className="text-[#A0A5A8] hover:text-[#6B8E61] premium-transition shrink-0 cursor-pointer"
           aria-label={visible ? "Hide password" : "Show password"}
         >
           {visible ? (

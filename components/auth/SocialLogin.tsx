@@ -27,19 +27,19 @@ export default function SocialLogin() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-px bg-white/10" />
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+        <div className="flex-1 h-px bg-[#EFEBE5]" />
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#A0A5A8]">
           or continue with
         </span>
-        <div className="flex-1 h-px bg-white/10" />
+        <div className="flex-1 h-px bg-[#EFEBE5]" />
       </div>
 
       <button
         type="button"
         onClick={handleGoogle}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-4 px-6 py-4 bg-white/5 border border-white/10 rounded-2xl
-          hover:bg-white/10 hover:border-white/20 premium-transition group cursor-pointer disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-4 px-6 py-4 bg-white border border-[#EFEBE5] rounded-2xl
+          hover:bg-[#F1E9DE] hover:border-[#6B8E61]/30 premium-transition group cursor-pointer disabled:opacity-50"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
           <path
@@ -59,13 +59,13 @@ export default function SocialLogin() {
             fill="#EA4335"
           />
         </svg>
-        <span className="text-sm font-bold text-white/70 group-hover:text-white premium-transition">
+        <span className="text-sm font-bold text-[#2D3436] group-hover:text-[#2D3436] premium-transition">
           {loading ? "Redirecting..." : "Google"}
         </span>
       </button>
 
       {error && (
-        <p className="text-[11px] font-bold text-red-400 uppercase tracking-wider text-center">
+        <p className="text-[11px] font-bold text-red-500 uppercase tracking-wider text-center">
           {error}
         </p>
       )}
