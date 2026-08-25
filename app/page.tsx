@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className="min-h-screen relative bg-[#FDFBF7] text-[#2D3436] font-sans overflow-x-hidden">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FDFBF7]/80 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FDFBF7]/80 backdrop-blur-md border-b border-[#EFEBE5]">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -50,8 +50,12 @@ export default function Home() {
       </nav>
 
       {/* Redesigned Hero Section (split layout) */}
-      <section className="pt-32 pb-20 px-6 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-32 -right-24 w-[460px] h-[460px] rounded-full bg-[#E8F1E6] blur-[140px] opacity-70" />
+          <div className="absolute top-48 -left-28 w-[380px] h-[380px] rounded-full bg-[#F6EFE0] blur-[140px] opacity-60" />
+        </div>
+        <div className="max-w-7xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Side: Content */}
             <div className="space-y-8">
@@ -128,7 +132,7 @@ export default function Home() {
               </div>
 
               {/* Floating UI Elements */}
-              <div className="absolute -top-10 -right-4 w-72 glass-card rounded-3xl p-5 shadow-xl border border-white/50">
+              <div className="absolute -top-10 -right-4 w-72 bg-white/80 backdrop-blur-xl rounded-3xl p-5 shadow-2xl border border-[#EFEBE5]">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Book className="text-[#6B8E61]" size={20} />
@@ -144,7 +148,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute bottom-20 -right-8 w-64 glass-card rounded-3xl p-5 shadow-xl border border-white/50">
+              <div className="absolute bottom-20 -right-8 w-64 bg-white/80 backdrop-blur-xl rounded-3xl p-5 shadow-2xl border border-[#EFEBE5]">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs font-bold text-[#2D3436]">Kinematics and</p>
@@ -447,7 +451,7 @@ export default function Home() {
               <a href="#" className="text-sm text-[#555E61] hover:text-[#6B8E61]">Community</a>
             </div>
           </div>
-          <p className="text-sm text-[#A0A5A8]">© 2024 Aether Learning. All rights reserved.</p>
+          <p className="text-sm text-[#A0A5A8]">© 2026 Aether Learning. All rights reserved.</p>
         </div>
       </footer>
     </div>

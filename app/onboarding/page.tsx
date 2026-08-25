@@ -243,7 +243,7 @@ export default function OnboardingPage() {
                   top: `${10 + Math.floor(i / 8) * 25}%`,
                   width: `${1.5 + (i % 4) * 2}px`,
                   height: `${1.5 + (i % 4) * 2}px`,
-                  background: i % 3 === 0 ? 'rgba(107,142,97,0.4)' : i % 3 === 1 ? 'rgba(255,255,255,0.12)' : 'rgba(6,182,212,0.15)',
+                  background: i % 3 === 0 ? 'rgba(107,142,97,0.4)' : i % 3 === 1 ? 'rgba(255,255,255,0.12)' : 'rgba(229,177,112,0.18)',
                   animation: `particleFloat ${9 + (i % 5) * 2}s ease-in-out infinite`,
                   animationDelay: `${i * 0.4}s`,
                   opacity: 0.15 + (i % 4) * 0.15,
@@ -262,7 +262,7 @@ export default function OnboardingPage() {
           </div>
 
           <div className="max-w-lg text-center relative z-10">
-            <div className="text-xl md:text-2xl text-white/90 font-medium leading-relaxed min-h-[3em]">
+              <div className="text-xl md:text-2xl text-warm-ink font-medium leading-relaxed min-h-[3em]">
               <AiMessage
                 text="Hello! I'm Aether, your personal AI tutor. I'll learn how you study, remember your progress, and help you master every subject. Before we begin, I'd like to get to know you."
                 typingSpeed={22}
@@ -288,11 +288,8 @@ export default function OnboardingPage() {
           {/* Header */}
           <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-[#FBF7F0]/80 backdrop-blur-xl border-b border-hairline-warm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sage flex items-center justify-center shadow-lg shadow-sage/10">
-                <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/landing/logo.png" alt="Aether" className="w-9 h-9 rounded-xl object-cover shadow-sm ring-1 ring-sage/15" />
               <div>
                 <span className="text-sm font-black tracking-tighter text-warm-ink">AETHER</span>
                 <div className="flex items-center gap-1.5">
@@ -332,7 +329,7 @@ export default function OnboardingPage() {
                     style={{ animation: "fadeIn 0.5s cubic-bezier(0.16, 1, 0.24, 1)" }}
                   >
                     <div className="bg-warm-ink/[0.04] border border-hairline-warm p-5 rounded-3xl rounded-tr-none max-w-[80%] shadow-lg">
-                      <p className="text-white/90 font-medium">{entry.content}</p>
+                      <p className="text-warm-ink font-medium">{entry.content}</p>
                     </div>
                   </div>
                 )

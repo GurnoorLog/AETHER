@@ -598,8 +598,9 @@ html {
 }
 
 .feature-icon {
-  background-color: #F1E9DE;
+  background: linear-gradient(135deg, #EDF3EA, #F1E9DE);
   color: #6B8E61;
+  box-shadow: 0 8px 22px -10px rgba(107, 142, 97, 0.45);
 }
 
 .app-screen-mockup {
