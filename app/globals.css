@@ -517,3 +517,44 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
+
+/* ── Aether marketing landing (light theme) ── */
+html {
+  scroll-behavior: smooth;
+}
+
+.btn-primary {
+  background-color: #6B8E61;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  background-color: #5a7a52;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(107, 142, 97, 0.4);
+}
+
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+}
+
+.feature-icon-box {
+  background-color: #F1E9DE;
+  color: #6B8E61;
+}
+
+.pricing-card-featured {
+  border: 2px solid #6B8E61;
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.98);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
