@@ -1,19 +1,8 @@
 import type { Metadata } from "next";
 import {
   Sparkles,
-  Leaf,
   ArrowRight,
-  PlayCircle,
-  User,
-  TrendingUp,
-  BookOpen,
-  Heart,
-  Book,
-  MessageSquareText,
-  Calendar,
-  BarChart2,
-  Target,
-  BookMarked,
+  Smartphone,
   UploadCloud,
   Mic,
   Map,
@@ -26,14 +15,16 @@ import {
 export const metadata: Metadata = {
   title: "Aether AI | Everything You Need to Learn Faster",
   description:
-    "Your personal AI tutor that adapts to you. Study, practice, and master any subject with confidence.",
+    "Neural language models adapt to your unique learning style, creating a personalized educational experience that evolves with you.",
 };
 
 export default function Home() {
   return (
     <div className="min-h-screen relative bg-[#FDFBF7] text-[#2D3436] font-sans overflow-x-hidden">
+      <div className="gradient-blur" />
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FDFBF7]/80 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FDFBF7]/80 backdrop-blur-md border-b border-[#EFEBE5]">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-[#6B8E61] rounded-xl flex items-center justify-center">
@@ -41,175 +32,61 @@ export default function Home() {
             </div>
             <span className="text-[#2D3436] font-bold text-2xl tracking-tight uppercase">Aether</span>
           </div>
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden md:flex items-center gap-10">
             <a href="#features" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Features</a>
-            <a href="#journey" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">How It Works</a>
-            <a href="#" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Subjects</a>
+            <a href="#journey" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Journey</a>
             <a href="#pricing" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Pricing</a>
-            <a href="#" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">For Schools</a>
+            <a href="#showcase" className="text-sm font-semibold hover:text-[#6B8E61] transition-colors">Mobile App</a>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-sm font-semibold text-[#2D3436] px-6 py-2.5 rounded-2xl hover:bg-[#F1E9DE] transition-all">Log in</a>
-            <a href="#beta" className="btn-primary text-sm font-bold px-8 py-3 rounded-2xl shadow-sm">Get Started</a>
+            <a href="#" className="text-sm font-semibold text-[#2D3436] px-6 py-2.5 rounded-2xl hover:bg-[#F1E9DE] transition-all">Login</a>
+            <a href="#beta" className="btn-primary text-sm font-bold px-8 py-3 rounded-2xl">Get Started</a>
           </div>
         </div>
       </nav>
 
-      {/* Redesigned Hero Section */}
-      <section className="pt-32 pb-20 px-6 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Side: Content */}
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#E8F1E6] text-[#6B8E61] rounded-full text-xs font-bold tracking-tight shadow-sm">
-                <Leaf size={18} />
-                Your AI Learning Companion
-              </div>
-              <h1 className="text-6xl md:text-[88px] font-bold tracking-tight leading-[0.95] text-[#2D3436]">
-                Learn smarter <br />
-                with <span className="text-[#6B8E61]">Aether</span>
-              </h1>
-              <p className="max-w-md text-xl text-[#555E61] leading-relaxed font-medium">
-                Your personal AI tutor that adapts to you. Study, practice, and master any subject with confidence.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <a href="#beta" className="btn-primary px-8 py-4 rounded-full text-lg font-bold flex items-center justify-center gap-3 shadow-lg">
-                  Start Learning
-                  <span className="bg-white/20 rounded-full p-1 flex items-center justify-center">
-                    <ArrowRight className="text-white" size={18} />
-                  </span>
-                </a>
-                <a href="#" className="px-8 py-4 rounded-full text-lg font-bold bg-white border border-[#EFEBE5] hover:border-[#6B8E61] transition-all flex items-center justify-center gap-3 shadow-sm text-[#555E61]">
-                  Watch Demo
-                  <PlayCircle className="text-[#D9C4A9]" size={24} />
-                </a>
-              </div>
-
-              {/* Mini Features Grid */}
-              <div className="grid grid-cols-2 gap-x-8 gap-y-6 pt-10 border-t border-[#EFEBE5]">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#F1E9DE] flex items-center justify-center text-[#6B8E61]">
-                    <User size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#2D3436]">Personalized</p>
-                    <p className="text-[10px] text-[#A0A5A8] font-bold uppercase">for you</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#F1E9DE] flex items-center justify-center text-[#E5B170]">
-                    <TrendingUp size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#2D3436]">Tracks</p>
-                    <p className="text-[10px] text-[#A0A5A8] font-bold uppercase">your progress</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#F1E9DE] flex items-center justify-center text-[#5E7DA3]">
-                    <BookOpen size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#2D3436]">Covers all</p>
-                    <p className="text-[10px] text-[#A0A5A8] font-bold uppercase">subjects</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#F1E9DE] flex items-center justify-center text-[#6B8E61]">
-                    <Heart size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#2D3436]">Always</p>
-                    <p className="text-[10px] text-[#A0A5A8] font-bold uppercase">by your side</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side: Visual Illustration Area */}
-            <div className="relative">
-              <div className="relative rounded-[64px] overflow-hidden shadow-2xl">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/landing/hero.png" className="w-full h-auto" alt="Aether Study Illustration" />
-              </div>
-
-              {/* Floating UI Elements */}
-              <div className="absolute -top-10 -right-4 w-72 glass-card rounded-3xl p-5 shadow-xl border border-white/50">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Book className="text-[#6B8E61]" size={20} />
-                    <span className="text-xs font-bold text-[#2D3436]">Exploring Gravitational Forces</span>
-                  </div>
-                  <span className="text-xs font-bold text-[#6B8E61]">25%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[#EFEBE5] rounded-full overflow-hidden">
-                  <div className="w-1/4 h-full bg-[#6B8E61]" />
-                </div>
-                <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center">
-                  <Heart className="text-red-500" size={14} />
-                </div>
-              </div>
-
-              <div className="absolute bottom-20 -right-8 w-64 glass-card rounded-3xl p-5 shadow-xl border border-white/50">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold text-[#2D3436]">Kinematics and</p>
-                    <p className="text-xs font-bold text-[#2D3436]">Newton's Laws</p>
-                  </div>
-                  <span className="px-3 py-1 bg-[#E8F1E6] text-[#6B8E61] text-[10px] font-bold rounded-full uppercase tracking-tighter">Current</span>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#6B8E61]" />
-                  <div className="w-24 h-2 bg-[#EFEBE5] rounded-full" />
-                </div>
-              </div>
-            </div>
+      {/* Hero Section */}
+      <section className="pt-40 pb-20 px-6 hero-bg min-h-[90vh] flex items-center">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#E8F1E6]/90 backdrop-blur-sm text-[#6B8E61] rounded-full text-xs font-bold tracking-widest uppercase mb-8 shadow-sm">
+            <Sparkles className="text-[#6B8E61]" size={16} />
+            Powered by Adaptive Neural Models
+          </div>
+          <h1 className="text-5xl md:text-7xl lg:text-[84px] font-bold tracking-tight leading-[1.05] text-[#2D3436] mb-8">
+            Everything You Need to <br />
+            <span className="text-[#6B8E61]">Learn Faster</span>
+          </h1>
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-[#2D3436] font-medium leading-relaxed mb-12">
+            Neural language models adapt to your unique learning style, creating a personalized educational experience that evolves with you.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#beta" className="btn-primary w-full sm:w-auto px-10 py-5 rounded-3xl text-lg font-bold flex items-center justify-center gap-3 shadow-lg">
+              Start Learning Free
+              <ArrowRight className="text-white" size={20} />
+            </a>
+            <a href="#showcase" className="w-full sm:w-auto px-10 py-5 rounded-3xl text-lg font-bold bg-white/90 backdrop-blur-sm border border-[#EFEBE5] hover:border-[#6B8E61] transition-all flex items-center justify-center gap-3 shadow-lg">
+              View Mobile App
+              <Smartphone className="text-[#6B8E61]" size={20} />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Intermediate Section: Icons Grid */}
-      <section className="py-10 bg-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="inline-block px-4 py-1.5 bg-[#E8F1E6] text-[#6B8E61] text-[10px] font-bold uppercase tracking-widest rounded-full mb-6">Powered by AI</div>
-          <h2 className="text-4xl font-bold text-[#2D3436] mb-4">Everything you need to learn and grow</h2>
-          <p className="text-[#555E61] max-w-2xl mx-auto mb-16">Aether brings all the tools of a great study companion into one calm, beautiful space.</p>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            <div className="bg-[#FDFBF7] p-8 rounded-[32px] border border-[#EFEBE5] flex flex-col items-center group hover:shadow-lg transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-[#F1E9DE] flex items-center justify-center mb-6 text-[#A78BFA] transition-transform group-hover:scale-110">
-                <MessageSquareText size={24} />
-              </div>
-              <h4 className="text-sm font-bold mb-2">AI Tutor</h4>
-              <p className="text-[10px] text-[#555E61] leading-relaxed">Get explanations, answers, and guidance 24/7.</p>
+      {/* App Preview Floating */}
+      <section className="pb-32 px-6 overflow-hidden mt-[-60px]" id="showcase">
+        <div className="max-w-7xl mx-auto relative">
+          <div className="flex justify-center items-end gap-6 md:gap-12 flex-wrap lg:flex-nowrap">
+            <div className="app-screen-mockup w-[260px] h-[520px] shrink-0 overflow-hidden transform -rotate-6 translate-y-12 hidden lg:block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/landing/screen-4.jpeg" className="w-full h-full object-cover" alt="Aether Welcome screen" />
             </div>
-            <div className="bg-[#FDFBF7] p-8 rounded-[32px] border border-[#EFEBE5] flex flex-col items-center group hover:shadow-lg transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-[#F1E9DE] flex items-center justify-center mb-6 text-[#6B8E61] transition-transform group-hover:scale-110">
-                <Calendar size={24} />
-              </div>
-              <h4 className="text-sm font-bold mb-2">Smart Sessions</h4>
-              <p className="text-[10px] text-[#555E61] leading-relaxed">Focused study sessions designed just for you.</p>
+            <div className="app-screen-mockup w-[280px] h-[560px] shrink-0 overflow-hidden z-20">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/landing/screen-3.jpeg" className="w-full h-full object-cover" alt="Aether Dashboard" />
             </div>
-            <div className="bg-[#FDFBF7] p-8 rounded-[32px] border border-[#EFEBE5] flex flex-col items-center group hover:shadow-lg transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-[#F1E9DE] flex items-center justify-center mb-6 text-[#E5B170] transition-transform group-hover:scale-110">
-                <BarChart2 size={24} />
-              </div>
-              <h4 className="text-sm font-bold mb-2">Progress Tracking</h4>
-              <p className="text-[10px] text-[#555E61] leading-relaxed">See how you're improving and stay motivated.</p>
-            </div>
-            <div className="bg-[#FDFBF7] p-8 rounded-[32px] border border-[#EFEBE5] flex flex-col items-center group hover:shadow-lg transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-[#F1E9DE] flex items-center justify-center mb-6 text-[#5E7DA3] transition-transform group-hover:scale-110">
-                <Target size={24} />
-              </div>
-              <h4 className="text-sm font-bold mb-2">Quizzes &amp; Practice</h4>
-              <p className="text-[10px] text-[#555E61] leading-relaxed">Test your knowledge and master every topic.</p>
-            </div>
-            <div className="bg-[#FDFBF7] p-8 rounded-[32px] border border-[#EFEBE5] flex flex-col items-center group hover:shadow-lg transition-all">
-              <div className="w-12 h-12 rounded-2xl bg-[#F1E9DE] flex items-center justify-center mb-6 text-[#6B8E61] transition-transform group-hover:scale-110">
-                <BookMarked size={24} />
-              </div>
-              <h4 className="text-sm font-bold mb-2">All Subjects</h4>
-              <p className="text-[10px] text-[#555E61] leading-relaxed">From school basics to advanced topics.</p>
+            <div className="app-screen-mockup w-[260px] h-[520px] shrink-0 overflow-hidden transform rotate-6 translate-y-12 hidden lg:block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/landing/screen-1.jpeg" className="w-full h-full object-cover" alt="Aether Progress screen" />
             </div>
           </div>
         </div>
@@ -225,7 +102,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-[#FDFBF7] p-10 rounded-[40px] border border-[#EFEBE5] card-hover group">
-              <div className="w-14 h-14 feature-icon-box rounded-2xl flex items-center justify-center mb-8">
+              <div className="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center mb-8">
                 <UploadCloud size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">Multi-Format Upload</h3>
@@ -234,7 +111,7 @@ export default function Home() {
               </p>
             </div>
             <div className="bg-[#FDFBF7] p-10 rounded-[40px] border border-[#EFEBE5] card-hover">
-              <div className="w-14 h-14 feature-icon-box rounded-2xl flex items-center justify-center mb-8">
+              <div className="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center mb-8">
                 <Mic size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">Voice Conversational</h3>
@@ -243,7 +120,7 @@ export default function Home() {
               </p>
             </div>
             <div className="bg-[#FDFBF7] p-10 rounded-[40px] border border-[#EFEBE5] card-hover">
-              <div className="w-14 h-14 feature-icon-box rounded-2xl flex items-center justify-center mb-8">
+              <div className="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center mb-8">
                 <Map size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">Visual Mind Palace</h3>
@@ -252,7 +129,7 @@ export default function Home() {
               </p>
             </div>
             <div className="bg-[#FDFBF7] p-10 rounded-[40px] border border-[#EFEBE5] card-hover">
-              <div className="w-14 h-14 feature-icon-box rounded-2xl flex items-center justify-center mb-8">
+              <div className="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center mb-8">
                 <Brain size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">Infinite Context Memory</h3>
@@ -261,7 +138,7 @@ export default function Home() {
               </p>
             </div>
             <div className="bg-[#FDFBF7] p-10 rounded-[40px] border border-[#EFEBE5] card-hover">
-              <div className="w-14 h-14 feature-icon-box rounded-2xl flex items-center justify-center mb-8">
+              <div className="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center mb-8">
                 <Users size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">Global Community</h3>
@@ -270,7 +147,7 @@ export default function Home() {
               </p>
             </div>
             <div className="bg-[#FDFBF7] p-10 rounded-[40px] border border-[#EFEBE5] card-hover">
-              <div className="w-14 h-14 feature-icon-box rounded-2xl flex items-center justify-center mb-8">
+              <div className="w-14 h-14 feature-icon rounded-2xl flex items-center justify-center mb-8">
                 <Zap size={28} />
               </div>
               <h3 className="text-2xl font-bold mb-4">Adaptive Learning Engine</h3>
@@ -395,7 +272,7 @@ export default function Home() {
       </section>
 
       {/* Mobile Screens Grid */}
-      <section className="py-32 px-6 bg-[#FDFBF7] overflow-hidden" id="showcase">
+      <section className="py-32 px-6 bg-[#FDFBF7] overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold">Beautiful Mobile Experience</h2>
@@ -457,7 +334,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-[#EFEBE5] text-center bg-white">
+      <footer className="py-12 border-t border-[#EFEBE5] text-center">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
             <div className="flex items-center gap-3">
