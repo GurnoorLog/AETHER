@@ -10,10 +10,8 @@
     "android": {
       "package": "trillion_game.start",
       "adaptiveIcon": {
-        "backgroundColor": "#0B0B10",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FDFBF7",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },

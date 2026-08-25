@@ -41,7 +41,7 @@ export default function Index() {
 
   return (
     <ImageBackground source={BG} style={styles.root} imageStyle={styles.bgImage}>
-      <StatusBar style="dark" />
+          <StatusBar hidden />
 
       {!hidden && (
         <>

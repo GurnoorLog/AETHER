@@ -379,8 +379,8 @@ export default function QuizzesTab() {
             </Text>
           </View>
         ) : (
-          quizzes.map((q) => {
-            const pct = q.total_questions > 0 ? Math.round(((q.score ?? 0) / q.total_questions) * 100) : 0;
+           quizzes.map((q) => {
+             const pct = Math.max(0, Math.min(100, Math.round(q.score ?? 0)));
             return (
               <Pressable key={q.id} accessibilityRole="button" onPress={() => startQuiz(q)} style={styles.card}>
                 <View style={styles.quizTop}>

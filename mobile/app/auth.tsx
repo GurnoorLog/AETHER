@@ -1,564 +1,518 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  ActivityIndicator,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
+  View,
   Text,
   TextInput,
-  View,
+  Pressable,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import Svg, { Path } from 'react-native-svg';
-import { makeRedirectUri } from 'expo-auth-session';
-import { getQueryParams } from 'expo-auth-session/build/QueryParams';
-import * as WebBrowser from 'expo-web-browser';
-import { useFonts, Outfit_700Bold, Outfit_800ExtraBold } from '@expo-google-fonts/outfit';
-import {
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold,
-} from '@expo-google-fonts/plus-jakarta-sans';
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Lock,
-  Mail,
-} from 'lucide-react-native';
+import { Mail, Lock, UserRound, Check, KeyRound } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
-import { ensureUserData } from '@/lib/onboarding';
+import { useTheme } from '@/theme';
 import { routeAfterLogin } from '@/lib/onboarding';
-import { SITE_URL } from '@/lib/auth';
 
-WebBrowser.maybeCompleteAuthSession();
+type Mode = 'signup' | 'signin';
 
-const REDIRECT_URI = makeRedirectUri({ path: 'oauth2redirect' });
+const ACCENT = 'feedback';
 
-const LOGO = require('../assets/design/icon_logo.png');
-
-const GREEN = '#6B8E61';
-const INK = '#333333';
-
-function GoogleIcon() {
-  return (
-    <Svg width={20} height={20} viewBox="0 0 48 48">
-      <Path
-        fill="#FFC107"
-        d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-      />
-      <Path
-        fill="#FF3D00"
-        d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
-      />
-      <Path
-        fill="#4CAF50"
-        d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-      />
-      <Path
-        fill="#1976D2"
-        d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
-      />
-    </Svg>
-  );
-}
-
-export default function AuthScreen() {
+export default function AuthModal() {
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const [fontsLoaded] = useFonts({
-    Outfit_700Bold,
-    Outfit_800ExtraBold,
-    PlusJakartaSans_400Regular,
-    PlusJakartaSans_500Medium,
-    PlusJakartaSans_600SemiBold,
-    PlusJakartaSans_700Bold,
-  });
-
+  const [mode, setMode] = useState<Mode>('signup');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [confirm, setConfirm] = useState('');
+  const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [sent, setSent] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; password?: string }>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const [activationError, setActivationError] = useState<{ email: string; message: string } | null>(null);
 
-  const validate = () => {
-    const errs: typeof fieldErrors = {};
-    if (!fullName.trim()) errs.name = 'Full name is required';
-    if (!email) errs.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Invalid email address';
-    if (!password) errs.password = 'Password is required';
-    else if (password.length < 8) errs.password = 'Password must be at least 8 characters';
-    else if (!/[A-Z]/.test(password)) errs.password = 'Password must contain an uppercase letter';
-    setFieldErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
+  const accent = theme.accents[ACCENT].solid;
 
-  const signUp = async () => {
-    setError('');
-    if (!validate()) return;
+  useEffect(() => {
+    let active = true;
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session && active) {
+        const dest = await routeAfterLogin(session.user, email);
+        router.replace(dest);
+      }
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleSignUp = async () => {
+    setFormError(null);
+    setActivationError(null);
+    if (!fullName.trim()) {
+      setFormError('Please enter your name.');
+      return;
+    }
+    if (!email.trim() || !password) {
+      setFormError('Email and password are required.');
+      return;
+    }
+    if (password.length < 6) {
+      setFormError('Password must be at least 6 characters.');
+      return;
+    }
+    if (password !== confirm) {
+      setFormError('Passwords do not match.');
+      return;
+    }
+    if (!accepted) {
+      setFormError('Please accept the Terms and Privacy Policy.');
+      return;
+    }
     setLoading(true);
-    const { data, error: err } = await supabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-      options: { data: { full_name: fullName.trim() } },
-    });
-    setLoading(false);
-    if (err) {
-      const msg = err.message.toLowerCase();
-      if (msg.includes('already') || msg.includes('exists') || msg.includes('registered')) {
-        setError('An account with this email already exists.');
-      } else {
-        setError(err.message);
-      }
-      return;
-    }
-    if (data.session) {
-      const { error: initError } = await ensureUserData(data.user!.id, email.trim().toLowerCase(), fullName.trim());
-      if (initError) {
-        setError(initError);
-        return;
-      }
-      router.replace('/onboarding');
-    } else {
-      setSent(true);
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    setGoogleLoading(true);
-    setError('');
-    const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: REDIRECT_URI,
-        skipBrowserRedirect: true,
-      },
-    });
-    if (oauthError || !data?.url) {
-      setGoogleLoading(false);
-      setError(oauthError?.message ?? 'Failed to start Google sign in.');
-      return;
-    }
-    const result = await WebBrowser.openAuthSessionAsync(data.url, REDIRECT_URI);
-    setGoogleLoading(false);
-    if (result.type !== 'success') return;
-    const { params, errorCode } = getQueryParams(result.url);
-    if (params.access_token && params.refresh_token) {
-      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-        access_token: params.access_token,
-        refresh_token: params.refresh_token,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { data: { full_name: fullName.trim() } },
       });
-      if (sessionError) {
-        setError(sessionError.message);
+      if (error) {
+        let message = error.message;
+        if (error.message?.toLowerCase().includes('email not confirmed')) {
+          message = 'Please check your email to activate your account.';
+          setActivationError({ email: email.trim(), message });
+        }
+        setFormError(message);
+        setLoading(false);
         return;
       }
-      if (sessionData.user) {
-        const dest = await routeAfterLogin(sessionData.user, '');
+      if (data.session) {
+        const dest = await routeAfterLogin(data.session.user, email.trim());
         router.replace(dest);
+      } else {
+        setActivationError({
+          email: email.trim(),
+          message: 'Account created! Check your email to activate your account, then log in.',
+        });
       }
-    } else if (params.code) {
-      const { data: sessionData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(params.code);
-      if (exchangeError) {
-        setError(exchangeError.message);
-        return;
-      }
-      if (sessionData.user) {
-        const dest = await routeAfterLogin(sessionData.user, '');
-        router.replace(dest);
-      }
-    } else {
-      setError('Google sign in was interrupted. Please try again.');
+      setLoading(false);
+    } catch (e: any) {
+      setFormError(e?.message ?? 'Something went wrong.');
+      setLoading(false);
     }
   };
 
-  if (!fontsLoaded) return null;
+  const handleSignIn = async () => {
+    setFormError(null);
+    setActivationError(null);
+    if (!email.trim() || !password) {
+      setFormError('Enter your email and password.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) {
+        let message = error.message;
+        if (error.message?.toLowerCase().includes('email not confirmed')) {
+          message = 'Please check your email to activate your account first.';
+          setActivationError({ email: email.trim(), message });
+        }
+        setFormError(message);
+        setLoading(false);
+        return;
+      }
+      if (data.session) {
+        const dest = await routeAfterLogin(data.session.user, email.trim());
+        router.replace(dest);
+      }
+      setLoading(false);
+    } catch (e: any) {
+      setFormError(e?.message ?? 'Something went wrong.');
+      setLoading(false);
+    }
+  };
 
-  if (sent) {
-    return (
-      <View style={[styles.centered, { paddingTop: insets.top }]}>
-        <Text style={styles.sentHeading}>Check Your Email</Text>
-        <Text style={styles.sentBody}>
-          We&apos;ve sent a confirmation link to {email}. Confirm your email, then sign in to finish setting up your
-          account.
-        </Text>
-        <Pressable style={styles.primaryBtn} onPress={() => router.replace('/login')}>
-          <Text style={styles.primaryBtnText}>Back to Sign In</Text>
-        </Pressable>
-      </View>
-    );
-  }
+  const handleGoogle = async () => {
+    setFormError(null);
+    setActivationError(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: 'aether://auth/callback' },
+      });
+      if (error) setFormError(error.message);
+    } catch (e: any) {
+      setFormError(e?.message ?? 'Google sign-in failed.');
+    }
+  };
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={[styles.topSection, { paddingTop: insets.top + 16 }]}>
-        <View style={styles.brand}>
-          <View style={styles.logoWrap}>
-            <ImageBackground source={LOGO} style={styles.logo} />
-          </View>
-          <View>
-            <Text style={styles.brandName}>AETHER</Text>
-            <Text style={styles.brandTag}>AI TUTOR</Text>
-          </View>
-        </View>
-
-        <Text style={styles.heroHeading}>Welcome back! 👋</Text>
-        <Text style={styles.heroSub}>
-          Continue your learning journey with <Text style={styles.heroAccent}>Aether</Text>.
-        </Text>
-      </View>
-
-      <View style={styles.spacer} />
-
-      {/* Signup card */}
-      <ScrollView
-        style={[styles.card, { flexShrink: 1 }]}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 34 }}
-        showsVerticalScrollIndicator={false}
+    <View style={styles.screen}>
+      <LinearGradient
+        colors={['#FFEAF2', '#FDFBF7', '#F3ECFB']}
+        style={StyleSheet.absoluteFill}
+      />
+      <Image
+        source={require('../assets/design/sakura_leaves.png')}
+        style={styles.sakura}
+        resizeMode="cover"
+      />
+      <StatusBar hidden />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Create your account</Text>
-            <Text style={styles.cardSub}>Let&apos;s get you started!</Text>
+        <ScrollView
+          contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 48 }]}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.logoWrap}>
+            <Image
+              source={require('../assets/design/icon_logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.appName}>Aether</Text>
           </View>
 
-          <Pressable
-            style={({ pressed }) => [styles.googleBtn, pressed && styles.pressed]}
-            onPress={signInWithGoogle}
-            disabled={googleLoading}
-          >
-            {googleLoading ? (
-              <ActivityIndicator color={INK} size="small" />
-            ) : (
-              <>
-                <GoogleIcon />
-                <Text style={styles.googleBtnText}>Sign up with Google</Text>
-              </>
-            )}
-          </Pressable>
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              {mode === 'signup' ? 'Create your account' : 'Welcome back'}
+            </Text>
+            <Text style={styles.subtitle}>
+              {mode === 'signup'
+                ? 'Start learning with your AI tutor.'
+                : 'Log in to pick up where you left off.'}
+            </Text>
 
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.dividerLine} />
-          </View>
+            {activationError ? (
+              <View style={styles.activationBanner}>
+                <Mail size={18} color="#0B7A4B" strokeWidth={1.8} />
+                <Text style={styles.activationText}>{activationError.message}</Text>
+              </View>
+            ) : null}
 
-          <View style={styles.fields}>
-            <View style={styles.field}>
-              <Text style={styles.label}>Full name</Text>
-              <View style={styles.inputShell}>
-                <Mail size={20} color="#BBBBBB" />
+            {mode === 'signup' ? (
+              <View style={styles.inputWrap}>
+                <UserRound size={20} color="#6E6577" strokeWidth={1.8} />
                 <TextInput
                   style={styles.input}
-                  placeholder="Full name"
-                  placeholderTextColor="#CCCCCC"
-                  autoCapitalize="words"
-                  autoComplete="name"
                   value={fullName}
                   onChangeText={setFullName}
+                  placeholder="Full name"
+                  placeholderTextColor="#9C95A3"
+                  autoCapitalize="words"
+                  editable={!loading}
                 />
               </View>
-              {fieldErrors.name ? <Text style={styles.fieldError}>{fieldErrors.name}</Text> : null}
+            ) : null}
+
+            <View style={styles.inputWrap}>
+              <Mail size={20} color="#6E6577" strokeWidth={1.8} />
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Email"
+                placeholderTextColor="#9C95A3"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!loading}
+              />
             </View>
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Email</Text>
-              <View style={styles.inputShell}>
-                <Mail size={20} color="#BBBBBB" />
+            <View style={styles.inputWrap}>
+              <Lock size={20} color="#6E6577" strokeWidth={1.8} />
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Password"
+                placeholderTextColor="#9C95A3"
+                secureTextEntry
+                editable={!loading}
+              />
+            </View>
+
+            {mode === 'signup' ? (
+              <View style={styles.inputWrap}>
+                <KeyRound size={20} color="#6E6577" strokeWidth={1.8} />
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your email"
-                  placeholderTextColor="#CCCCCC"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  autoComplete="email"
-                  value={email}
-                  onChangeText={setEmail}
+                  value={confirm}
+                  onChangeText={setConfirm}
+                  placeholder="Confirm password"
+                  placeholderTextColor="#9C95A3"
+                  secureTextEntry
+                  editable={!loading}
                 />
               </View>
-              {fieldErrors.email ? <Text style={styles.fieldError}>{fieldErrors.email}</Text> : null}
-            </View>
+            ) : null}
 
-            <View style={styles.field}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.inputShell}>
-                <Lock size={20} color="#BBBBBB" />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor="#CCCCCC"
-                  secureTextEntry={!showPassword}
-                  autoComplete="new-password"
-                  value={password}
-                  onChangeText={setPassword}
-                />
-                <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
-                  {showPassword ? <EyeOff size={20} color="#BBBBBB" /> : <Eye size={20} color="#BBBBBB" />}
-                </Pressable>
-              </View>
-              {fieldErrors.password ? <Text style={styles.fieldError}>{fieldErrors.password}</Text> : null}
-            </View>
-          </View>
-
-          <View style={styles.forgotRow}>
-            <Text style={styles.forgotLink} onPress={() => router.replace('/login')}>
-              Forgot password?
-            </Text>
-          </View>
-
-          {error ? (
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          ) : null}
-
-          <Pressable
-            style={({ pressed }) => [styles.primaryBtn, loading && styles.btnDisabled, pressed && styles.pressed]}
-            onPress={signUp}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" size="small" />
-            ) : (
-              <>
-                <Text style={styles.primaryBtnText}>Create an account</Text>
-                <View style={styles.primaryBtnCircle}>
-                  <ArrowRight size={24} color={GREEN} strokeWidth={2.5} />
+            {mode === 'signup' ? (
+              <Pressable
+                style={styles.termsRow}
+                onPress={() => !loading && setAccepted((v) => !v)}
+              >
+                <View style={[styles.checkbox, accepted && styles.checkboxOn]}>
+                  {accepted ? (
+                    <Check size={14} color="#fff" strokeWidth={3} />
+                  ) : null}
                 </View>
-              </>
-            )}
-          </Pressable>
+                <Text style={styles.termsText}>
+                  I agree to the{' '}
+                  <Text style={[styles.link, { color: accent }]}>Terms</Text> and{' '}
+                  <Text style={[styles.link, { color: accent }]}>Privacy Policy</Text>
+                </Text>
+              </Pressable>
+            ) : null}
 
-          <Text style={styles.bottomNav}>
-            Already have an account?{' '}
-            <Text style={styles.bottomNavLink} onPress={() => router.replace('/login')}>
-              Log in
-            </Text>
-          </Text>
+            {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
 
-          <View style={styles.homeIndicator} />
+            <Pressable
+              style={[styles.button, { backgroundColor: accent }, loading && styles.buttonDisabled]}
+              disabled={loading}
+              onPress={mode === 'signup' ? handleSignUp : handleSignIn}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>
+                  {mode === 'signup' ? 'Create account' : 'Log in'}
+                </Text>
+              )}
+            </Pressable>
+
+            <View style={styles.dividerRow}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.divider} />
+            </View>
+
+            <Pressable
+              style={[styles.googleButton, loading && styles.buttonDisabled]}
+              disabled={loading}
+              onPress={handleGoogle}
+            >
+              <Text style={styles.googleG}>G</Text>
+              <Text style={styles.googleText}>
+                {mode === 'signup' ? 'Continue with Google' : 'Log in with Google'}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.modeToggleRow}
+              onPress={() => {
+                setFormError(null);
+                setActivationError(null);
+                setMode((m) => (m === 'signup' ? 'signin' : 'signup'));
+              }}
+            >
+              <Text style={styles.modeToggleText}>
+                {mode === 'signup' ? 'Already have an account? ' : 'New to Aether? '}
+                <Text style={[styles.modeToggleLink, { color: accent }]}>
+                  {mode === 'signup' ? 'Log in' : 'Create one'}
+                </Text>
+              </Text>
+            </Pressable>
+          </View>
+
+          <View style={{ height: insets.bottom + 24 }} />
         </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  topSection: {
-    paddingHorizontal: 32,
-    zIndex: 10,
+  screen: { flex: 1, backgroundColor: '#FDFBF7' },
+  sakura: {
+    position: 'absolute',
+    top: -40,
+    right: -60,
+    width: 280,
+    height: 280,
+    opacity: 0.5,
   },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 32 },
-  logoWrap: { width: 40, height: 40 },
-  logo: { width: '100%', height: '100%' },
-  brandName: {
-    fontFamily: 'Outfit_700Bold',
-    fontSize: 18,
-    color: '#2D2D2D',
-    letterSpacing: 2,
-    lineHeight: 22,
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    alignItems: 'center',
   },
-  brandTag: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 9,
-    color: GREEN,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    lineHeight: 13,
+  logoWrap: {
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  heroHeading: {
-    fontFamily: 'Outfit_800ExtraBold',
-    fontSize: 36,
-    lineHeight: 42,
-    color: INK,
-    letterSpacing: -0.5,
-    marginBottom: 8,
+  logo: {
+    width: 96,
+    height: 96,
+    borderRadius: 24,
   },
-  heroSub: {
-    fontFamily: 'PlusJakartaSans_400Regular',
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#666666',
-    maxWidth: 260,
+  appName: {
+    marginTop: 10,
+    fontSize: 26,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+    color: '#241F2E',
   },
-  heroAccent: { fontFamily: 'PlusJakartaSans_600SemiBold', color: GREEN },
-  spacer: { flex: 1, minHeight: 140 },
   card: {
-    backgroundColor: '#FDFBF7',
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 22,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 40,
-    shadowOffset: { width: 0, height: -20 },
-    elevation: 10,
-    paddingHorizontal: 32,
-    paddingTop: 40,
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 6,
   },
-  cardHeader: { marginBottom: 32 },
-  cardTitle: {
-    fontFamily: 'Outfit_700Bold',
+  title: {
     fontSize: 22,
-    color: INK,
-    marginBottom: 4,
+    fontWeight: '700',
+    color: '#241F2E',
   },
-  cardSub: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 14, color: '#999999' },
-  googleBtn: {
-    height: 56,
-    backgroundColor: '#fff',
-    borderColor: '#EAEAEA',
-    borderWidth: 1,
-    borderRadius: 16,
+  subtitle: {
+    fontSize: 14,
+    marginTop: 4,
+    marginBottom: 18,
+    color: '#6E6577',
+  },
+  activationBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    gap: 8,
+    backgroundColor: '#E7F7EF',
+    borderColor: '#BFE9D4',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
   },
-  googleBtnText: {
-    fontFamily: 'PlusJakartaSans_500Medium',
-    fontSize: 15,
-    color: INK,
-  },
-  pressed: { transform: [{ scale: 0.99 }] },
-  divider: { flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: 24 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#EEEEEE' },
-  dividerText: {
-    fontFamily: 'PlusJakartaSans_400Regular',
-    fontSize: 12,
-    color: '#BBBBBB',
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-  },
-  fields: { gap: 20 },
-  field: { gap: 8 },
-  label: {
-    fontFamily: 'PlusJakartaSans_600SemiBold',
+  activationText: {
+    flex: 1,
+    color: '#0B7A4B',
     fontSize: 13,
-    color: '#666666',
-    marginLeft: 4,
   },
-  inputShell: {
-    height: 56,
-    backgroundColor: '#fff',
-    borderColor: '#EAEAEA',
-    borderWidth: 1,
-    borderRadius: 16,
+  inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    gap: 12,
+    backgroundColor: '#F5F1F8',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 12,
+    gap: 10,
   },
   input: {
     flex: 1,
-    color: INK,
     fontSize: 15,
-    fontFamily: 'PlusJakartaSans_400Regular',
-    paddingVertical: 0,
+    color: '#241F2E',
   },
-  fieldError: {
-    color: '#E06054',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    marginLeft: 4,
-  },
-  forgotRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 8, marginBottom: 24 },
-  forgotLink: {
-    fontFamily: 'PlusJakartaSans_500Medium',
-    fontSize: 14,
-    color: GREEN,
-  },
-  errorBox: {
-    backgroundColor: 'rgba(224,90,84,0.08)',
-    borderColor: 'rgba(224,90,84,0.3)',
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#E06054',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    fontFamily: 'PlusJakartaSans_700Bold',
-  },
-  primaryBtn: {
-    backgroundColor: GREEN,
-    height: 70,
-    borderRadius: 35,
+  termsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 32,
-    paddingRight: 9,
-    shadowColor: GREEN,
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
+    marginBottom: 14,
+    gap: 10,
   },
-  btnDisabled: { opacity: 0.6 },
-  primaryBtnText: {
-    fontFamily: 'PlusJakartaSans_700Bold',
-    fontSize: 16,
-    color: '#fff',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  primaryBtnCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#fff',
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#C9B8A8',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bottomNav: {
-    textAlign: 'center',
-    marginTop: 32,
-    fontFamily: 'PlusJakartaSans_400Regular',
+  checkboxOn: {
+    backgroundColor: '#DB5F9E',
+    borderColor: '#DB5F9E',
+  },
+  termsText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#6E6577',
+  },
+  link: {
+    fontWeight: '600',
+  },
+  errorText: {
+    color: '#D23B5B',
+    fontSize: 13,
+    marginBottom: 10,
+  },
+  button: {
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 16,
+    gap: 12,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E9E3EF',
+  },
+  dividerText: {
+    fontSize: 13,
+    color: '#6E6577',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    borderRadius: 14,
+    paddingVertical: 13,
+    borderWidth: 1,
+    borderColor: '#E9E3EF',
+    backgroundColor: '#F5F1F8',
+  },
+  googleText: {
     fontSize: 15,
-    color: '#888888',
+    fontWeight: '600',
+    color: '#241F2E',
   },
-  bottomNavLink: { fontFamily: 'PlusJakartaSans_700Bold', color: GREEN },
-  homeIndicator: {
-    width: 128,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: 'rgba(0,0,0,0.1)',
-    alignSelf: 'center',
-    marginTop: 32,
+  googleG: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#EA4335',
   },
-  centered: { flex: 1, justifyContent: 'center', paddingHorizontal: 32, zIndex: 10 },
-  sentHeading: {
-    fontFamily: 'Outfit_800ExtraBold',
-    fontSize: 24,
-    color: INK,
-    textAlign: 'center',
-    marginBottom: 8,
+  modeToggleRow: {
+    marginTop: 18,
+    alignItems: 'center',
   },
-  sentBody: {
-    fontFamily: 'PlusJakartaSans_400Regular',
+  modeToggleText: {
     fontSize: 14,
-    lineHeight: 22,
-    color: '#666666',
-    textAlign: 'center',
-    marginBottom: 24,
+    color: '#6E6577',
+  },
+  modeToggleLink: {
+    fontWeight: '700',
   },
 });

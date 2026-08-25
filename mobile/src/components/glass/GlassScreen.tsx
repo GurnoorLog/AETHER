@@ -88,7 +88,7 @@ export function GlassScreen({
   }, [focused, sceneVeil, transitionOnFocus]);
   return (
     <View style={styles.root}>
-      <StatusBar style={theme.dark ? 'light' : 'dark'} />
+      <StatusBar hidden />
       <GlassBlurTargetContext.Provider value={blurTargetRef}>
         <BlurTargetView ref={blurTargetRef} style={StyleSheet.absoluteFill}>
           <LinearGradient

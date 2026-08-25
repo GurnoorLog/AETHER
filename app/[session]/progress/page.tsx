@@ -147,18 +147,12 @@ export default function SessionProgressPage() {
       `}</style>
 
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-sage text-white liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-sage text-white liquid-wave relative flex flex-col justify-end overflow-hidden transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
             <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">WEEKLY REPORT</div>
             <div className="bg-white/15 border border-white/25 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{weekRange}</div>
           </div>
           <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
-            {!expanded && (
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">WEEKLY REPORT</div>
-                <span className="text-[10px] font-bold text-white/70">{weekRange}</span>
-              </div>
-            )}
             <h1 className={`text-white leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Your Learning Journey</span>
             </h1>
@@ -171,7 +165,7 @@ export default function SessionProgressPage() {
         </div>
 
         {/* Content Layer */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 space-y-8 overflow-y-auto">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pt-6 pb-20 space-y-8 overflow-y-auto">
 
           {/* Main Analytics Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-stretch">

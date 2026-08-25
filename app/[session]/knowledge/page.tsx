@@ -258,18 +258,12 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
   return (
     <>
         {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-sage text-white liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-sage text-white liquid-wave relative flex flex-col justify-end overflow-hidden transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute top-4 right-4 sm:top-10 sm:right-10 flex gap-4">
             <div className="bg-black text-warm-ink px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
             <div className="bg-white/15 border border-white/25 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{stats.total} Files</div>
           </div>
           <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
-            {!expanded && (
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-warm-ink px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">STUDENT BRAIN</div>
-                <span className="text-[10px] font-bold text-white/70">{stats.total} Files</span>
-              </div>
-            )}
             <h1 className={`text-white leading-tight transition-all duration-[800ms] ${expanded ? "text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Knowledge Base</span>
             </h1>
@@ -282,7 +276,7 @@ export default function SessionKnowledgePage({ params }: { params: Promise<{ ses
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-20 pb-24 overflow-y-auto space-y-10 relative z-10">
+        <div className="flex-1 px-4 sm:px-6 lg:px-12 pt-6 pb-24 overflow-y-auto space-y-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div
               onDrop={onDrop}
