@@ -9,18 +9,18 @@ export function verifyTotp(secret: string, token: string): boolean {
   const code = String(token).replace(/\s/g, "");
   if (!/^\d{6}$/.test(code)) return false;
 
-  const key = base32Decode(secret);
-  if (!key) return false;
+  const k = b32decode(secret);
+  if (!k) return false;
 
-  for (let offset = -1; offset <= 1; offset++) {
-    const counter = Math.floor(Date.now() / 1000 / 30) + offset;
+  for (let off = -1; off <= 1; off++) {
+    const ctr = Math.floor(Date.now() / 1000 / 30) + off;
     const buf = Buffer.alloc(8);
-    buf.writeBigUInt64BE(BigInt(counter));
-    const hmac = createHmac("sha1", key).update(buf).digest();
-    const o = hmac[hmac.length - 1] & 0x0f;
-    const num = (hmac.readUInt32BE(o) & 0x7fffffff) % 1000000;
-    const candidate = String(num).padStart(6, "0");
-    if (candidate === code) return true;
+    buf.writeBigUInt64BE(BigInt(ctr));
+    const mac = createHmac("sha1", k).update(buf).digest();
+    const o = mac[mac.length - 1] & 0x0f;
+    const n = (mac.readUInt32BE(o) & 0x7fffffff) % 1000000;
+    const guess = String(n).padStart(6, "0");
+    if (guess === code) return true;
   }
   return false;
 }
@@ -31,52 +31,52 @@ export function totpIssuerUri(secret: string, account: string): string {
 
 const B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-function base32Decode(input: string): Buffer | null {
-  const cleaned = input.toUpperCase().replace(/=+$/, "").replace(/[^A-Z2-7]/g, "");
-  let bits = 0;
-  let value = 0;
-  const out: number[] = [];
-  for (const ch of cleaned) {
+function b32decode(input: string): Buffer | null {
+  const cl = input.toUpperCase().replace(/=+$/, "").replace(/[^A-Z2-7]/g, "");
+  let b = 0;
+  let val = 0;
+  const bytes: number[] = [];
+  for (const ch of cl) {
     const idx = B32.indexOf(ch);
     if (idx === -1) return null;
-    value = (value << 5) | idx;
-    bits += 5;
-    if (bits >= 8) {
-      out.push((value >>> (bits - 8)) & 0xff);
-      bits -= 8;
+    val = (val << 5) | idx;
+    b += 5;
+    if (b >= 8) {
+      bytes.push((val >>> (b - 8)) & 0xff);
+      b -= 8;
     }
   }
-  return Buffer.from(out);
+  return Buffer.from(bytes);
 }
 
-function sha256(value: string): Buffer {
-  return createHmac("sha256", process.env.ADMIN_TOKEN_SECRET || "").update(value).digest();
+function hmacHash(v: string): Buffer {
+  return createHmac("sha256", process.env.ADMIN_TOKEN_SECRET || "").update(v).digest();
 }
 
 export function signAdminToken(userId: string, email: string): string {
   const exp = Date.now() + TOKEN_TTL_MS;
   const payload = Buffer.from(`${userId}|${email}|${exp}`, "utf8").toString("base64url");
-  const sig = sha256(payload).toString("base64url");
+  const sig = hmacHash(payload).toString("base64url");
   return `${payload}.${sig}`;
 }
 
 export function verifyAdminToken(token: string): { userId: string; email: string } | null {
   const [payload, sig] = token.split(".");
   if (!payload || !sig) return null;
-  const expected = sha256(payload);
-  const provided = Buffer.from(sig, "base64url");
-  if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) return null;
-  const decoded = Buffer.from(payload, "base64url").toString("utf8");
-  const [userId, email, exp] = decoded.split("|");
+  const expHash = hmacHash(payload);
+  const got = Buffer.from(sig, "base64url");
+  if (got.length !== expHash.length || !timingSafeEqual(got, expHash)) return null;
+  const plain = Buffer.from(payload, "base64url").toString("utf8");
+  const [userId, email, exp] = plain.split("|");
   if (!userId || !email || !exp) return null;
   if (Date.now() > Number(exp)) return null;
   return { userId, email };
 }
 
 export function safeCompare(a: string, b: string): boolean {
-  const aBuf = Buffer.from(String(a));
-  const bBuf = Buffer.from(String(b));
-  return aBuf.length === bBuf.length && timingSafeEqual(aBuf, bBuf);
+  const ab = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  return ab.length === bb.length && timingSafeEqual(ab, bb);
 }
 
 export function clientIp(request: Request): string {
@@ -85,22 +85,22 @@ export function clientIp(request: Request): string {
 
 export async function logAudit(email: string | undefined, action: string, request: Request): Promise<void> {
   try {
-    const admin = createAdminClient();
-    await admin.from("admin_audit").insert({
+    const db = createAdminClient();
+    await db.from("admin_audit").insert({
       email: email ?? "unknown",
       action,
       ip: clientIp(request),
       user_agent: request.headers.get("user-agent") || null,
     });
-  } catch (e) {
-    console.error("Failed to log admin audit:", e);
+  } catch (err) {
+    console.error("Failed to log admin audit:", err);
   }
 }
 
 export async function isLockedOut(email: string | undefined, ip: string): Promise<{ locked: boolean; retryAfterSec: number }> {
   const since = new Date(Date.now() - LOCKOUT_WINDOW_MS).toISOString();
-  const admin = createAdminClient();
-  const { count } = await admin
+  const db = createAdminClient();
+  const { count } = await db
     .from("admin_audit")
     .select("id", { count: "exact", head: true })
     .eq("action", "verify_failed")
@@ -108,8 +108,8 @@ export async function isLockedOut(email: string | undefined, ip: string): Promis
     .gte("created_at", since);
 
   if ((count ?? 0) >= MAX_ATTEMPTS) {
-    const next = new Date(Date.now() + LOCKOUT_WINDOW_MS);
-    return { locked: true, retryAfterSec: Math.ceil((next.getTime() - Date.now()) / 1000) };
+    const nxt = new Date(Date.now() + LOCKOUT_WINDOW_MS);
+    return { locked: true, retryAfterSec: Math.ceil((nxt.getTime() - Date.now()) / 1000) };
   }
   return { locked: false, retryAfterSec: 0 };
 }

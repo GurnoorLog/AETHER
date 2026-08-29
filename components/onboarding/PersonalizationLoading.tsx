@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 
-const messages = [
+const msgs = [
   "Creating your personal AI tutor...",
   "Learning your preferences...",
   "Building your private knowledge base...",
@@ -11,42 +11,43 @@ const messages = [
 ];
 
 export default function PersonalizationLoading({ onComplete }: { onComplete: () => void }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [idx, setIdx] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [displayedText, setDisplayedText] = useState("");
-  const charIndexRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const [txt, setTxt] = useState("");
+  const ciRef = useRef(0);
+  const ivRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + Math.random() * 2.5 + 0.5;
-        return next >= 100 ? 100 : next;
+        let next = prev + Math.random() * 2.5 + 0.5;
+        if (next >= 100) next = 100;
+        return next;
       });
     }, 200);
-    intervalRef.current = progressInterval;
+    ivRef.current = progressInterval;
 
     return () => clearInterval(progressInterval);
   }, []);
 
   useEffect(() => {
-    if (currentIndex >= messages.length) return;
+    if (idx >= msgs.length) return;
 
-    charIndexRef.current = 0;
-    setDisplayedText("");
+    ciRef.current = 0;
+    setTxt("");
 
     const interval = setInterval(() => {
-      if (charIndexRef.current < messages[currentIndex].length) {
-        setDisplayedText(messages[currentIndex].slice(0, charIndexRef.current + 1));
-        charIndexRef.current++;
+      if (ciRef.current < msgs[idx].length) {
+        setTxt(msgs[idx].slice(0, ciRef.current + 1));
+        ciRef.current++;
       } else {
         clearInterval(interval);
         setTimeout(() => {
-          if (currentIndex < messages.length - 1) {
-            setCurrentIndex((prev) => prev + 1);
+          if (idx < msgs.length - 1) {
+            setIdx((prev) => prev + 1);
           } else {
-            setDisplayedText(messages[currentIndex]);
-            if (intervalRef.current) clearInterval(intervalRef.current);
+            setTxt(msgs[idx]);
+            if (ivRef.current) clearInterval(ivRef.current);
             setTimeout(onComplete, 800);
           }
         }, 600);
@@ -54,11 +55,11 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
     }, 25);
 
     return () => clearInterval(interval);
-  }, [currentIndex, onComplete]);
+  }, [idx, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[300] bg-deep-onyx flex flex-col items-center justify-center">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.06)_0%,_transparent_60%)] pointer-events-none" />
+    <div className="fixed inset-0 z-[300] bg-deep-onyx flex flex-col items-center justify-center editorial">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.06)_0%,_transparent_60%)] pointer-events-none editorial" />
       <div className="absolute inset-0 bg-gradient-to-b from-cyber-yellow/[0.02] via-transparent to-transparent pointer-events-none" />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -81,7 +82,7 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
       </div>
 
       <div className="relative z-10 flex flex-col items-center max-w-md w-full px-8">
-        <div className="w-24 h-24 rounded-[32px] bg-cyber-yellow/10 flex items-center justify-center mb-12 ring-1 ring-cyber-yellow/20 shadow-[0_0_60px_rgba(253,224,71,0.1)] avatar-breathing">
+        <div className="w-24 h-24 rounded-[32px] bg-cyber-yellow/10 flex items-center justify-center mb-12 ring-1 ring-cyber-yellow/20 shadow-[0_0_60px_rgba(253,224,71,0.1)] avatar-breathing editorial">
           <div className="relative">
             <svg className="w-12 h-12 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -91,7 +92,7 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
         </div>
 
         <p className="text-lg md:text-xl text-white/80 font-medium text-center mb-10 min-h-[2em]">
-          {displayedText}
+           {txt}
           <span className="typing-cursor inline-block w-[3px] h-[1em] bg-cyber-yellow ml-0.5 align-middle rounded-full" />
         </p>
 

@@ -1,9 +1,9 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&display=swap');
+@import "tailwindcss";
 
 @theme inline {
   /* ── Legacy dark tokens (landing page depends on these staying put) ── */
-  --color-cyber-yellow: #FDE047;
+  --color-cyber-yellow: #C9772E;
   --color-deep-onyx: #0A0A0A;
   --color-charcoal: #171717;
   --color-cyan-accent: #06B6D4;
@@ -22,8 +22,8 @@
   --color-cream: #FBF7F0;
   --color-lavender-mist: #F6F2FA;
   --color-lavender-deep: #EDE7F6;
-  --color-sage: #6B8E61;
-  --color-violet-accent: #8E77E6;
+  --color-sage: #3F5C3A;
+  --color-violet-accent: #C9772E;
   --color-mint-accent: #2DD4BF;
   --color-butter-accent: #D89A2E;
   --color-rose-accent: #DB5F9E;
@@ -154,34 +154,157 @@
   color: rgba(250, 250, 249, 0.55);
 }
 
-/* ── Buttons (dark originals — landing depends) ── */
+/* ── Buttons — canonical landing style (forest + hard shadow) ── */
 .btn-primary {
-  background: #FDE047;
-  color: #0A0A0A;
+  background-color: #3F5C3A;
+  color: #FDFBF7;
   font-weight: 700;
   border-radius: 100px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 0 0 rgba(253, 224, 71, 0);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 4px 4px 0 0 rgba(47, 71, 48, 0.9);
 }
 .btn-primary:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 4px 24px rgba(253, 224, 71, 0.2);
+  background-color: #35502f;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 rgba(47, 71, 48, 0.9);
 }
 .btn-primary:active {
-  transform: translateY(0) scale(0.98);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 rgba(47, 71, 48, 0.9);
 }
 
 /* Sage primary for warm app pages */
 .btn-sage {
-  background: #6B8E61;
-  color: #FBF7F0;
+  background: #3F5C3A;
+  color: #FDFBF7;
   font-weight: 700;
   border-radius: 100px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 4px 4px 0 0 rgba(47, 71, 48, 0.9);
 }
 .btn-sage:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 4px 24px rgba(107, 142, 97, 0.3);
+  background: #35502f;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 rgba(47, 71, 48, 0.9);
+}
+
+/* Secondary (cream) — matches landing white CTA */
+.btn-secondary {
+  background-color: #FDFBF7;
+  color: #3F5C3A;
+  font-weight: 700;
+  border: 1px solid #E7E1D6;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 4px 4px 0 0 rgba(47, 71, 48, 0.9);
+}
+.btn-secondary:hover {
+  background-color: #F4F0E9;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 rgba(47, 71, 48, 0.9);
+}
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 rgba(47, 71, 48, 0.9);
+}
+
+/* ── Hand-crafted editorial buttons (logged-in app, NOT the landing) ── */
+.btn-editorial {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background-color: #3F5C3A;
+  color: #FDFBF7;
+  border: 2px solid #2D3436;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 3px 3px 0 0 #2D3436;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.btn-editorial:hover {
+  background-color: #35502f;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 0 #2D3436;
+}
+.btn-editorial:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 #2D3436;
+}
+
+.btn-editorial-ghost {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background-color: #FDFBF7;
+  color: #3F5C3A;
+  border: 2px solid #2D3436;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 3px 3px 0 0 #2D3436;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.btn-editorial-ghost:hover {
+  background-color: #F4F0E9;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 0 #2D3436;
+}
+.btn-editorial-ghost:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 0 #2D3436;
+}
+
+/* ── Hand-crafted editorial surface (cards, panels, containers) ── */
+.editorial {
+  border: 2px solid #2D3436;
+  box-shadow: 4px 4px 0 0 #2D3436;
+  border-radius: 20px 8px 22px 7px / 8px 20px 7px 22px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.editorial:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 #2D3436;
+  border-color: #2D3436;
+}
+.editorial:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 #2D3436;
+}
+.editorial-ink {
+  border: 2px solid #2D3436;
+  box-shadow: 4px 4px 0 0 #2D3436;
+  background-color: #2D3436;
+  color: #FDFBF7;
+  border-radius: 20px 8px 22px 7px / 8px 20px 7px 22px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.editorial-ink:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 #FDFBF7;
+}
+.editorial-ink:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 #FDFBF7;
+}
+
+/* ── Hand-crafted editorial text input / textarea ── */
+.editorial-input {
+  background-color: #FDFBF7;
+  border: 2px solid #2D3436;
+  border-radius: 16px 6px 18px 6px / 6px 16px 6px 18px;
+  color: #2D3436;
+  outline: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.editorial-input::placeholder {
+  color: #2D3436;
+  opacity: 0.4;
+}
+.editorial-input:focus {
+  box-shadow: 3px 3px 0 0 #2D3436;
+  transform: translate(-1px, -1px);
 }
 
 .btn-ghost {
@@ -225,9 +348,9 @@
   border-bottom-left-radius: clamp(20px, 3vw, 60px);
 }
 
-/* Warm violet wave variant for app pages */
+/* Warm ochre wave variant for app pages */
 .liquid-wave-warm {
-  background-color: #8E77E6;
+  background-color: #C9772E;
   border-bottom-right-radius: clamp(60px, 8vw, 160px);
   border-bottom-left-radius: clamp(20px, 3vw, 60px);
 }
@@ -364,12 +487,12 @@
   box-shadow: 0 0 40px rgba(253, 224, 71, 0.15);
 }
 
-/* Violet glow variant for warm app pages */
+/* Ochre glow variant for warm app pages */
 .glow-violet {
-  box-shadow: 0 0 20px rgba(142, 119, 230, 0.15);
+  box-shadow: 0 0 20px rgba(201, 119, 46, 0.15);
 }
 .glow-violet-strong {
-  box-shadow: 0 0 40px rgba(142, 119, 230, 0.28);
+  box-shadow: 0 0 40px rgba(201, 119, 46, 0.28);
 }
 
 /* ── Nav items (dark originals — sidebar depends) ── */
@@ -419,12 +542,14 @@
   transition: color 0.2s ease;
 }
 .nav-item-warm:hover {
-  color: #6B8E61;
+  color: #3F5C3A;
 }
 .nav-item-warm.active {
-  background-color: #E8F1E6;
-  color: #6B8E61 !important;
+  background-color: #3F5C3A;
+  color: #FDFBF7 !important;
   font-weight: 600;
+  border: 2px solid #2D3436;
+  box-shadow: 3px 3px 0 0 #2D3436;
 }
 
 /* ── Tooltip ── */
@@ -580,14 +705,18 @@ html {
 }
 
 .btn-primary {
-  background-color: #6B8E61;
-  color: #ffffff;
-  transition: all 0.3s ease;
+  background-color: #3F5C3A;
+  color: #FDFBF7;
+  font-weight: 700;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 4px 4px 0 0 rgba(47, 71, 48, 0.9);
 }
 .btn-primary:hover {
-  background-color: #5a7a52;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px -5px rgba(107, 142, 97, 0.4);
+  background-color: #35502f;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 rgba(47, 71, 48, 0.9);
 }
 
 .card-hover {
@@ -607,7 +736,7 @@ html {
 .app-screen-mockup {
   border-radius: 40px;
   border: 8px solid #2D3436;
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.2);
+  box-shadow: 8px 8px 0 0 #2D3436;
 }
 
 .gradient-blur {

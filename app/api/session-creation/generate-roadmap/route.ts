@@ -6,7 +6,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 function extractSubject(input: string): string {
   const trimmed = input.trim();
   if (!trimmed) return "";
-  // Extract topic from "i want to learn about X", "learn X", "study X" etc.
+
   const patterns = [
     /^i'?m?\s+(?:trying\s+to\s+)?(?:want\s+to\s+)?(?:learn|study|understand|master|know)\s+(?:about\s+|how\s+)?(.+)$/i,
     /^i\s+(?:want\s+to\s+)?(?:learn|study)\s+(.+)$/i,
@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Clean subject for prompt — extract real topic from sentence input
   const cleanSubj = extractSubject(rawSubject || "");
   const subject = cleanSubj || rawSubject || "this topic";
   const objectives = [rawObjectives, rawSubject !== subject ? rawSubject : ""].filter(Boolean).join(". ") || "General mastery";

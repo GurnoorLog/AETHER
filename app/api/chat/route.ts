@@ -26,7 +26,6 @@ export async function POST(request: Request) {
           return;
         }
 
-        // 1. Authenticate
         const supabase = await createServerSupabaseClient();
         const { data: { user } } = await supabase.auth.getUser();
 
@@ -36,7 +35,6 @@ export async function POST(request: Request) {
           return;
         }
 
-        // 2. Check chat usage limit
         const usage = await checkUsage(user.id, "chat");
         if (!usage.allowed) {
           send("error", { error: "Chat limit reached for today. Upgrade for more messages." });
@@ -44,7 +42,6 @@ export async function POST(request: Request) {
           return;
         }
 
-        // 3. Save user message
         const { error: userMsgErr } = await supabase.from("chat_messages").insert({
           conversation_id,
           user_id: user.id,
@@ -55,17 +52,15 @@ export async function POST(request: Request) {
 
         await incrementUsage(user.id, "chat");
 
-        // 4. Retrieve relevant chunks — show file checking status
         send("status", { text: "Searching your documents..." });
         const chunks = await searchChunks(message, user.id, 8, session_id);
 
-        // Extract unique filenames from chunks
         const uniqueFiles = [...new Set(chunks.map((c) => c.metadata.source).filter(Boolean))];
 
         if (uniqueFiles.length > 0) {
           for (const filename of uniqueFiles) {
             send("status", { text: `Checking ${filename}` });
-            // Small delay so user can see each file being checked
+
             await new Promise((r) => setTimeout(r, 300));
           }
         } else {
@@ -74,7 +69,6 @@ export async function POST(request: Request) {
 
         send("status", { text: "Generating response..." });
 
-        // 4. Get recent conversation history
         const { data: historyMessages, error: histErr } = await supabase
           .from("chat_messages")
           .select("role, content")
@@ -83,7 +77,6 @@ export async function POST(request: Request) {
           .limit(20);
         if (histErr) console.error("Failed to fetch history:", histErr);
 
-        // 5. Get AI memories
         const { data: memories, error: memErr } = await supabase
           .from("ai_memories")
           .select("content, context")
@@ -92,7 +85,6 @@ export async function POST(request: Request) {
           .limit(5);
         if (memErr) console.error("Failed to fetch memories:", memErr);
 
-        // 6. Get learning profile
         const { data: profile, error: profileErr } = await supabase
           .from("user_profiles")
           .select("full_name, preferences, ai_tutor_name")
@@ -100,7 +92,6 @@ export async function POST(request: Request) {
           .single();
         if (profileErr && profileErr.code !== "PGRST116") console.error("Failed to fetch profile:", profileErr);
 
-        // 7. Build system prompt
         const tutorName = profile?.ai_tutor_name || "Aether";
         const userName = profile?.full_name?.split(" ")[0] || "Student";
 
@@ -116,7 +107,6 @@ export async function POST(request: Request) {
           ? historyMessages.map((m) => `${m.role === "user" ? userName : tutorName}: ${m.content}`).join("\n")
           : "";
 
-        // Module-aware system prompt
         let moduleSection = "";
         let resolvedContext = module_context;
         if (!resolvedContext && session_id) {
@@ -201,7 +191,6 @@ Answer the student's question using the retrieved context when relevant.
 ${moduleSection ? "Always relate answers back to the active module content when possible." : "If the documents don't contain relevant information, answer from general knowledge."}
 Always be helpful and educational. Keep responses focused and clear.`;
 
-        // 8. Call Gemini with streaming
         const geminiRes = await fetch(`${GEMINI_CHAT_URL}?key=${GEMINI_API_KEY}&alt=sse`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -225,7 +214,6 @@ Always be helpful and educational. Keep responses focused and clear.`;
           return;
         }
 
-        // Stream the Gemini response
         const reader = geminiRes.body?.getReader();
         const decoder = new TextDecoder();
         let fullText = "";
@@ -238,7 +226,6 @@ Always be helpful and educational. Keep responses focused and clear.`;
             if (done) break;
             buffer += decoder.decode(value, { stream: true });
 
-            // Parse SSE chunks from Gemini
             const lines = buffer.split("\n");
             buffer = lines.pop() || "";
 
@@ -255,14 +242,13 @@ Always be helpful and educational. Keep responses focused and clear.`;
                     send("chunk", { text });
                   }
                 } catch {
-                  // skip malformed chunks
+
                 }
               }
             }
           }
         }
 
-        // If Gemini didn't stream, try non-streaming parse
         if (!fullText) {
           try {
             const geminiData = JSON.parse(buffer);
@@ -274,7 +260,6 @@ Always be helpful and educational. Keep responses focused and clear.`;
           }
         }
 
-        // 9. Save assistant response
         const { error: saveErr } = await supabase.from("chat_messages").insert({
           conversation_id,
           user_id: user.id,
@@ -285,7 +270,6 @@ Always be helpful and educational. Keep responses focused and clear.`;
         });
         if (saveErr) console.error("Failed to save assistant message:", saveErr);
 
-        // Record token usage
         if (usageMetadata) {
           const tokens = (usageMetadata.promptTokenCount ?? 0) + (usageMetadata.candidatesTokenCount ?? 0);
           if (tokens > 0) await incrementTokens(user.id, tokens);

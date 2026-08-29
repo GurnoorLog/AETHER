@@ -20,31 +20,21 @@ interface Conversation {
   updated_at: string;
 }
 
-const SUBJECT_EMOJI: Record<string, string> = {
-  Mathematics: "\uD83D\uDCD0",
-  "Computer Science": "\uD83D\uDCBB",
-  Biology: "\uD83E\uDDEA",
-  Physics: "\u269B\uFE0F",
-  Medicine: "\uD83D\uDC8A",
-  Engineering: "\uD83D\uDD27",
-  Languages: "\uD83C\uDF0D",
-  History: "\uD83D\uDCDC",
-  Psychology: "\uD83E\uDDE0",
-  Economics: "\uD83D\uDCB0",
-};
-
-function getSubjectFromTitle(title: string): string {
+function subjFromTitle(title: string): string {
   const match = title.match(/^(.+?) Study Session$/);
-  return match ? match[1] : title;
+  if (match) return match[1];
+  return title;
 }
 
-function getSubjectEmoji(subject: string): string {
-  return SUBJECT_EMOJI[subject] || "\uD83D\uDCDA";
+function subjInitial(subject: string): string {
+  return (subject || "?").trim().charAt(0).toUpperCase();
 }
 
-function getSubjectProgress(subject: string, subjects: Subject[]): number {
+
+function subjProgress(subject: string, subjects: Subject[]): number {
   const found = subjects.find((s) => s.subject === subject);
-  return found ? found.mastery_level : 0;
+  if (found) return found.mastery_level;
+  return 0;
 }
 
 function timeAgo(date: string): string {
@@ -57,30 +47,22 @@ function timeAgo(date: string): string {
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
-function extractSubjectColor(subject: string): string {
-  const colors: Record<string, string> = {
-    Mathematics: "#FDE047",
-    "Computer Science": "#60A5FA",
-    Biology: "#34D399",
-    Physics: "#A78BFA",
-    Medicine: "#FB7185",
-    Engineering: "#FBBF24",
-    Languages: "#22D3EE",
-    History: "#F59E0B",
-    Psychology: "#EC4899",
-    Economics: "#10B981",
-  };
-  return colors[subject] || "#FDE047";
+const EDITORIAL_ACCENTS = ["#3F5C3A", "#C9772E", "#2D3436"];
+function subjAccent(subject: string): string {
+  let h = 0;
+  const key = subject || "";
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+  return EDITORIAL_ACCENTS[h % EDITORIAL_ACCENTS.length];
 }
 
 const STAT_COLORS = [
-  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
-  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
-  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
-  { bg: "#E8F0E5", icon: "#6B8E61", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#3F5C3A", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#3F5C3A", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#3F5C3A", value: "#2D3436" },
+  { bg: "#E8F0E5", icon: "#3F5C3A", value: "#2D3436" },
 ];
 
-function getGreeting(): string {
+function greet(): string {
   const h = new Date().getHours();
   if (h < 12) return "Good morning";
   if (h < 18) return "Good afternoon";
@@ -97,10 +79,10 @@ export default function HubPage() {
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
   const [greeting, setGreeting] = useState("Hello");
 
-  const fetchHubData = useCallback(async () => {
+  const grab = useCallback(async () => {
     if (!user) return;
     const supabase = createClient();
-    const [subjectsRes, sessionsRes] = await Promise.all([
+    const [sr, sessRes] = await Promise.all([
       supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id),
       supabase
         .from("sessions")
@@ -108,8 +90,8 @@ export default function HubPage() {
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false }),
     ]);
-    if (subjectsRes.data) setSubjects(subjectsRes.data as Subject[]);
-    if (sessionsRes.data) setConversations(sessionsRes.data as Conversation[]);
+    if (sr.data) setSubjects(sr.data as Subject[]);
+    if (sessRes.data) setConversations(sessRes.data as Conversation[]);
     setLoading(false);
   }, [user]);
 
@@ -118,20 +100,24 @@ export default function HubPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    setGreeting(getGreeting());
+    setGreeting(greet());
   }, []);
 
   useEffect(() => {
-    if (user) fetchHubData();
-  }, [user, fetchHubData]);
+    if (user) grab();
+  }, [user, grab]);
 
-  const sessionsWithSubject = conversations.map((conv) => ({
-    ...conv,
-    subject: getSubjectFromTitle(conv.title),
-    progress: getSubjectProgress(getSubjectFromTitle(conv.title), subjects),
-  }));
+  const withSubj: Array<Omit<Conversation, "subject"> & { subject: string; progress: number }> = [];
+  for (const conv of conversations) {
+    const subj = subjFromTitle(conv.title);
+    withSubj.push({
+      ...conv,
+      subject: subj,
+      progress: subjProgress(subj, subjects),
+    });
+  }
 
-  const filteredSessions = sessionsWithSubject.filter((s) => {
+  const filtered = withSubj.filter((s) => {
     const matchesFilter =
       filter === "all" ||
       (filter === "active" && s.progress < 100) ||
@@ -139,21 +125,24 @@ export default function HubPage() {
     return matchesFilter;
   });
 
-  const totalMastery =
-    subjects.length > 0
-      ? Math.round(subjects.reduce((acc, s) => acc + s.mastery_level, 0) / subjects.length)
-      : 0;
+  let mastery = 0;
+  if (subjects.length > 0) {
+    let acc = 0;
+    for (const s of subjects) acc += s.mastery_level;
+    mastery = Math.round(acc / subjects.length);
+  }
 
-  const thisWeekCount = conversations.filter((c) => {
+  let weekCount = 0;
+  for (const c of conversations) {
     const daysSince = (Date.now() - new Date(c.updated_at || c.created_at).getTime()) / 86400000;
-    return daysSince <= 7;
-  }).length;
+    if (daysSince <= 7) weekCount++;
+  }
 
-  const handleResume = (sessionSlug: string) => {
+  const resume = (sessionSlug: string) => {
     router.push(`/${sessionSlug}/dashboard`);
   };
 
-  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+  const delSession = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user) return;
     const supabase = createClient();
@@ -172,27 +161,27 @@ export default function HubPage() {
     await supabase.from("session_roadmap_modules").delete().eq("session_id", sessionId);
     await supabase.from("progress_tracking").delete().eq("session_id", sessionId);
     await supabase.from("sessions").delete().eq("id", sessionId);
-    fetchHubData();
+    grab();
   };
 
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FDFBF7" }}>
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-[#6B8E61]/40 border-t-[#6B8E61] rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#3F5C3A]/40 border-t-[#3F5C3A] rounded-full animate-spin" />
           <span className="text-[#999] text-xs font-medium tracking-wide">Loading</span>
         </div>
       </div>
     );
   }
 
-  const firstName = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
+  const fname = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
 
   const stats = [
     { label: "Sessions", value: conversations.length, iconBg: STAT_COLORS[0].bg, iconColor: STAT_COLORS[0].icon, valueColor: STAT_COLORS[0].value, icon: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" },
-    { label: "Mastery", value: `${totalMastery}%`, iconBg: STAT_COLORS[1].bg, iconColor: STAT_COLORS[1].icon, valueColor: STAT_COLORS[1].value, icon: "M12 4.5v15m7.5-7.5h-15" },
+    { label: "Mastery", value: `${mastery}%`, iconBg: STAT_COLORS[1].bg, iconColor: STAT_COLORS[1].icon, valueColor: STAT_COLORS[1].value, icon: "M12 4.5v15m7.5-7.5h-15" },
     { label: "Subjects", value: subjects.length, iconBg: STAT_COLORS[2].bg, iconColor: STAT_COLORS[2].icon, valueColor: STAT_COLORS[2].value, icon: "M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" },
-    { label: "This week", value: thisWeekCount, iconBg: STAT_COLORS[3].bg, iconColor: STAT_COLORS[3].icon, valueColor: STAT_COLORS[3].value, icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
+    { label: "This week", value: weekCount, iconBg: STAT_COLORS[3].bg, iconColor: STAT_COLORS[3].icon, valueColor: STAT_COLORS[3].value, icon: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" },
   ];
 
   return (
@@ -204,55 +193,44 @@ export default function HubPage() {
       />
 
       <div className="mx-auto max-w-4xl px-6 py-10">
-        {/* Content */}
         <main className="relative z-10">
-
-        {/* Header */}
         <div className="pt-10 pb-2 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-[28px] font-bold text-[#333] tracking-tight leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            <h1 className="serif-display text-[28px] font-bold text-[#2D3436] tracking-tight leading-tight">
               {greeting},<br />
-              <span style={{ color: "#6B8E61" }}>{firstName} 👋</span>
+              <span style={{ color: "#3F5C3A" }}>{fname}</span>
             </h1>
             <p className="text-[15px] mt-1 opacity-80" style={{ color: "#666" }}>
-              Ready to learn something amazing today?
+              What are we diving into today?
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            {/* New button */}
             <button
               onClick={() => setShowModal(true)}
-              className="h-11 px-5 rounded-full flex items-center gap-1.5 shadow-lg text-white font-bold text-[15px] cursor-pointer"
-              style={{ backgroundColor: "#6B8E61", boxShadow: "0 8px 20px rgba(107,142,97,0.25)", transition: "transform 0.2s" }}
-              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              className="btn-editorial h-11 px-5 rounded-full flex items-center gap-1.5 text-[15px] font-bold cursor-pointer"
             >
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <svg className="w-5 h-5 text-[#FDFBF7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
               New
             </button>
-            {/* Avatar */}
             <div className="w-12 h-12 rounded-full border-2 border-white shadow-sm overflow-hidden">
-              <div className="w-full h-full rounded-full flex items-center justify-center text-lg" style={{ backgroundColor: "#F9F6F0" }}>
-                🐨
+              <div className="w-full h-full rounded-full flex items-center justify-center text-lg serif-display text-[#3F5C3A]" style={{ backgroundColor: "#F9F6F0" }}>
+                {fname?.[0]?.toUpperCase()}
               </div>
             </div>
           </div>
         </div>
-
-        {/* Content column */}
         <div className="pt-8 pb-12">
-          {/* Stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className="flex flex-col gap-3 p-4 rounded-[20px]"
-                style={{ backgroundColor: "#FFFDF9", border: "1px solid #EFEBE5", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
+                className="flex flex-col gap-3 p-4 editorial"
+                style={{ backgroundColor: "#FFFDF9" }}
               >
                 <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  className="w-9 h-9 rounded-xl flex items-center justify-center editorial"
                   style={{ backgroundColor: stat.iconBg }}
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={stat.iconColor} strokeWidth="1.5">
@@ -266,57 +244,44 @@ export default function HubPage() {
               </div>
             ))}
           </div>
-
-          {/* Your Sessions */}
           <div className="mt-10">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#6B8E61" strokeWidth="1.5">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#3F5C3A" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
                 </svg>
-                <h2 className="text-[18px] font-bold" style={{ color: "#333" }}>Your Sessions</h2>
+                <h2 className="text-[18px] font-bold" style={{ color: "#2D3436" }}>Your Sessions</h2>
               </div>
-              <button className="flex items-center gap-1.5 text-[13px] font-bold" style={{ color: "#6B8E61" }}>
+              <button className="btn-editorial-ghost flex items-center gap-1.5 text-[13px] font-bold px-4 py-2 rounded-full cursor-pointer">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                 </svg>
                 View calendar
               </button>
             </div>
-
-            {/* Tabs */}
             <div className="flex gap-2 mb-6">
               {(["all", "active", "completed"] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className="h-9 px-6 rounded-[18px] text-[14px] font-bold transition-colors"
-                  style={
-                    filter === f
-                      ? { backgroundColor: "#F3EDE3", color: "#6B8E61" }
-                      : { color: "#999" }
-                  }
+                  className={`h-9 px-6 rounded-full text-[14px] font-bold cursor-pointer ${filter === f ? "btn-editorial" : "btn-editorial-ghost"}`}
                 >
                   {f === "all" ? "All" : f === "active" ? "Active" : "Done"}
                 </button>
               ))}
             </div>
-
-            {/* Sessions list or empty state */}
-            {filteredSessions.length === 0 ? (
+            {filtered.length === 0 ? (
               <div
-                className="rounded-[32px] p-8 flex flex-col items-center text-center relative"
-                style={{ backgroundColor: "#fff", border: "1px solid #F3EDE3" }}
+                className="rounded-[32px] p-8 flex flex-col items-center text-center relative editorial"
+                style={{ backgroundColor: "#fff" }}
               >
-                {/* Empty state illustration */}
                 <div className="mb-6 flex justify-center w-full relative">
                   <div
                     className="w-[150px] h-[150px] rounded-full flex items-center justify-center"
                     style={{ backgroundColor: "#F9F6F0" }}
                   >
-                    <span className="text-[60px]">🐨</span>
+                    <span className="text-[64px] serif-display text-[#3F5C3A] leading-none select-none">Æ</span>
                   </div>
-                  {/* Sparkles */}
                   <svg className="absolute top-4 right-16 w-5 h-5 fill-[#FAD59B]" viewBox="0 0 24 24">
                     <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
                   </svg>
@@ -327,16 +292,15 @@ export default function HubPage() {
                     <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold mb-2" style={{ color: "#333" }}>No sessions yet</h3>
+                <h3 className="text-lg font-bold mb-2" style={{ color: "#2D3436" }}>No sessions yet</h3>
                 <p className="text-[14px] leading-relaxed max-w-[260px] mb-8 opacity-80" style={{ color: "#666" }}>
                   Tap New to start your first learning session and I&apos;ll build a personalized path just for you.
                 </p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="w-full h-[58px] rounded-[29px] flex items-center justify-center gap-2 text-white font-bold text-[16px] shadow-lg"
-                  style={{ backgroundColor: "#6B8E61", boxShadow: "0 8px 20px rgba(107,142,97,0.2)" }}
+                  className="btn-editorial w-full h-[58px] rounded-full flex items-center justify-center gap-2 text-[16px] font-bold cursor-pointer"
                 >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg className="w-5 h-5 text-[#FDFBF7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
                   Create your first session
@@ -344,19 +308,19 @@ export default function HubPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {filteredSessions.map((session) => (
+                {filtered.map((session) => (
                   <div
                     key={session.id}
-                    onClick={() => session.slug && handleResume(session.slug)}
-                    className="rounded-[24px] p-4 group cursor-pointer relative overflow-hidden transition-all"
-                    style={{ backgroundColor: "#fff", border: "1px solid #F3EDE3" }}
+                      onClick={() => session.slug && resume(session.slug)}
+                    className="rounded-[24px] p-4 group cursor-pointer relative overflow-hidden transition-all editorial"
+                    style={{ backgroundColor: "#fff" }}
                   >
                     <div
                       className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                      style={{ background: `radial-gradient(circle at 30% 30%, ${extractSubjectColor(session.subject)}, transparent 70%)` }}
+                      style={{ background: `radial-gradient(circle at 30% 30%, ${subjAccent(session.subject)}, transparent 70%)` }}
                     />
                     <button
-                      onClick={(e) => handleDeleteSession(session.id, e)}
+                      onClick={(e) => delSession(session.id, e)}
                       className="absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-400 transition-all cursor-pointer z-10"
                       style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
                     >
@@ -365,19 +329,19 @@ export default function HubPage() {
                       </svg>
                     </button>
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-2xl">{getSubjectEmoji(session.subject)}</span>
+                      <span className="w-9 h-9 rounded-xl flex items-center justify-center serif-display text-sm font-bold text-[#FDFBF7]" style={{ backgroundColor: "#3F5C3A" }}>{subjInitial(session.subject)}</span>
                       <span
                         className="px-2.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider"
                         style={
                           session.progress >= 100
-                            ? { backgroundColor: "rgba(34,197,94,0.1)", color: "#22c55e" }
-                            : { backgroundColor: "rgba(0,0,0,0.04)", color: "#999" }
+                            ? { backgroundColor: "rgba(63,92,58,0.1)", color: "#3F5C3A" }
+                            : { backgroundColor: "rgba(45,52,54,0.06)", color: "#2D3436" }
                         }
                       >
                         {session.progress >= 100 ? "Done" : "Active"}
                       </span>
                     </div>
-                    <h3 className="text-sm font-bold mb-1 leading-tight" style={{ color: "#333" }}>{session.title}</h3>
+                    <h3 className="text-sm font-bold mb-1 leading-tight" style={{ color: "#2D3436" }}>{session.title}</h3>
                     <p className="text-[11px] mb-3" style={{ color: "#999" }}>{timeAgo(session.updated_at || session.created_at)}</p>
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-[10px] font-medium uppercase tracking-wider" style={{ color: "#bbb" }}>
@@ -387,12 +351,12 @@ export default function HubPage() {
                       <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
                         <div
                           className="h-full rounded-full transition-all duration-700"
-                          style={{ width: `${session.progress}%`, backgroundColor: extractSubjectColor(session.subject) }}
+                          style={{ width: `${session.progress}%`, backgroundColor: subjAccent(session.subject) }}
                         />
                       </div>
                     </div>
                     <div className="pt-3 mt-3 flex items-center justify-between" style={{ borderTop: "1px solid #F3EDE3" }}>
-                      <span className="text-[9px] font-bold uppercase tracking-widest group-hover:opacity-100 transition-opacity" style={{ color: "#6B8E61", opacity: 0.5 }}>
+                      <span className="text-[9px] font-bold uppercase tracking-widest group-hover:opacity-100 transition-opacity" style={{ color: "#3F5C3A", opacity: 0.5 }}>
                         Resume →
                       </span>
                     </div>

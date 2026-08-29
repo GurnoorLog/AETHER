@@ -60,7 +60,7 @@ export default function AdminSetupPage() {
   return (
     <div className="min-h-screen bg-deep-onyx text-white">
       <div className="max-w-md mx-auto px-6 py-16">
-        <div className="glass-card rounded-[28px] p-8">
+        <div className="glass-card rounded-[28px] p-8 editorial">
           <p className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow mb-2">Aether Admin</p>
           <h1 className="text-2xl font-bold tracking-tighter mb-2">Set up Google Authenticator</h1>
           <p className="text-sm text-white/40 mb-6">
@@ -68,7 +68,7 @@ export default function AdminSetupPage() {
             <b className="text-white/80">Enter a setup key</b>, and paste the key below:
           </p>
 
-          <div className="bg-black/40 border border-white/10 rounded-2xl p-4 mb-6">
+          <div className="bg-black/40 border border-white/10 rounded-2xl p-4 mb-6 editorial">
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Setup key</p>
             <code className="text-cyber-yellow font-mono text-sm break-all">{totp.secret}</code>
           </div>
@@ -83,7 +83,7 @@ export default function AdminSetupPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Enter the 6-digit code to confirm"
-              className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-center focus:outline-none focus:border-cyber-yellow/50"
+              className="editorial-input w-full px-4 py-3 text-center"
             />
             {error && <p className="text-xs text-red-400">{error}</p>}
             <button

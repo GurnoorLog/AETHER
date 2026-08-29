@@ -64,7 +64,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen w-full" style={{ backgroundColor: "#FDFBF7" }}>
       <div className="mx-auto max-w-3xl px-6 py-16">
         <div className="mb-10">
-          <h1 className="text-[34px] font-bold tracking-tight" style={{ color: "#333", fontFamily: "'Outfit', sans-serif" }}>
+          <h1 className="text-[34px] font-bold tracking-tight" style={{ color: "#2D3436", fontFamily: "'Fraunces', Georgia, serif, sans-serif" }}>
             Privacy Policy
           </h1>
           <p className="text-sm mt-2" style={{ color: "#999" }}>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
         <div className="space-y-9">
           {SECTIONS.map((s) => (
             <section key={s.h}>
-              <h2 className="text-[18px] font-bold mb-3" style={{ color: "#6B8E61" }}>
+              <h2 className="text-[18px] font-bold mb-3" style={{ color: "#3F5C3A" }}>
                 {s.h}
               </h2>
               {s.p && (
@@ -97,12 +97,12 @@ export default function PrivacyPage() {
         </div>
 
         <div
-          className="mt-14 p-6 rounded-[24px] text-center"
+          className="mt-14 p-6 rounded-[24px] text-center editorial"
           style={{ backgroundColor: "#FFFDF9", border: "1px solid #EFEBE5" }}
         >
           <p className="text-[14px]" style={{ color: "#666" }}>
             Questions about your privacy? Email us at{" "}
-            <a href="mailto:gurnoor.tamber.x.01@gmail.com" className="font-bold" style={{ color: "#6B8E61" }}>
+            <a href="mailto:gurnoor.tamber.x.01@gmail.com" className="font-bold" style={{ color: "#3F5C3A" }}>
               gurnoor.tamber.x.01@gmail.com
             </a>
           </p>

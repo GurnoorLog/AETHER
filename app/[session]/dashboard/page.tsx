@@ -7,10 +7,10 @@ import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import type { Lesson } from "@/types/database";
 
-const SAGE = "#6B8E61";
+const SAGE = "#3F5C3A";
 const INK = "#2D3436";
 const MUTED = "#A9B1A7";
-const CARD_SHADOW = "0 10px 30px -5px rgba(0, 0, 0, 0.05)";
+
 
 interface RoadmapModule {
   id: string;
@@ -38,13 +38,13 @@ const SUBJECT_IMAGES: Record<string, string> = {
 
 const DEFAULT_IMAGE = "/design/physics.jpg";
 
-function getSubjectImage(subject?: string | null): string {
+function imgFor(subject?: string | null): string {
   if (!subject) return DEFAULT_IMAGE;
   const key = subject.toLowerCase().trim();
   return SUBJECT_IMAGES[key] || DEFAULT_IMAGE;
 }
 
-function getGreeting(): string {
+function hello(): string {
   const h = new Date().getHours();
   if (h < 12) return "Good morning,";
   if (h < 18) return "Good afternoon,";
@@ -64,61 +64,62 @@ export default function SessionDashboardPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    setGreeting(getGreeting());
+    setGreeting(hello());
   }, []);
 
-  const fetchModules = useCallback(async () => {
+  const loadMods = useCallback(async () => {
     if (!user || !session) return;
     const supabase = createClient();
-    const { data } = await supabase
+    const { data: rows } = await supabase
       .from("session_roadmap_modules")
       .select("*")
       .eq("session_id", session.id)
       .eq("user_id", user.id)
       .order("module_index", { ascending: true });
-    if (data) {
-      setModules(data.map((m) => ({
-        ...m,
-        lessons: typeof m.lessons === "string" ? JSON.parse(m.lessons) : (m.lessons || []),
-      })) as RoadmapModule[]);
+    if (rows) {
+      const out: RoadmapModule[] = [];
+      for (const m of rows) {
+        out.push({
+          ...m,
+          lessons: typeof m.lessons === "string" ? JSON.parse(m.lessons) : (m.lessons || []),
+        });
+      }
+      setModules(out);
     }
     setLoading(false);
   }, [user, session]);
 
   useEffect(() => {
-    if (user) fetchModules();
-  }, [user, fetchModules]);
+    if (user) loadMods();
+  }, [user, loadMods]);
 
-  const startModule = (moduleId: string) => {
+  const openModule = (moduleId: string) => {
     router.push(`/${session?.slug}/chat?module=${moduleId}`);
   };
 
-  const completedCount = modules.filter((m) => m.status === "completed").length;
-  const currentModule = modules.find((m) => m.status === "current");
-  const progress = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
+  const done = modules.filter((m) => m.status === "completed").length;
+  const curMod = modules.find((m) => m.status === "current");
+  const pct = modules.length > 0 ? Math.round((done / modules.length) * 100) : 0;
 
   if (authLoading || !user || !session) {
     return (
       <div className="flex items-center justify-center h-full" style={{ backgroundColor: "#FDFBF7" }}>
-        <div className="w-6 h-6 border-2 border-[#6B8E61]/40 border-t-[#6B8E61] rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#3F5C3A]/40 border-t-[#3F5C3A] rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="h-screen overflow-y-auto no-scrollbar p-6" style={{ backgroundColor: "#FDFBF7" }}>
-
-      {/* ── Header image & greeting ── */}
       <div
         className="relative h-[420px] lg:h-[520px] w-full"
         style={{
-          backgroundImage: `linear-gradient(rgba(253, 251, 247, 0.02), rgba(253, 251, 247, 0.02)), url('${getSubjectImage(session.subject)}')`,
+              backgroundImage: `linear-gradient(rgba(253, 251, 247, 0.02), rgba(253, 251, 247, 0.02)), url('${imgFor(session.subject)}')`,
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
           borderRadius: 40,
         }}
       >
-        {/* Back to hub */}
         <button
           onClick={() => router.push("/hub")}
           aria-label="Back to hub"
@@ -138,11 +139,9 @@ export default function SessionDashboardPage() {
             Let&apos;s continue your learning journey.
           </p>
         </div>
-
-        {/* ── Hero course card (overlapping, half below hero) ── */}
         <div
-          className="absolute left-8 right-8 bottom-0 translate-y-1/2 rounded-[40px] p-6 lg:p-10 border border-white/80"
-          style={{ backgroundColor: "rgba(255,255,255,0.98)", backdropFilter: "blur(8px)", boxShadow: "0 20px 50px -15px rgba(0,0,0,0.18)" }}
+          className="absolute left-8 right-8 bottom-0 translate-y-1/2 rounded-[40px] p-6 lg:p-10 border border-white/80 editorial"
+          style={{ backgroundColor: "rgba(255,255,255,0.98)", backdropFilter: "blur(8px)" }}
         >
           <div className="flex items-center gap-3 mb-5 flex-wrap">
             <div className="text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase max-w-[320px] truncate" style={{ backgroundColor: "#2D3436" }}>
@@ -154,46 +153,44 @@ export default function SessionDashboardPage() {
           </div>
 
           <h2 className="text-xl lg:text-[36px] font-bold mb-6 lg:mb-8 tracking-tight text-[#2D3436] truncate">
-            {currentModule
-              ? `Continue "${currentModule.title}"`
-              : completedCount === modules.length && modules.length > 0
-                ? "All Complete!"
-                : `Welcome to ${session.subject || "your session"}`}
+              {curMod
+                ? `Continue "${curMod.title}"`
+                : done === modules.length && modules.length > 0
+                  ? "All Complete!"
+                  : `Welcome to ${session.subject || "your session"}`}
           </h2>
 
           <div className="flex items-center gap-6">
             <div className="flex-1 h-3 bg-[#F1E9DE] rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-1000"
-                style={{ width: `${progress}%`, backgroundColor: SAGE }}
+                style={{ width: `${pct}%`, backgroundColor: SAGE }}
               />
             </div>
-            <span className="text-xl lg:text-2xl font-bold text-[#2D3436]">{progress}%</span>
+                <span className="text-xl lg:text-2xl font-bold text-[#2D3436]">{pct}%</span>
           </div>
         </div>
       </div>
-
-      {/* ── Quick actions ── */}
       <div className="mt-28 lg:mt-32 px-2 pb-12">
         <h3 className="text-[13px] font-bold tracking-[0.2em] uppercase mb-6 px-2" style={{ color: MUTED }}>
           Start Learning
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          {currentModule && (
+          {curMod && (
             <button
-              onClick={() => startModule(currentModule.id)}
-              className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
-              style={{ boxShadow: CARD_SHADOW }}
+              onClick={() => openModule(curMod.id)}
+              className="relative bg-white p-6 rounded-[32px] cursor-pointer text-left editorial"
+              
             >
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E8F1E6" }}>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 editorial" style={{ backgroundColor: "#E8F1E6" }}>
                 <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 2v8l3-3 3 3V2" />
                 </svg>
               </div>
               <p className="text-[10px] font-bold tracking-widest uppercase mb-2" style={{ color: MUTED }}>Continue</p>
-              <h4 className="font-bold text-[17px] text-[#2D3436] truncate">{currentModule.title}</h4>
+              <h4 className="font-bold text-[17px] text-[#2D3436] truncate">{curMod.title}</h4>
               <p className="text-xs mt-1" style={{ color: MUTED }}>Resume this module</p>
               <div className="absolute bottom-6 right-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: SAGE }}>
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
@@ -205,10 +202,10 @@ export default function SessionDashboardPage() {
 
           <button
             onClick={() => router.push(`/${session?.slug}/chat`)}
-            className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
-            style={{ boxShadow: CARD_SHADOW }}
+            className="relative bg-white p-6 rounded-[32px] cursor-pointer text-left editorial"
+            
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E8F1E6" }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 editorial" style={{ backgroundColor: "#E8F1E6" }}>
               <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke={SAGE} strokeWidth="1.8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
               </svg>
@@ -225,10 +222,10 @@ export default function SessionDashboardPage() {
 
           <button
             onClick={() => router.push(`/${session?.slug}/progress`)}
-            className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
-            style={{ boxShadow: CARD_SHADOW }}
+            className="relative bg-white p-6 rounded-[32px] cursor-pointer text-left editorial"
+            
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#FBEFF0" }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 editorial" style={{ backgroundColor: "#FBEFF0" }}>
               <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#D65F5F" strokeWidth="1.8">
                 <circle cx="12" cy="12" r="10" />
                 <circle cx="12" cy="12" r="6" />
@@ -247,10 +244,10 @@ export default function SessionDashboardPage() {
 
           <button
             onClick={() => router.push(`/${session?.slug}/quizzes`)}
-            className="relative bg-white p-6 rounded-[32px] border border-[#EFEBE5] hover:scale-[1.02] transition-transform cursor-pointer text-left"
-            style={{ boxShadow: CARD_SHADOW }}
+            className="relative bg-white p-6 rounded-[32px] cursor-pointer text-left editorial"
+            
           >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style={{ backgroundColor: "#E1EAF4" }}>
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 editorial" style={{ backgroundColor: "#E1EAF4" }}>
               <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#5E7DA3" strokeWidth="1.8">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
@@ -271,8 +268,6 @@ export default function SessionDashboardPage() {
           </button>
         </div>
       </div>
-
-      {/* ── Modules ── */}
       <div className="px-2 pb-12">
         <h3 className="text-sm font-bold uppercase tracking-widest mb-6" style={{ color: MUTED }}>
           Modules
@@ -281,13 +276,13 @@ export default function SessionDashboardPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-[24px] p-5 border border-[#EFEBE5] animate-pulse" style={{ boxShadow: CARD_SHADOW }}>
-                <div className="w-40 h-3.5 bg-[#EFEBE5] rounded" />
+              <div key={i} className="bg-white rounded-[24px] p-5 animate-pulse editorial">
+                <div className="w-40 h-3.5 bg-[#EFEBE5] rounded editorial" />
               </div>
             ))}
           </div>
         ) : modules.length === 0 ? (
-          <div className="bg-white rounded-[24px] p-10 text-center border border-[#EFEBE5]" style={{ boxShadow: CARD_SHADOW }}>
+          <div className="bg-white rounded-[24px] p-10 text-center editorial">
             <p className="text-sm text-[#A9B1A7]">No modules yet.</p>
           </div>
         ) : (
@@ -300,12 +295,12 @@ export default function SessionDashboardPage() {
               return (
                 <div
                   key={mod.id}
-                  onClick={() => isCurrent ? startModule(mod.id) : undefined}
-                  className={`bg-white rounded-[24px] p-5 flex items-center gap-4 border border-[#EFEBE5] transition-all ${isCurrent ? "cursor-pointer hover:border-[#CFDFC9]" : ""}`}
-                  style={{ boxShadow: CARD_SHADOW, opacity: isCurrent ? 1 : isCompleted ? 0.7 : 0.45 }}
+                  onClick={() => isCurrent ? openModule(mod.id) : undefined}
+                  className={`bg-white rounded-[24px] p-5 flex items-center gap-4 editorial transition-all ${isCurrent ? "cursor-pointer" : ""}`}
+                  style={{ opacity: isCurrent ? 1 : isCompleted ? 0.7 : 0.45 }}
                 >
                   <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 text-sm font-bold"
+                    className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 text-sm font-bold editorial"
                     style={{
                       backgroundColor: isCompleted ? "#E8F1E6" : isCurrent ? SAGE : "#EFEBE5",
                       color: isCompleted ? SAGE : isCurrent ? "#FFFFFF" : "#A0A5A8",

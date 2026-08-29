@@ -22,9 +22,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aether — The AI Tutor That Never Forgets",
+  title: "Aether · A tutor that remembers everything you study",
   description:
-    "Upload anything—notes, slides, or entire textbooks. Experience a human-like conversational journey that adapts to your learning pace in real-time.",
+    "Upload anything: notes, slides, or entire textbooks. Talk with a tutor that remembers everything you've studied and meets you exactly where you are.",
   manifest: "/manifest.webmanifest",
 };
 

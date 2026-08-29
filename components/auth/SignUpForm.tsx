@@ -26,7 +26,7 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
   const { refresh } = useAuth();
   const { close } = useAuthModal();
 
-  const validate = () => {
+  const check = () => {
     let valid = true;
     setNameError("");
     setEmailError("");
@@ -59,18 +59,18 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
     return valid;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!validate()) return;
+    if (!check()) return;
 
     setLoading(true);
 
-    const result = await signUp({ email, password, fullName });
+    const out = await signUp({ email, password, fullName });
 
-    if (result.error) {
-      setError(result.error);
+    if (out.error) {
+      setError(out.error);
       setLoading(false);
       return;
     }
@@ -81,7 +81,7 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
+    <form onSubmit={submit} className="space-y-4 lg:space-y-5">
       <AuthInput
         id="signup-name"
         label="Full Name"
@@ -115,7 +115,7 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
       />
 
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl editorial">
           <p className="text-[11px] font-bold text-red-400 uppercase tracking-wider text-center">
             {error}
           </p>
@@ -125,8 +125,8 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-5 bg-[#6B8E61] text-white rounded-2xl font-black text-sm
-          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#6B8E61]/20
+        className="w-full py-5 btn-editorial rounded-2xl font-black text-sm
+          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#3F5C3A]/20
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
@@ -149,7 +149,7 @@ export default function SignUpForm({ onSwitchView, onSuccess }: SignUpFormProps)
         <button
           type="button"
           onClick={() => onSwitchView("login")}
-          className="text-[#6B8E61] hover:text-[#6B8E61]/80 premium-transition cursor-pointer"
+          className="text-[#3F5C3A] hover:text-[#3F5C3A]/80 premium-transition cursor-pointer"
         >
           Sign in
         </button>

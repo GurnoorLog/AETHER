@@ -13,24 +13,23 @@ export default function SuccessPage() {
 }
 
 function SuccessContent() {
-  const { user, loading } = useAuth();
+  const { user, loading: load } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
+  const params = useSearchParams();
 
   useEffect(() => {
-    if (loading) return;
+    if (load) return;
     if (!user) {
       router.push("/");
       return;
     }
 
-    const timer = setTimeout(() => {
+    const t = setTimeout(() => {
       router.push("/dashboard");
     }, 3000);
 
-    return () => clearTimeout(timer);
-  }, [user, loading, router]);
+    return () => clearTimeout(t);
+  }, [user, load, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FBF7F0] px-6">
@@ -46,7 +45,7 @@ function SuccessContent() {
         </p>
         <button
           onClick={() => router.push("/dashboard")}
-          className="px-10 py-4 bg-sage text-white rounded-full font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-xl shadow-sage/10 cursor-pointer"
+          className="px-10 py-4 btn-editorial rounded-full font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-xl  cursor-pointer"
         >
           Go to Dashboard
         </button>

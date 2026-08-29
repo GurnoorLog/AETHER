@@ -12,64 +12,56 @@ export interface ExtractionResult {
   pageCount: number;
 }
 
-/**
- * Extract text from a PDF buffer.
- * Returns per-page text for page-aware chunking.
- */
 export async function extractPdf(buffer: Buffer): Promise<ExtractionResult> {
   const data = await pdfParse(buffer);
 
-  // pdf-parse doesn't give per-page text in the free version.
-  // We split on form-feed characters (ASCII 12) which separate pages.
-  const rawPages: string[] = data.text.split(/\f/);
+  const raw: string[] = data.text.split(/\f/);
 
-  const pages: ExtractedPage[] = rawPages
-    .map((text, i) => ({
-      text: text.trim(),
-      pageNumber: i + 1,
-    }))
-    .filter((p) => p.text.length > 0);
+  const pg: ExtractedPage[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const line = raw[i].trim();
+    if (line.length > 0) pg.push({ text: line, pageNumber: i + 1 });
+  }
 
   return {
-    pages,
+    pages: pg,
     fullText: data.text,
-    pageCount: data.numpages || pages.length,
+    pageCount: data.numpages || pg.length,
   };
 }
 
-/**
- * Extract text from a PPTX file.
- * PPTX is a ZIP containing XML files. We extract text from slide XML.
- */
 export async function extractPptx(buffer: Buffer): Promise<ExtractionResult> {
-  // Dynamic import to avoid bundling JSZip on the client
-  const JSZip = (await import("jszip")).default;
-  const zip = await JSZip.loadAsync(buffer);
+  const zipLib = (await import("jszip")).default;
+  const zip = await zipLib.loadAsync(buffer);
 
   const slides: ExtractedPage[] = [];
-  const slideFiles = Object.keys(zip.files)
+  const slideNames = Object.keys(zip.files)
     .filter((name) => name.match(/^ppt\/slides\/slide\d+\.xml$/))
     .sort();
 
-  for (let i = 0; i < slideFiles.length; i++) {
-    const xml = await zip.files[slideFiles[i]].async("text");
+  for (let i = 0; i < slideNames.length; i++) {
+    const slideXml = await zip.files[slideNames[i]].async("text");
 
-    // Extract text content from XML <a:t> tags (PowerPoint text runs)
-    const textMatches = xml.match(/<a:t[^>]*>([^<]+)<\/a:t>/g) || [];
-    const text = textMatches
-      .map((m) => m.replace(/<[^>]+>/g, "").trim())
-      .filter((t) => t.length > 0)
-      .join(" ");
+    const m = slideXml.match(/<a:t[^>]*>([^<]+)<\/a:t>/g) || [];
+    const bits: string[] = [];
+    for (let j = 0; j < m.length; j++) {
+      const cell = m[j].replace(/<[^>]+>/g, "").trim();
+      if (cell.length > 0) bits.push(cell);
+    }
+    const text = bits.join(" ");
 
     if (text.trim()) {
-      slides.push({
-        text: text.trim(),
-        pageNumber: i + 1,
-      });
+      slides.push({ text: text.trim(), pageNumber: i + 1 });
     }
   }
 
-  const fullText = slides.map((s) => s.text).join("\n\n");
+  let fullText = "";
+  for (let i = 0; i < slides.length; i++) {
+    if (i > 0) {
+      fullText += "\n\n";
+    }
+    fullText += slides[i].text;
+  }
 
   return {
     pages: slides,
@@ -78,23 +70,16 @@ export async function extractPptx(buffer: Buffer): Promise<ExtractionResult> {
   };
 }
 
-/**
- * Main extraction dispatcher. Routes to the right extractor based on file type.
- */
 export async function extractText(
   buffer: Buffer,
-  fileType: string
+  fileType: string,
 ): Promise<ExtractionResult> {
   switch (fileType.toUpperCase()) {
     case "PDF":
       return extractPdf(buffer);
-
     case "PPTX":
       return extractPptx(buffer);
-
     default:
-      // For unsupported types (images, etc.), return empty for now.
-      // OCR support can be added later.
       return {
         pages: [{ text: "", pageNumber: 1 }],
         fullText: "",

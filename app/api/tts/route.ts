@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { checkUsage, incrementUsage } from "@/lib/usage";
 
-// Deepgram Aura voices the app offers (Settings → Voice).
 const AURA_VOICES = [
   "aura-asteria-en",
   "aura-luna-en",

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -63,10 +63,10 @@ export default function SessionMusicPage() {
   const [modelProvider, setModelProvider] = useState<"heartmula" | "musicgen">("heartmula");
   const [mood, setMood] = useState("Focused");
   const [instrument, setInstrument] = useState("Ambient Synth");
-  const [searchInput, setSearchInput] = useState("");
+  const [q, setQ] = useState("");
   const [generating, setGenerating] = useState(false);
-  const [generationError, setGenerationError] = useState<string | null>(null);
-  const [latestAudio, setLatestAudio] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [lastAudio, setLastAudio] = useState<string | null>(null);
 
   const { play: playTrack, currentTrack, isPlaying, togglePlay, currentTime, duration, seek, nextTrack, prevTrack, setQueue } = usePlayer();
 
@@ -80,7 +80,7 @@ export default function SessionMusicPage() {
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [trackMenuOpen, setTrackMenuOpen] = useState<string | null>(null);
 
-  const fetchTracks = useCallback(async () => {
+  const loadTracks = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("generated_tracks")
@@ -91,7 +91,7 @@ export default function SessionMusicPage() {
     setHistoryLoading(false);
   }, [user]);
 
-  const fetchPlaylists = useCallback(async () => {
+  const loadPlaylists = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("playlists")
@@ -101,7 +101,7 @@ export default function SessionMusicPage() {
     if (data) setPlaylists(data as Playlist[]);
   }, [user]);
 
-  const fetchPlaylistTracks = useCallback(async (playlistId: string) => {
+  const loadPlaylist = useCallback(async (playlistId: string) => {
     const { data: ptData } = await supabase
       .from("playlist_tracks")
       .select("track_id")
@@ -110,11 +110,12 @@ export default function SessionMusicPage() {
       setPlaylistTracks((prev) => ({ ...prev, [playlistId]: [] }));
       return;
     }
-    const trackIds = ptData.map((pt: { track_id: string }) => pt.track_id);
+    const ids: string[] = [];
+    for (const pt of ptData) ids.push(pt.track_id);
     const { data: trData } = await supabase
       .from("generated_tracks")
       .select("*")
-      .in("id", trackIds)
+      .in("id", ids)
       .order("created_at", { ascending: false });
     if (trData) setPlaylistTracks((prev) => ({ ...prev, [playlistId]: trData as GeneratedTrack[] }));
   }, []);
@@ -125,16 +126,16 @@ export default function SessionMusicPage() {
 
   useEffect(() => {
     if (user) {
-      fetchTracks();
-      fetchPlaylists();
+      loadTracks();
+      loadPlaylists();
     }
-  }, [user, fetchTracks, fetchPlaylists]);
+  }, [user, loadTracks, loadPlaylists]);
 
   useEffect(() => {
-    if (selectedPlaylistId) fetchPlaylistTracks(selectedPlaylistId);
-  }, [selectedPlaylistId, fetchPlaylistTracks]);
+    if (selectedPlaylistId) loadPlaylist(selectedPlaylistId);
+  }, [selectedPlaylistId, loadPlaylist]);
 
-  const enhancePromptWithGemini = async (userText: string, moodVal: string, instrumentVal: string) => {
+  const boostPrompt = async (userText: string, moodVal: string, instrumentVal: string) => {
     const res = await fetch("/api/music/enhance-prompt", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -144,29 +145,33 @@ export default function SessionMusicPage() {
     return res.json();
   };
 
-  const handleGenerate = async () => {
+  const gen = async () => {
     setGenerating(true);
-    setGenerationError(null);
-    setLatestAudio(null);
+    setErr(null);
+    setLastAudio(null);
 
     try {
-      let promptText = `${mood} study music with ${instrument}`;
-      let lyricsText = "";
+      let prompt = `${mood} study music with ${instrument}`;
+      let lyrics = "";
 
-      if (searchInput.trim()) {
+      if (q.trim()) {
         try {
-          const geminiResult = await enhancePromptWithGemini(searchInput, mood, instrument);
-          promptText = geminiResult.enhanced_prompt || promptText;
-          lyricsText = geminiResult.lyrics || "";
+          const boost = await boostPrompt(q, mood, instrument);
+          prompt = boost.enhanced_prompt || prompt;
+          lyrics = boost.lyrics || "";
         } catch {
-          promptText = searchInput.trim();
+          prompt = q.trim();
         }
       }
 
-      const endpoint = modelProvider === "musicgen" ? "/generate-musicgen" : "/generate";
-      const body = modelProvider === "musicgen"
-        ? { prompt: lyricsText ? `${lyricsText}\n\n${promptText}` : promptText, duration: 30 }
-        : { prompt: promptText, lyrics: lyricsText, duration: 30 };
+      let endpoint = "/generate";
+      let body: { prompt: string; lyrics?: string; duration: number };
+      if (modelProvider === "musicgen") {
+        endpoint = "/generate-musicgen";
+        body = { prompt: lyrics ? `${lyrics}\n\n${prompt}` : prompt, duration: 30 };
+      } else {
+        body = { prompt: prompt, lyrics: lyrics, duration: 30 };
+      }
 
       const res = await fetch(`${COLAB_API}${endpoint}`, {
         method: "POST",
@@ -175,65 +180,64 @@ export default function SessionMusicPage() {
       });
 
       if (!res.ok) {
-        const errData = await res.json().catch(() => null);
-        throw new Error(errData?.detail || `API error: ${res.status}`);
+        const errBody = await res.json().catch(() => null);
+        throw new Error(errBody?.detail || `API error: ${res.status}`);
       }
 
-      const result = await res.json();
-      const audio_url = `/api/proxy-audio?url=${encodeURIComponent(result.audio_url)}`;
+      const out = await res.json();
+      const audio_url = `/api/proxy-audio?url=${encodeURIComponent(out.audio_url)}`;
 
       if (!audio_url) {
         throw new Error("Server returned no audio_url");
       }
 
-      const title = searchInput.trim()
-        ? `${searchInput.trim().slice(0, 40)}${searchInput.trim().length > 40 ? "..." : ""}`
+      const title = q.trim()
+        ? `${q.trim().slice(0, 40)}${q.trim().length > 40 ? "..." : ""}`
         : `${mood} ${instrument} Track`;
 
-      // Always show track in UI immediately (skip DB if it fails)
       const newTrack: GeneratedTrack = {
         id: `${Date.now()}`,
         title,
-        prompt: promptText,
+        prompt: prompt,
         mood,
         instrument,
-        lyrics: lyricsText || null,
+        lyrics: lyrics || null,
         audio_url,
         duration: 30,
         created_at: new Date().toISOString(),
         user_id: user!.id,
       };
       setTracks((prev) => [newTrack, ...prev]);
-      setLatestAudio(audio_url);
+      setLastAudio(audio_url);
       playTrack(newTrack, [newTrack, ...tracks]);
 
       try {
         await supabase.from("generated_tracks").insert({
-          user_id: user!.id, title, prompt: promptText,
-          mood, instrument, lyrics: lyricsText || null,
+          user_id: user!.id, title, prompt: prompt,
+          mood, instrument, lyrics: lyrics || null,
           audio_url, duration: 30,
         });
       } catch {
-        // DB not required — audio works from state
+
       }
 
-      setSearchInput("");
-      setGenerationError(null);
+      setQ("");
+      setErr(null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Generation failed";
       console.error("Generation failed:", msg, err);
-      setGenerationError(msg);
+      setErr(msg);
     } finally {
       setGenerating(false);
     }
   };
 
-  const deleteTrack = async (trackId: string) => {
+  const killTrack = async (trackId: string) => {
     await supabase.from("generated_tracks").delete().eq("id", trackId);
     setTracks((prev) => prev.filter((t) => t.id !== trackId));
   };
 
-  const createPlaylist = async () => {
+  const makePlaylist = async () => {
     if (!newPlaylistName.trim()) return;
     const { data } = await supabase
       .from("playlists")
@@ -245,14 +249,14 @@ export default function SessionMusicPage() {
     setShowCreatePlaylist(false);
   };
 
-  const deletePlaylist = async (playlistId: string) => {
+  const killPlaylist = async (playlistId: string) => {
     await supabase.from("playlist_tracks").delete().eq("playlist_id", playlistId);
     await supabase.from("playlists").delete().eq("id", playlistId);
     setPlaylists((prev) => prev.filter((p) => p.id !== playlistId));
     if (selectedPlaylistId === playlistId) setSelectedPlaylistId(null);
   };
 
-  const addTrackToPlaylist = async (trackId: string, playlistId: string) => {
+  const addToPl = async (trackId: string, playlistId: string) => {
     const exists = playlistTracks[playlistId]?.some((t) => t.id === trackId);
     if (exists) return;
     const position = (playlistTracks[playlistId]?.length || 0) + 1;
@@ -267,7 +271,7 @@ export default function SessionMusicPage() {
     setTrackMenuOpen(null);
   };
 
-  const removeTrackFromPlaylist = async (trackId: string, playlistId: string) => {
+  const pullFromPl = async (trackId: string, playlistId: string) => {
     await supabase.from("playlist_tracks").delete().match({ playlist_id: playlistId, track_id: trackId });
     setPlaylistTracks((prev) => ({
       ...prev,
@@ -291,26 +295,24 @@ export default function SessionMusicPage() {
 
   return (
     <>
-
-        {/* Hero Section */}
-        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-sage text-white liquid-wave relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
+        <div className={`${expanded ? "min-h-[40vh] p-4 sm:p-6 lg:p-12" : "h-[16vh] px-4 sm:px-6 lg:px-12 py-5"} bg-[#FDFBF7] text-[#2D3436] relative flex flex-col justify-end transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]`}>
           <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 lg:gap-4">
-            <div className="bg-black text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">PRO PLAN</div>
+            <div className="btn-editorial px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">PRO PLAN</div>
             <div className="bg-white/15 border border-white/25 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
           </div>
           <div className={`transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-w-3xl mb-12" : "w-full mb-0"}`}>
             {!expanded && (
               <div className="flex items-center justify-center gap-3 mb-2">
-                <div className="bg-black text-white px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">FOCUS MUSIC</div>
+                <div className="btn-editorial px-3 py-0.5 rounded-full text-[8px] font-semibold uppercase tracking-wider">FOCUS MUSIC</div>
               </div>
             )}
-            <h1 className={`text-white leading-tight transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
+            <h1 className={`text-[#2D3436] leading-tight serif-display transition-all duration-[800ms] ${expanded ? "text-7xl font-bold tracking-tighter mb-4" : "text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-center mb-0"}`}>
               <span className="block truncate">Your Focus. Your Sound.</span>
             </h1>
             <div className={`transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`}>
               <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Audio Intelligence</p>
-              <p className="text-xl font-medium opacity-80 mb-8">AI-generated music tailored to your learning style.</p>
-              <button className="bg-black text-white font-bold py-4 px-8 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-3 w-fit shadow-2xl cursor-pointer">
+              <p className="text-xl font-medium opacity-80 mb-8">Adaptive mixes that follow your focus: quiet for deep reading, brighter when you're working through problems.</p>
+              <button className="btn-editorial font-bold py-4 px-8 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-3 w-fit btn-hard cursor-pointer">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -318,15 +320,11 @@ export default function SessionMusicPage() {
               </button>
             </div>
           </div>
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#3F5C3A]/5 rounded-full -mb-40 -mr-20" />
         </div>
-
-        {/* Content Layer */}
         <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-24 overflow-y-auto space-y-6 lg:space-y-12 relative z-10">
-
-          {/* Currently Playing */}
           {activeTrack && (
-          <section className="glass-card-warm rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-8 relative overflow-hidden">
+          <section className="bg-white rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-8 relative overflow-hidden editorial">
             <div className="absolute top-0 right-0 p-8 flex items-end h-full music-waveform opacity-20">
               <div className="wave-bar-active w-1 bg-sage rounded-full" style={{ height: "24px", animationDelay: "0.1s" }} />
               <div className="wave-bar-active w-1 bg-sage rounded-full" style={{ height: "32px", animationDelay: "0.3s" }} />
@@ -334,7 +332,7 @@ export default function SessionMusicPage() {
               <div className="wave-bar-active w-1 bg-sage rounded-full" style={{ height: "28px", animationDelay: "0.2s" }} />
               <div className="wave-bar-active w-1 bg-sage rounded-full" style={{ height: "20px", animationDelay: "0.4s" }} />
             </div>
-            <div className="w-32 h-32 rounded-2xl bg-[#F3EDE3] border border-hairline-warm flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+            <div className="w-32 h-32 rounded-2xl bg-[#F3EDE3] border border-hairline-warm flex items-center justify-center flex-shrink-0 relative overflow-hidden editorial">
               <div className="absolute inset-0 bg-gradient-to-br from-sage/20 to-transparent" />
               <svg className="w-10 h-10 relative z-10 text-sage" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
@@ -357,7 +355,7 @@ export default function SessionMusicPage() {
                     </svg>
                   </button>
                   <div
-                    className="w-12 h-12 rounded-full bg-sage text-white flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 active:scale-95 transition-all"
+                    className="w-12 h-12 rounded-full btn-editorial flex items-center justify-center cursor-pointer hover:scale-110 active:scale-95 transition-all"
                     onClick={togglePlay}
                   >
                     {isPlaying ? (
@@ -388,7 +386,7 @@ export default function SessionMusicPage() {
                   max={duration || 1}
                   value={currentTime}
                   onChange={(e) => seek(Number(e.target.value))}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-warm-ink/[0.04] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sage [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(107,142,97,0.5)]"
+                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-warm-ink/[0.04] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sage [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(63,92,58,0.5)]"
                   style={{
                     background: `linear-gradient(to right, rgb(253,224,71) ${duration > 0 ? (currentTime / duration) * 100 : 0}%, rgba(255,255,255,0.05) ${duration > 0 ? (currentTime / duration) * 100 : 0}%)`,
                   }}
@@ -397,8 +395,6 @@ export default function SessionMusicPage() {
             </div>
           </section>
           )}
-
-          {/* History */}
           <section className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -413,7 +409,7 @@ export default function SessionMusicPage() {
 
             {historyLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-[24px]" />)}
+                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-[24px] editorial" />)}
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-4">
@@ -427,7 +423,7 @@ export default function SessionMusicPage() {
                   const isActive = currentTrack?.id === track.id;
                   const isThisPlaying = isActive && isPlaying;
                   return (
-                  <div key={track.id} className="glass-card-warm rounded-[24px] p-5 hover:border-sage/30 transition-all group relative">
+                  <div key={track.id} className="bg-white rounded-[24px] p-5 hover:border-sage/30 transition-all group relative editorial">
                     <div className="flex items-start gap-4">
                       <button
                         onClick={() => {
@@ -437,7 +433,7 @@ export default function SessionMusicPage() {
                             playTrack(track, trackList);
                           }
                         }}
-                        className="w-14 h-14 rounded-xl bg-black flex items-center justify-center flex-shrink-0 border border-hairline-warm group-hover:border-sage/50 transition-all cursor-pointer hover:scale-105 active:scale-95"
+                        className="w-14 h-14 rounded-xl bg-[#3F5C3A] flex items-center justify-center flex-shrink-0 border border-[#E7E1D6] group-hover:border-[#3F5C3A]/50 transition-all cursor-pointer hover:scale-105 active:scale-95"
                       >
                         {isThisPlaying ? (
                           <svg className="w-6 h-6 text-sage" fill="currentColor" viewBox="0 0 24 24">
@@ -466,14 +462,14 @@ export default function SessionMusicPage() {
                             </svg>
                           </button>
                           {trackMenuOpen === track.id && (
-                            <div className="absolute right-0 top-8 bg-white backdrop-blur-xl border border-hairline-warm rounded-xl p-2 min-w-[160px] z-20 shadow-2xl">
+                            <div className="absolute right-0 top-8 bg-white backdrop-blur-xl border border-hairline-warm rounded-xl p-2 min-w-[160px] z-20 shadow-2xl editorial">
                               {playlists.length === 0 ? (
                                 <p className="text-[10px] text-warm-ink-muted px-2 py-1">No playlists yet</p>
                               ) : (
                                 playlists.map((pl) => (
                                   <button
                                     key={pl.id}
-                                    onClick={() => addTrackToPlaylist(track.id, pl.id)}
+                                    onClick={() => addToPl(track.id, pl.id)}
                                     className="w-full text-left px-2 py-1.5 text-xs text-warm-ink-soft hover:text-sage hover:bg-warm-ink/[0.05] rounded-lg transition-all cursor-pointer"
                                   >
                                     + {pl.name}
@@ -485,7 +481,7 @@ export default function SessionMusicPage() {
                         </div>
                       )}
                       <button
-                        onClick={() => selectedPlaylistId ? removeTrackFromPlaylist(track.id, selectedPlaylistId) : deleteTrack(track.id)}
+                        onClick={() => selectedPlaylistId ? pullFromPl(track.id, selectedPlaylistId) : killTrack(track.id)}
                         className="opacity-0 group-hover:opacity-100 p-1.5 text-red-400/60 hover:text-red-400 transition-all cursor-pointer"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -497,7 +493,7 @@ export default function SessionMusicPage() {
                   );
                 })}
                 {tracks.length === 0 && !selectedPlaylistId && (
-                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 glass-card-warm rounded-[32px] p-6 sm:p-8 lg:p-12 text-center">
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 bg-white rounded-[32px] p-6 sm:p-8 lg:p-12 text-center editorial">
                     <svg className="w-12 h-12 mx-auto text-warm-ink-faint mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1">
                       <path d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
                     </svg>
@@ -505,15 +501,13 @@ export default function SessionMusicPage() {
                   </div>
                 )}
                 {selectedPlaylistId && (playlistTracks[selectedPlaylistId]?.length || 0) === 0 && (
-                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 glass-card-warm rounded-[32px] p-6 sm:p-8 lg:p-12 text-center">
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 bg-white rounded-[32px] p-6 sm:p-8 lg:p-12 text-center editorial">
                     <p className="text-warm-ink-muted text-sm font-medium">This playlist is empty. Add tracks from your history.</p>
                   </div>
                 )}
               </div>
             )}
           </section>
-
-          {/* Preset Ambiences */}
           <section className="space-y-6">
             <div>
               <h3 className="text-xl font-bold tracking-tight mb-1">Preset Ambiencies</h3>
@@ -526,8 +520,8 @@ export default function SessionMusicPage() {
                 { icon: "rocket", label: "Space Void", tags: "Synth \u2022 Drone \u2022 Deep" },
                 { icon: "coffee", label: "Lofi Cafe", tags: "Vinyl \u2022 Chords \u2022 Chill" },
               ].map((amb) => (
-                <div key={amb.label} className="glass-card-warm rounded-[32px] p-4 sm:p-6 hover:border-sage/40 hover:scale-[1.02] transition-all group cursor-pointer flex flex-col">
-                  <div className="w-12 h-12 rounded-2xl bg-[#F3EDE3] mb-4 flex items-center justify-center border border-hairline-warm group-hover:border-sage/50">
+                <div key={amb.label} className="bg-white rounded-[32px] p-4 sm:p-6 hover:border-sage/40 hover:scale-[1.02] transition-all group cursor-pointer flex flex-col editorial">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F3EDE3] mb-4 flex items-center justify-center border border-hairline-warm group-hover:border-sage/50 editorial">
                     {amb.icon === "trees" && (
                       <svg className="w-6 h-6 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                         <path d="M12 21v-6m0 0l-2.5-2.5M12 9l2.5 2.5M12 3v6m0 0l-2.5-2.5M12 9l2.5-2.5M3 21h18M3 3h18" />
@@ -556,9 +550,7 @@ export default function SessionMusicPage() {
               ))}
             </div>
           </section>
-
-          {/* AI Studio Generator */}
-          <section className="glass-card-warm rounded-[32px] p-4 sm:p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 relative overflow-hidden">
+          <section className="bg-white rounded-[32px] p-4 sm:p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 relative overflow-hidden editorial">
             <div className="space-y-6 lg:space-y-8 z-10">
               <div>
                 <h3 className="text-xl lg:text-2xl font-bold tracking-tight mb-2">AI Studio Generator</h3>
@@ -572,7 +564,7 @@ export default function SessionMusicPage() {
                       <button
                         key={m}
                         onClick={() => setMood(m)}
-                        className={`px-4 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer ${mood === m ? "border-sage bg-sage text-white" : "border-hairline-warm bg-warm-ink/[0.04] hover:bg-warm-ink/[0.05]"}`}
+                        className={`px-4 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer ${mood === m ? "border-sage btn-editorial" : "border-hairline-warm bg-warm-ink/[0.04] hover:bg-warm-ink/[0.05]"}`}
                       >
                         {m}
                       </button>
@@ -611,9 +603,9 @@ export default function SessionMusicPage() {
                   </div>
                 </div>
                 <button
-                  onClick={handleGenerate}
+                  onClick={gen}
                   disabled={generating}
-                  className="w-full bg-sage text-white font-bold py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(107,142,97,0.2)] flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn-editorial font-bold py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all btn-hard flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {generating ? (
                     <>
@@ -629,10 +621,10 @@ export default function SessionMusicPage() {
                     </>
                   )}
                 </button>
-                {generationError && <p className="text-red-400 text-sm font-bold text-center mt-4 bg-red-400/10 rounded-xl p-3">{generationError}</p>}
+                {err && <p className="text-red-400 text-sm font-bold text-center mt-4 bg-red-400/10 rounded-xl p-3">{err}</p>}
             </div>
             </div>
-            <div className="bg-white/70 rounded-[32px] border border-hairline-warm p-8 flex flex-col justify-center items-center text-center space-y-6 relative overflow-hidden group cursor-pointer">
+            <div className="bg-white/70 rounded-[32px] border border-hairline-warm p-8 flex flex-col justify-center items-center text-center space-y-6 relative overflow-hidden group cursor-pointer editorial">
               <div className="absolute inset-0 bg-gradient-to-t from-sage/5 to-transparent pointer-events-none" />
               <div className="w-24 h-24 rounded-full bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft flex items-center justify-center group-hover:scale-110 transition-all group-hover:bg-sage group-hover:text-white">
                 <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
@@ -640,7 +632,7 @@ export default function SessionMusicPage() {
                 </svg>
               </div>
               <h4 className="text-xl font-bold mb-2">Import Spotify Library</h4>
-              <p className="text-sm text-warm-ink-muted max-w-[240px] mx-auto mb-6">Seamlessly connect your playlists and let AI remix them for focus.</p>
+              <p className="text-sm text-warm-ink-muted max-w-[240px] mx-auto mb-6">Link your Spotify library and we'll turn your playlists into focused study sessions.</p>
               <button className="bg-[#1DB954] text-white px-8 py-3 rounded-full text-sm font-bold flex items-center gap-2 hover:scale-105 transition-all mx-auto">
                 Connect Spotify
               </button>
@@ -649,8 +641,6 @@ export default function SessionMusicPage() {
 
 
         </div>
-
-        {/* Composer Bar */}
       <div className="absolute bottom-8 left-0 right-0 z-50 pointer-events-none px-4 sm:px-6 lg:px-12">
         <div className="pointer-events-auto">
           <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
@@ -660,14 +650,14 @@ export default function SessionMusicPage() {
                   <path d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
               </button>
-              <input type="text" placeholder="Describe the track you want..." value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") handleGenerate(); }} className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-xs sm:text-sm py-2 sm:py-4 text-warm-ink placeholder-warm-ink-faint outline-none" />
+              <input type="text" placeholder="Describe the track you want..." value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") gen(); }} className="flex-1 min-w-0 bg-transparent border-none focus:ring-0 text-xs sm:text-sm py-2 sm:py-4 text-warm-ink placeholder-warm-ink-faint outline-none" />
               <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <button className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-warm-ink/[0.03] border border-hairline-warm hover:bg-warm-ink/[0.05] flex items-center justify-center text-warm-ink-soft cursor-pointer">
                   <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
                   </svg>
                 </button>
-                <button onClick={handleGenerate} disabled={generating} className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-sage text-white shadow-[0_0_20px_rgba(107,142,97,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
+                <button onClick={gen} disabled={generating} className="w-10 sm:w-12 h-10 sm:h-12 rounded-full btn-editorial btn-hard hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
                   <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                   </svg>
@@ -684,7 +674,7 @@ export default function SessionMusicPage() {
       {generating && (
       <div className="bg-white backdrop-blur-xl border border-sage/30 px-4 py-3 rounded-full flex items-center gap-3 shadow-2xl pointer-events-auto">
         <div className="w-2 h-2 bg-sage rounded-full animate-pulse" />
-        <span className="text-[10px] font-bold uppercase tracking-widest">🎵 AI generating focus track...</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest">Generating your focus track…</span>
       </div>
       )}
       </div>

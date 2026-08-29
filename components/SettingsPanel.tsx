@@ -35,13 +35,13 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
     setActive("general");
     fetch("/api/stripe/subscription")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setPlan({ tier: d.tier, status: d.status, currentPeriodEnd: d.current_period_end ?? null }))
+      .then((dat) => dat && setPlan({ tier: dat.tier, status: dat.status, currentPeriodEnd: dat.current_period_end ?? null }))
       .catch(() => {});
   }, [open]);
 
   if (!open) return null;
 
-  const handleManagePlan = async () => {
+  const managePlan = async () => {
     setPortalLoading(true);
     setPlanError("");
     try {
@@ -70,12 +70,11 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
         <div
-          className="pointer-events-auto w-full max-w-2xl bg-[#1a1a1a] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+          className="pointer-events-auto w-full max-w-2xl bg-[#FDFBF7] editorial overflow-hidden flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-            <h2 className="text-sm font-bold text-white/90">Settings</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E1D6]">
+            <h2 className="text-sm font-bold text-[#2D3436]">Settings</h2>
             <button
               onClick={onClose}
               className="w-7 h-7 rounded-full bg-warm-ink/[0.04] flex items-center justify-center hover:bg-warm-ink/[0.05] transition-all cursor-pointer"
@@ -85,25 +84,20 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               </svg>
             </button>
           </div>
-
-          {/* Body: two-column like ChatGPT settings */}
           <div className="flex min-h-[380px]">
-            {/* Left nav */}
-            <nav className="w-44 shrink-0 border-r border-white/[0.06] px-3 py-4 space-y-0.5">
+            <nav className="w-44 shrink-0 border-r border-[#E7E1D6] px-3 py-4 space-y-0.5">
               {NAV_ITEMS.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setActive(item.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                    active === item.id ? "bg-warm-ink/[0.04] text-warm-ink" : "text-warm-ink-muted hover:text-warm-ink-soft hover:bg-warm-ink/[0.05]"
+                  className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors cursor-pointer ${
+                    active === item.id ? "btn-editorial-ghost justify-start" : "text-warm-ink-muted hover:text-warm-ink-soft hover:bg-warm-ink/[0.05]"
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
             </nav>
-
-            {/* Right content */}
             <div className="flex-1 px-6 py-5 overflow-y-auto max-h-[60vh]">
               {active === "general" && (
                 <section>
@@ -117,7 +111,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                       <select
                         value={theme}
                         onChange={(e) => setTheme(e.target.value as "dark" | "system")}
-                        className="bg-warm-ink/[0.04] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-warm-ink-soft focus:outline-none focus:border-sage/50 cursor-pointer"
+                        className="editorial bg-warm-ink/[0.04] px-3 py-1.5 text-xs text-warm-ink-soft focus:outline-none cursor-pointer"
                       >
                         <option value="dark">Dark</option>
                         <option value="system">System</option>
@@ -136,7 +130,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         <p className="text-xs font-medium text-warm-ink-soft">Voice Input Language</p>
                         <p className="text-[10px] text-warm-ink-muted mt-0.5">Language for speech recognition</p>
                       </div>
-                      <select className="bg-warm-ink/[0.04] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-warm-ink-soft focus:outline-none focus:border-sage/50 cursor-pointer">
+                      <select className="editorial bg-warm-ink/[0.04] px-3 py-1.5 text-xs text-warm-ink-soft focus:outline-none cursor-pointer">
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
                         <option value="fr">French</option>
@@ -148,7 +142,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                         <p className="text-xs font-medium text-warm-ink-soft">TTS Voice</p>
                         <p className="text-[10px] text-warm-ink-muted mt-0.5">Voice for AI responses</p>
                       </div>
-                      <select className="bg-warm-ink/[0.04] border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-warm-ink-soft focus:outline-none focus:border-sage/50 cursor-pointer">
+                      <select className="editorial bg-warm-ink/[0.04] px-3 py-1.5 text-xs text-warm-ink-soft focus:outline-none cursor-pointer">
                         <option value="aura-2-odysseus-en">Odysseus (Default)</option>
                       </select>
                     </label>
@@ -178,7 +172,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
               {active === "subscription" && (
                 <section>
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-warm-ink-faint mb-3">Subscription</h3>
-                  <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
+                  <div className="editorial bg-warm-ink/[0.04] p-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-bold text-warm-ink capitalize">{plan?.tier ?? "Free"} plan</p>
@@ -188,13 +182,13 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                               ? `Renews ${new Date(plan.currentPeriodEnd).toLocaleDateString()}`
                               : "Active"
                             : plan?.status === "past_due"
-                              ? "Payment issue — update your billing details."
+                              ? "Payment issue: update your billing details."
                               : "You're on the free plan."}
                         </p>
                       </div>
                       <span
                         className={`text-[10px] font-bold px-2 py-1 rounded-full ${
-                          isPaid ? "bg-green-500/10 text-green-400" : "bg-warm-ink/[0.04] text-warm-ink-muted"
+                          isPaid ? "bg-[#3F5C3A]/10 text-[#3F5C3A]" : "bg-warm-ink/[0.04] text-warm-ink-muted"
                         }`}
                       >
                         {isPaid ? "ACTIVE" : plan?.status === "past_due" ? "PAST DUE" : "FREE"}
@@ -203,16 +197,16 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     <div className="mt-4 space-y-2">
                       {isPaid ? (
                         <button
-                          onClick={handleManagePlan}
+                          onClick={managePlan}
                           disabled={portalLoading}
-                          className="w-full py-2.5 rounded-lg bg-sage text-white text-xs font-black hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
+                          className="w-full py-2.5 rounded-lg btn-editorial text-xs font-black hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
                         >
                           {portalLoading ? "Opening billing portal..." : "Manage Subscription"}
                         </button>
                       ) : (
                         <button
                           onClick={() => setShowUpgrade(true)}
-                          className="block w-full py-2.5 rounded-lg bg-sage text-white text-xs font-black text-center hover:opacity-90 transition-all cursor-pointer"
+                          className="block w-full py-2.5 rounded-lg btn-editorial text-xs font-black text-center hover:opacity-90 transition-all cursor-pointer"
                         >
                           Upgrade Plan
                         </button>

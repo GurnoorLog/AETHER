@@ -44,7 +44,7 @@ interface AdminData {
 
 function StatCard({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5 editorial">
       <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">{label}</p>
       <p className={`text-2xl font-bold mt-1 ${accent ?? "text-white"}`}>{value}</p>
     </div>
@@ -166,7 +166,7 @@ export default function AdminPage() {
         </div>
 
         {!data ? (
-          <div className="max-w-md mx-auto mt-16 glass-card rounded-[28px] p-8">
+          <div className="max-w-md mx-auto mt-16 glass-card rounded-[28px] p-8 editorial">
             <h2 className="text-xl font-bold mb-1">Two-Factor Authentication</h2>
             <p className="text-sm text-white/40 mb-6">Enter the 6-digit code from Google Authenticator. Sessions expire after 6 hours.</p>
             <form onSubmit={handleVerify} className="space-y-4">
@@ -175,7 +175,7 @@ export default function AdminPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Enter 2FA code"
-                className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-3 text-center focus:outline-none focus:border-cyber-yellow/50"
+                className="editorial-input w-full px-4 py-3 text-center"
               />
               {error && <p className="text-xs text-red-400">{error}</p>}
               <button
@@ -202,7 +202,7 @@ export default function AdminPage() {
               <StatCard label="Beta Approved" value={`${data.stats.total_approved} / ${data.stats.total_users}`} />
             </div>
 
-            <div className="glass-card rounded-[28px] overflow-hidden">
+            <div className="glass-card rounded-[28px] overflow-hidden editorial">
               <div className="px-6 py-4 border-b border-hairline-warm flex items-center justify-between">
                 <h3 className="font-bold">All Users</h3>
                 <span className="text-xs text-white/40">{data.users.length} users</span>
@@ -251,7 +251,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="glass-card rounded-[28px] overflow-hidden">
+            <div className="glass-card rounded-[28px] overflow-hidden editorial">
               <div className="px-6 py-4 border-b border-hairline-warm flex items-center justify-between">
                 <h3 className="font-bold">Access Log</h3>
                 <span className="text-xs text-white/40">last {data.audit.length} events</span>

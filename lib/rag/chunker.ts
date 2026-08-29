@@ -12,101 +12,86 @@ export interface Chunk {
 }
 
 interface ChunkOptions {
-  maxTokens?: number;   // Default 600
-  overlapTokens?: number; // Default 100
+  maxTokens?: number;
+  overlapTokens?: number;
 }
 
-const DEFAULT_OPTIONS: ChunkOptions = {
+const defaults: ChunkOptions = {
   maxTokens: 600,
   overlapTokens: 100,
 };
 
-/**
- * Rough token count estimation.
- * ~1 token per 4 characters for English text.
- * Good enough for chunking — not for billing.
- */
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4);
+function guessTok(t: string): number {
+  return Math.ceil(t.length / 4);
 }
 
-/**
- * Split text into sentences. Handles common abbreviations.
- */
-function splitSentences(text: string): string[] {
-  const sentences = text
-    .replace(/\n{2,}/g, "|||PARA|||")
-    .split(/(?<=[.!?])\s+(?=[A-Z\d"'\(])/)
-    .map((s) => s.replace(/\|\|\|PARA\|\|\|/g, "\n\n").trim())
-    .filter((s) => s.length > 0);
-
-  return sentences;
+function breakSentences(text: string): string[] {
+  const cl = text.replace(/\n{2,}/g, "|||PARA|||");
+  const parts = cl.split(/(?<=[.!?])\s+(?=[A-Z\d"'\(])/);
+  const sent: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const piece = parts[i].replace(/\|\|\|PARA\|\|\|/g, "\n\n").trim();
+    if (piece.length > 0) sent.push(piece);
+  }
+  return sent;
 }
 
-/**
- * Semantic chunking: split text into chunks of ~maxTokens with overlap.
- * Respects sentence boundaries — never splits mid-sentence.
- * Respects page boundaries when page info is available.
- */
 export function chunkText(
   text: string,
-  sourceFilename: string,
+  srcName: string,
   pageNumber: number | null,
   options: ChunkOptions = {}
 ): Chunk[] {
-  const { maxTokens = 600, overlapTokens = 100 } = { ...DEFAULT_OPTIONS, ...options };
+  const { maxTokens = 600, overlapTokens = 100 } = { ...defaults, ...options };
 
-  const sentences = splitSentences(text);
+  const sentences = breakSentences(text);
   const chunks: Chunk[] = [];
-  let currentChunk: string[] = [];
-  let currentTokens = 0;
-  let chunkIndex = 0;
+  let cur: string[] = [];
+  let curT = 0;
+  let ix = 0;
 
-  for (const sentence of sentences) {
-    const sentenceTokens = estimateTokens(sentence);
+  for (const s of sentences) {
+    const st = guessTok(s);
 
-    if (currentTokens + sentenceTokens > maxTokens && currentChunk.length > 0) {
-      // Flush current chunk
+    if (curT + st > maxTokens && cur.length > 0) {
       chunks.push({
-        content: currentChunk.join(" "),
-        chunk_index: chunkIndex,
+        content: cur.join(" "),
+        chunk_index: ix,
         page_number: pageNumber,
         metadata: {
-          source: sourceFilename,
+          source: srcName,
           page: pageNumber ?? undefined,
-          chunk: chunkIndex,
+          chunk: ix,
         },
       });
-      chunkIndex++;
+      ix++;
 
-      // Keep overlap: take the last N tokens worth of sentences
-      const overlapChunk: string[] = [];
-      let overlapTokensCount = 0;
-      for (let i = currentChunk.length - 1; i >= 0; i--) {
-        const tokens = estimateTokens(currentChunk[i]);
-        if (overlapTokensCount + tokens > overlapTokens) break;
-        overlapChunk.unshift(currentChunk[i]);
-        overlapTokensCount += tokens;
+      const ov: string[] = [];
+      let ovT = 0;
+      for (let i = cur.length - 1; i >= 0; i--) {
+        const tokens = guessTok(cur[i]);
+        if (ovT + tokens > overlapTokens) break;
+        ov.unshift(cur[i]);
+        ovT += tokens;
       }
 
-      currentChunk = overlapChunk;
-      currentTokens = overlapTokensCount;
+      cur = ov;
+      curT = ovT;
     }
 
-    currentChunk.push(sentence);
-    currentTokens += sentenceTokens;
+    cur.push(s);
+    curT += st;
   }
 
-  // Flush remaining
-  if (currentChunk.length > 0) {
+  if (cur.length > 0) {
     chunks.push({
-      content: currentChunk.join(" "),
-      chunk_index: chunkIndex,
+      content: cur.join(" "),
+      chunk_index: ix,
       page_number: pageNumber,
       metadata: {
-        source: sourceFilename,
+        source: srcName,
         page: pageNumber ?? undefined,
-        chunk: chunkIndex,
+        chunk: ix,
       },
     });
   }
@@ -114,34 +99,26 @@ export function chunkText(
   return chunks;
 }
 
-/**
- * Chunk multi-page text (e.g., from a PDF with page breaks).
- * Each page is chunked separately to preserve page boundaries.
- */
 export function chunkPages(
   pages: { text: string; pageNumber: number }[],
-  sourceFilename: string,
+  srcName: string,
   options: ChunkOptions = {}
 ): Chunk[] {
   const allChunks: Chunk[] = [];
 
-  for (const page of pages) {
-    if (!page.text.trim()) continue;
+  for (const pg of pages) {
+    if (!pg.text.trim()) continue;
 
-    const pageChunks = chunkText(
-      page.text,
-      sourceFilename,
-      page.pageNumber,
-      options
-    );
-
-    allChunks.push(...pageChunks);
+    const pageChunks = chunkText(pg.text, srcName, pg.pageNumber, options);
+    for (let i = 0; i < pageChunks.length; i++) {
+      allChunks.push(pageChunks[i]);
+    }
   }
 
-  // Re-index globally
-  return allChunks.map((chunk, i) => ({
-    ...chunk,
-    chunk_index: i,
-    metadata: { ...chunk.metadata, chunk: i },
-  }));
+  const reindexed: Chunk[] = [];
+  for (let i = 0; i < allChunks.length; i++) {
+    const chunk = allChunks[i];
+    reindexed.push({ ...chunk, chunk_index: i, metadata: { ...chunk.metadata, chunk: i } });
+  }
+  return reindexed;
 }

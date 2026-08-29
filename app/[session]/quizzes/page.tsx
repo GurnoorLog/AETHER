@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import type { QuizQuestion, SessionQuiz } from "@/types/database";
 
-const GREEN = "#6B8E61";
+const GREEN = "#3F5C3A";
 const RED = "#C05050";
 
 interface ModuleInfo {
@@ -36,22 +36,21 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
   const [generating, setGenerating] = useState(false);
   const [selectedModule, setSelectedModule] = useState<string>(preselectedModule || "");
 
-  // Quiz taking state
-  const [activeQuiz, setActiveQuiz] = useState<SessionQuiz | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
-  const [submitted, setSubmitted] = useState(false);
+  const [quiz, setQuiz] = useState<SessionQuiz | null>(null);
+  const [qIdx, setQIdx] = useState(0);
+  const [picks, setPicks] = useState<number[]>([]);
+  const [done, setDone] = useState(false);
   const [score, setScore] = useState<number | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
-  const fetchData = useCallback(async () => {
+  const load = useCallback(async () => {
     if (!user || !session) return;
     const supabase = createClient();
 
-    const [modulesRes, quizzesRes] = await Promise.all([
+    const [mRes, qRes] = await Promise.all([
       supabase
         .from("session_roadmap_modules")
         .select("id, title, module_index")
@@ -66,28 +65,31 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
         .order("created_at", { ascending: false }),
     ]);
 
-    if (modulesRes.data) setModules(modulesRes.data as ModuleInfo[]);
-    if (quizzesRes.data) {
-      setQuizzes(quizzesRes.data.map((q) => ({
-        ...q,
-        questions: typeof q.questions === "string" ? JSON.parse(q.questions) : q.questions,
-      })) as SessionQuiz[]);
+    if (mRes.data) setModules(mRes.data as ModuleInfo[]);
+    if (qRes.data) {
+      const list: SessionQuiz[] = [];
+      for (const q of qRes.data) {
+        list.push({
+          ...q,
+          questions: typeof q.questions === "string" ? JSON.parse(q.questions) : q.questions,
+        } as SessionQuiz);
+      }
+      setQuizzes(list);
     }
     setLoading(false);
   }, [user, session]);
 
   useEffect(() => {
-    if (user) fetchData();
-  }, [user, fetchData]);
+    if (user) load();
+  }, [user, load]);
 
-  // Auto-start quiz if preselected module
   useEffect(() => {
     if (preselectedModule && !loading && quizzes.length === 0 && !generating) {
-      handleGenerateQuiz(preselectedModule);
+      genQuiz(preselectedModule);
     }
   }, [preselectedModule, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleGenerateQuiz = useCallback(async (moduleId?: string) => {
+  const genQuiz = useCallback(async (moduleId?: string) => {
     if (!session) return;
     setGenerating(true);
     try {
@@ -104,7 +106,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
       const data = await res.json();
       if (data.quiz) {
         setQuizzes((prev) => [data.quiz, ...prev]);
-        startQuiz(data.quiz);
+        begin(data.quiz);
       }
     } catch (err) {
       console.error("Failed to generate quiz:", err);
@@ -113,56 +115,54 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
     }
   }, [session, selectedModule]);
 
-  const startQuiz = (quiz: SessionQuiz) => {
-    setActiveQuiz(quiz);
-    setCurrentQuestion(0);
-    setSelectedAnswers(new Array(quiz.questions.length).fill(-1));
-    setSubmitted(false);
+  const begin = (quiz: SessionQuiz) => {
+    setQuiz(quiz);
+    setQIdx(0);
+    setPicks(new Array(quiz.questions.length).fill(-1));
+    setDone(false);
     setScore(null);
     setView("taking");
   };
 
-  const selectAnswer = (questionIdx: number, answerIdx: number) => {
-    if (submitted) return;
-    setSelectedAnswers((prev) => {
+  const pick = (questionIdx: number, answerIdx: number) => {
+    if (done) return;
+    setPicks((prev) => {
       const next = [...prev];
       next[questionIdx] = answerIdx;
       return next;
     });
   };
 
-  const submitQuiz = useCallback(async () => {
-    if (!activeQuiz || !user) return;
+  const finish = useCallback(async () => {
+    if (!quiz || !user) return;
 
-    let correct = 0;
-    activeQuiz.questions.forEach((q: QuizQuestion, i: number) => {
-      if (selectedAnswers[i] === q.correct_index) correct++;
+    let right = 0;
+    quiz.questions.forEach((q: QuizQuestion, i: number) => {
+      if (picks[i] === q.correct_index) right++;
     });
-    const finalScore = Math.round((correct / activeQuiz.questions.length) * 100);
+    const finalScore = Math.round((right / quiz.questions.length) * 100);
     setScore(finalScore);
-    setSubmitted(true);
+    setDone(true);
 
-    // Save score
     const supabase = createClient();
     await supabase
       .from("session_quizzes")
       .update({ score: finalScore, completed: true })
-      .eq("id", activeQuiz.id);
+      .eq("id", quiz.id);
 
-    // Update local state
     setQuizzes((prev) =>
-      prev.map((q) => q.id === activeQuiz.id ? { ...q, score: finalScore, completed: true } : q)
+      prev.map((q) => q.id === quiz.id ? { ...q, score: finalScore, completed: true } : q)
     );
 
     setView("results");
-  }, [activeQuiz, selectedAnswers, user]);
+  }, [quiz, picks, user]);
 
-  const goToList = () => {
+  const back = () => {
     setView("list");
-    setActiveQuiz(null);
+    setQuiz(null);
   };
 
-  const deleteQuiz = useCallback(async (quizId: string) => {
+  const kill = useCallback(async (quizId: string) => {
     if (!user) return;
     const supabase = createClient();
     await supabase.from("session_quizzes").delete().eq("id", quizId);
@@ -170,9 +170,12 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
   }, [user]);
 
   const completedQuizzes = quizzes.filter((q) => q.completed);
-  const avgScore = completedQuizzes.length > 0
-    ? Math.round(completedQuizzes.reduce((a, q) => a + (q.score || 0), 0) / completedQuizzes.length)
-    : 0;
+  let avgScore = 0;
+  if (completedQuizzes.length > 0) {
+    let sum = 0;
+    for (const q of completedQuizzes) sum += q.score || 0;
+    avgScore = Math.round(sum / completedQuizzes.length);
+  }
 
   if (authLoading || !user || !session) {
     return (
@@ -187,16 +190,13 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
   return (
     <div className="h-screen overflow-y-auto px-4 sm:px-8 lg:px-16 py-10 lg:py-14" style={{ backgroundColor: "#FDFBF7" }}>
       <div className="max-w-4xl mx-auto">
-
-        {/* ── TAKING ── */}
-        {view === "taking" && activeQuiz && (
+        {view === "taking" && quiz && (
           <div className="space-y-5">
-            {/* Header */}
             <div className="flex items-center justify-between gap-3">
-              <h1 className="text-xl lg:text-2xl font-bold truncate" style={{ color: "#333" }}>{activeQuiz.title}</h1>
+              <h1 className="text-xl lg:text-2xl font-bold truncate" style={{ color: "#2D3436" }}>{quiz.title}</h1>
               <button
-                onClick={goToList}
-                className="flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-2xl shrink-0 cursor-pointer hover:brightness-95 transition-all"
+                onClick={back}
+                className="flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-2xl shrink-0 cursor-pointer hover:brightness-95 transition-all editorial"
                 style={{ backgroundColor: "#F3EDE3", color: "#999", letterSpacing: "0.05em" }}
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="#999" strokeWidth="2.5">
@@ -205,36 +205,30 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 EXIT
               </button>
             </div>
-
-            {/* Progress */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
                 <div
                   className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${(currentQuestion / activeQuiz.questions.length) * 100}%`, backgroundColor: GREEN }}
+                  style={{ width: `${(qIdx / quiz.questions.length) * 100}%`, backgroundColor: GREEN }}
                 />
               </div>
-              <span className="text-xs font-bold" style={{ color: "#999" }}>{currentQuestion + 1} / {activeQuiz.questions.length}</span>
+              <span className="text-xs font-bold" style={{ color: "#999" }}>{qIdx + 1} / {quiz.questions.length}</span>
             </div>
-
-            {/* Question card */}
-            <div className="rounded-[20px] p-5 lg:p-7" style={cardStyle}>
+            <div className="rounded-[20px] p-5 lg:p-7 editorial" style={cardStyle}>
               <p className="text-[10px] font-bold uppercase mb-2" style={{ color: GREEN, letterSpacing: "0.12em" }}>
-                QUESTION {currentQuestion + 1} OF {activeQuiz.questions.length}
+                QUESTION {qIdx + 1} OF {quiz.questions.length}
               </p>
-              <h2 className="text-lg lg:text-xl font-semibold leading-relaxed" style={{ color: "#333" }}>
-                {activeQuiz.questions[currentQuestion]?.question}
+              <h2 className="text-lg lg:text-xl font-semibold leading-relaxed" style={{ color: "#2D3436" }}>
+                {quiz.questions[qIdx]?.question}
               </h2>
             </div>
-
-            {/* Answers */}
             <div className="space-y-2.5">
-              {activeQuiz.questions[currentQuestion]?.options.map((opt, i) => {
-                const selected = selectedAnswers[currentQuestion] === i;
+              {quiz.questions[qIdx]?.options.map((opt, i) => {
+                const selected = picks[qIdx] === i;
                 return (
                   <button
                     key={i}
-                    onClick={() => selectAnswer(currentQuestion, i)}
+                    onClick={() => pick(qIdx, i)}
                     className="w-full flex items-center gap-3 text-left p-4 rounded-[20px] transition-all cursor-pointer"
                     style={{
                       backgroundColor: selected ? "#FBFCF9" : "#FFF",
@@ -258,12 +252,10 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 );
               })}
             </div>
-
-            {/* Nav */}
             <div className="flex items-center justify-between gap-3 pt-1">
               <button
-                onClick={() => setCurrentQuestion((p) => Math.max(0, p - 1))}
-                disabled={currentQuestion === 0}
+                onClick={() => setQIdx((p) => Math.max(0, p - 1))}
+                disabled={qIdx === 0}
                 className="px-5 py-3 rounded-full text-sm font-semibold transition-all disabled:opacity-30 cursor-pointer"
                 style={{ backgroundColor: "#F3EDE3", color: "#666" }}
               >
@@ -271,22 +263,20 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
               </button>
               <button
                 onClick={() =>
-                  currentQuestion < activeQuiz.questions.length - 1
-                    ? setCurrentQuestion((c) => c + 1)
-                    : submitQuiz()
+                  qIdx < quiz.questions.length - 1
+                    ? setQIdx((c) => c + 1)
+                    : finish()
                 }
-                disabled={selectedAnswers[currentQuestion] === -1}
+                disabled={picks[qIdx] === -1}
                 className="text-white text-xs font-bold py-3.5 px-8 rounded-full transition-all cursor-pointer disabled:opacity-40 hover:brightness-105 active:scale-[0.98]"
                 style={{ backgroundColor: GREEN, letterSpacing: "0.08em" }}
               >
-                {currentQuestion === activeQuiz.questions.length - 1 ? "SUBMIT QUIZ" : "NEXT QUESTION"}
+                {qIdx === quiz.questions.length - 1 ? "SUBMIT QUIZ" : "NEXT QUESTION"}
               </button>
             </div>
           </div>
         )}
-
-        {/* ── RESULTS ── */}
-        {view === "results" && activeQuiz && (
+        {view === "results" && quiz && (
           <div className="space-y-5">
             <div className="flex flex-col items-center py-6">
               <div
@@ -295,33 +285,31 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
               >
                 <span className="text-4xl font-extrabold" style={{ color: (score ?? 0) >= 70 ? GREEN : RED }}>{score}%</span>
               </div>
-              <h1 className="text-xl font-bold" style={{ color: "#333" }}>
+              <h1 className="text-xl font-bold" style={{ color: "#2D3436" }}>
                 {(score ?? 0) >= 70 ? "Great work!" : "Keep practicing!"}
               </h1>
               <p className="text-sm mt-1" style={{ color: "#999" }}>
-                You got {activeQuiz.questions.filter((q: QuizQuestion, i: number) => selectedAnswers[i] === q.correct_index).length} of {activeQuiz.questions.length} correct.
+                You got {quiz.questions.filter((q: QuizQuestion, i: number) => picks[i] === q.correct_index).length} of {quiz.questions.length} correct.
               </p>
             </div>
-
-            {/* Review */}
             <div className="space-y-3">
-              {activeQuiz.questions.map((q: QuizQuestion, qi: number) => {
-                const correct = selectedAnswers[qi] === q.correct_index;
-                const picked = selectedAnswers[qi];
+              {quiz.questions.map((q: QuizQuestion, qi: number) => {
+                const right = picks[qi] === q.correct_index;
+                const picked = picks[qi];
                 return (
-                  <div key={qi} className="rounded-[20px] p-5 space-y-2" style={cardStyle}>
-                    <p className="text-[13px] font-bold leading-snug" style={{ color: "#333" }}>{qi + 1}. {q.question}</p>
+                  <div key={qi} className="rounded-[20px] p-5 space-y-2 editorial" style={cardStyle}>
+                    <p className="text-[13px] font-bold leading-snug" style={{ color: "#2D3436" }}>{qi + 1}. {q.question}</p>
                     <div className="flex items-center gap-1.5">
-                      {correct ? (
+                      {right ? (
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                       ) : (
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={RED} strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                       )}
-                      <span className="text-xs font-semibold" style={{ color: correct ? GREEN : RED }}>
-                        {correct ? "Correct" : `Correct answer: ${q.options[q.correct_index]}`}
+                      <span className="text-xs font-semibold" style={{ color: right ? GREEN : RED }}>
+                        {right ? "Correct" : `Correct answer: ${q.options[q.correct_index]}`}
                       </span>
                     </div>
-                    {!correct && picked >= 0 && (
+                    {!right && picked >= 0 && (
                       <div className="flex items-center gap-1.5">
                         <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke={RED} strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                         <span className="text-xs font-semibold" style={{ color: RED }}>Your pick: {q.options[picked]}</span>
@@ -334,7 +322,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
             </div>
 
             <button
-              onClick={goToList}
+              onClick={back}
               className="w-full flex items-center justify-center gap-2 text-white text-xs font-bold py-4 rounded-full cursor-pointer hover:brightness-105 active:scale-[0.99] transition-all"
               style={{ backgroundColor: GREEN, letterSpacing: "0.08em" }}
             >
@@ -342,20 +330,17 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
             </button>
           </div>
         )}
-
-        {/* ── LIST ── */}
         {view === "list" && (
           <div className="space-y-6">
-            {/* Header */}
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: GREEN }}>Test Yourself</p>
-                <h1 className="text-2xl lg:text-[28px] font-bold" style={{ color: "#333" }}>Quizzes</h1>
+                <h1 className="text-2xl lg:text-[28px] font-bold" style={{ color: "#2D3436" }}>Quizzes</h1>
               </div>
               <button
-                onClick={() => handleGenerateQuiz()}
+                onClick={() => genQuiz()}
                 disabled={generating}
-                className="flex items-center gap-1.5 text-white text-[11px] font-bold px-4 py-3 rounded-[20px] cursor-pointer transition-all disabled:opacity-55 hover:brightness-105 active:scale-[0.98]"
+                className="flex items-center gap-1.5 text-white text-[11px] font-bold px-4 py-3 rounded-[20px] cursor-pointer transition-all disabled:opacity-55 hover:brightness-105 active:scale-[0.98] editorial"
                 style={{ backgroundColor: GREEN, letterSpacing: "0.05em" }}
               >
                 {!generating && (
@@ -366,8 +351,6 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 {generating ? "GENERATING..." : "GENERATE"}
               </button>
             </div>
-
-            {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
                 { label: "Total Quizzes", value: String(quizzes.length), fg: "#7C69A2", bg: "#F0EEFA" },
@@ -375,8 +358,8 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 { label: "Avg. Score", value: `${avgScore}%`, fg: "#6366F1", bg: "#EBF1FF" },
                 { label: "Modules", value: String(modules.length), fg: GREEN, bg: "#EBF7F2" },
               ].map((s) => (
-                <div key={s.label} className="rounded-[20px] p-4" style={cardStyle}>
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2.5" style={{ backgroundColor: s.bg }}>
+                <div key={s.label} className="rounded-[20px] p-4 editorial" style={cardStyle}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-2.5 editorial" style={{ backgroundColor: s.bg }}>
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke={s.fg} strokeWidth="1.8">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-6m2.25-9m-3.75 3.75h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>
@@ -386,13 +369,11 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 </div>
               ))}
             </div>
-
-            {/* Module chips */}
             {modules.length > 0 && (
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                 <button
                   onClick={() => setSelectedModule("")}
-                  className="shrink-0 text-xs font-bold px-3.5 py-2.5 rounded-full cursor-pointer transition-colors"
+                  className="shrink-0 text-xs font-bold px-3.5 py-2.5 cursor-pointer transition-colors editorial"
                   style={selectedModule === "" ? { backgroundColor: GREEN, color: "#FFF" } : { backgroundColor: "#F3EDE3", color: "#666" }}
                 >
                   General
@@ -401,7 +382,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                   <button
                     key={mod.id}
                     onClick={() => setSelectedModule(mod.id)}
-                    className="shrink-0 max-w-[200px] truncate text-xs font-bold px-3.5 py-2.5 rounded-full cursor-pointer transition-colors"
+                    className="shrink-0 max-w-[200px] truncate text-xs font-bold px-3.5 py-2.5 cursor-pointer transition-colors editorial"
                     style={selectedModule === mod.id ? { backgroundColor: GREEN, color: "#FFF" } : { backgroundColor: "#F3EDE3", color: "#666" }}
                   >
                     {mod.title}
@@ -409,20 +390,18 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                 ))}
               </div>
             )}
-
-            {/* Quiz list */}
             {loading ? (
-              <div className="rounded-[24px] p-8 text-center" style={cardStyle}>
+              <div className="rounded-[24px] p-8 text-center editorial" style={cardStyle}>
                 <p className="text-sm" style={{ color: "#999" }}>Loading quizzes...</p>
               </div>
             ) : quizzes.length === 0 ? (
-              <div className="rounded-[24px] p-10 flex flex-col items-center text-center" style={cardStyle}>
+              <div className="rounded-[24px] p-10 flex flex-col items-center text-center editorial" style={cardStyle}>
                 <div className="w-14 h-14 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: "#F9F6F0" }}>
                   <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#CCC" strokeWidth="1.8">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-6m2.25-9m-3.75 3.75h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                   </svg>
                 </div>
-                <h3 className="text-base font-bold mb-1" style={{ color: "#333" }}>No quizzes yet</h3>
+                <h3 className="text-base font-bold mb-1" style={{ color: "#2D3436" }}>No quizzes yet</h3>
                 <p className="text-sm max-w-[280px]" style={{ color: "#999" }}>
                   Generate a quiz on a module (or general knowledge) to test yourself.
                 </p>
@@ -434,12 +413,12 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                   return (
                     <div
                       key={quiz.id}
-                      onClick={() => startQuiz(quiz)}
-                      className="rounded-[20px] p-4 lg:p-5 cursor-pointer hover:shadow-md transition-shadow group"
+                      onClick={() => begin(quiz)}
+                      className="rounded-[20px] p-4 lg:p-5 cursor-pointer hover:shadow-md transition-shadow group editorial"
                       style={cardStyle}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <h4 className="flex-1 text-[15px] font-bold leading-snug" style={{ color: "#333" }}>{quiz.title}</h4>
+                        <h4 className="flex-1 text-[15px] font-bold leading-snug" style={{ color: "#2D3436" }}>{quiz.title}</h4>
                         {quiz.completed && (
                           <span
                             className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-xl"
@@ -449,7 +428,7 @@ export default function SessionQuizzesPage({ params }: { params: Promise<{ sessi
                           </span>
                         )}
                         <button
-                          onClick={(e) => { e.stopPropagation(); deleteQuiz(quiz.id); }}
+                          onClick={(e) => { e.stopPropagation(); kill(quiz.id); }}
                           className="shrink-0 w-7 h-7 rounded-lg hidden lg:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 cursor-pointer"
                           aria-label="Delete quiz"
                         >

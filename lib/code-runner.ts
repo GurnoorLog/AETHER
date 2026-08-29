@@ -1,7 +1,7 @@
-let pyodideInstance: any = null;
+let pyo: any = null;
 
-async function loadPyodide() {
-  if (pyodideInstance) return pyodideInstance;
+async function spinUpPy() {
+  if (pyo) return pyo;
   const script = document.createElement("script");
   script.src = "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js";
   document.head.appendChild(script);
@@ -9,10 +9,10 @@ async function loadPyodide() {
     script.onload = () => resolve();
     script.onerror = () => reject(new Error("Failed to load Pyodide"));
   });
-  pyodideInstance = await (globalThis as any).loadPyodide({
+  pyo = await (globalThis as any).loadPyodide({
     indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/",
   });
-  return pyodideInstance;
+  return pyo;
 }
 
 const WRAPPER = `
@@ -41,21 +41,23 @@ finally:
 _stdout.getvalue() + ("STDERR:" + _stderr.getvalue() if _stderr.tell() else "")
 `;
 
-async function runPython(code: string): Promise<{ output: string; error?: string }> {
-  const py = await loadPyodide();
-  await py.loadPackagesFromImports(code);
-  py.globals.set("_code_str", code);
-  const result = py.runPython(WRAPPER);
-  const parts = result.split("STDERR:");
-  const output = parts[0].trim();
-  const error = parts[1]?.trim();
-  return error ? { output, error } : { output };
+async function pyRun(code: string): Promise<{ output: string; error?: string }> {
+  const inst = await spinUpPy();
+  await inst.loadPackagesFromImports(code);
+  inst.globals.set("_code_str", code);
+  const raw = inst.runPython(WRAPPER);
+  const parts = raw.split("STDERR:");
+  const out = parts[0].trim();
+  const err = parts[1]?.trim();
+  if (err) {
+    return { output: out, error: err };
+  }
+  return { output: out };
 }
 
-function runJavaScript(code: string): Promise<{ output: string; error?: string }> {
+function jsRun(code: string): Promise<{ output: string; error?: string }> {
   return new Promise((resolve) => {
-    const logs: string[] = [];
-    const worker = new Worker(
+    const w = new Worker(
       URL.createObjectURL(
         new Blob(
           [
@@ -76,16 +78,16 @@ function runJavaScript(code: string): Promise<{ output: string; error?: string }
         ),
       ),
     );
-    worker.onmessage = (e) => {
+    w.onmessage = (e) => {
       resolve(e.data);
-      worker.terminate();
+      w.terminate();
     };
-    worker.postMessage(code);
+    w.postMessage(code);
   });
 }
 
-async function runRust(code: string): Promise<{ output: string; error?: string }> {
-  const res = await fetch("https://play.rust-lang.org/evaluate.json", {
+async function rustRun(code: string): Promise<{ output: string; error?: string }> {
+  const r = await fetch("https://play.rust-lang.org/evaluate.json", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -97,13 +99,11 @@ async function runRust(code: string): Promise<{ output: string; error?: string }
       code,
     }),
   });
-  const data = await res.json();
-  return {
-    output: (data.stdout || "").trim(),
-    error: data.stderr || undefined,
-    // ponytail: success field from playground API
-    ...(data.success === false && data.stderr ? { error: data.stderr } : {}),
-  };
+  const j = await r.json();
+  const out = (j.stdout || "").trim();
+  let err: string | undefined = j.stderr || undefined;
+  if (j.success === false && err) err = j.stderr;
+  return { output: out, error: err };
 }
 
 export function runCode(
@@ -112,11 +112,11 @@ export function runCode(
 ): Promise<{ output: string; error?: string }> {
   switch (language.toLowerCase()) {
     case "python":
-      return runPython(code);
+      return pyRun(code);
     case "javascript":
-      return runJavaScript(code);
+      return jsRun(code);
     case "rust":
-      return runRust(code);
+      return rustRun(code);
     default:
       return Promise.resolve({ output: "", error: `Unsupported language: ${language}` });
   }

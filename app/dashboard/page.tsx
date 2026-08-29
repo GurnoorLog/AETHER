@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -39,21 +39,21 @@ export default function DashboardPage() {
   const [recentConversation, setRecentConversation] = useState<RecentConversation | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchDashboardData = useCallback(async () => {
+  const grab = useCallback(async () => {
     if (!user) return;
     const supabase = createClient();
 
-    const [profileRes, subjectsRes, docsRes, convRes] = await Promise.all([
+    const [pr, sr, dr, cr] = await Promise.all([
       supabase.from("user_profiles").select("full_name, onboarding_completed, preferences").eq("user_id", user.id).single(),
       supabase.from("progress_tracking").select("subject, mastery_level").eq("user_id", user.id),
       supabase.from("documents").select("*").eq("user_id", user.id).order("uploaded_at", { ascending: false }).limit(5),
       supabase.from("conversations").select("title, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
-    if (profileRes.data) setProfile(profileRes.data as { full_name: string; onboarding_completed: boolean; preferences: Record<string, unknown> });
-    if (subjectsRes.data) setSubjects(subjectsRes.data as { subject: string; mastery_level: number }[]);
-    if (docsRes.data) setDocuments(docsRes.data as Document[]);
-    if (convRes.data) setRecentConversation(convRes.data as RecentConversation);
+    if (pr.data) setProfile(pr.data as { full_name: string; onboarding_completed: boolean; preferences: Record<string, unknown> });
+    if (sr.data) setSubjects(sr.data as { subject: string; mastery_level: number }[]);
+    if (dr.data) setDocuments(dr.data as Document[]);
+    if (cr.data) setRecentConversation(cr.data as RecentConversation);
     setLoading(false);
   }, [user]);
 
@@ -64,8 +64,8 @@ export default function DashboardPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) fetchDashboardData();
-  }, [user, fetchDashboardData]);
+    if (user) grab();
+  }, [user, grab]);
 
   if (authLoading || !user) {
     return (
@@ -73,25 +73,25 @@ export default function DashboardPage() {
         <div className="w-[15%] shrink-0 p-6 space-y-4">
           <Skeleton className="w-10 h-10 rounded-xl" />
           <Skeleton className="h-10 rounded-full" />
-          <Skeleton className="h-48 rounded-2xl" />
-          <Skeleton className="h-10 rounded-2xl mt-auto" />
+          <Skeleton className="h-48 rounded-2xl editorial" />
+          <Skeleton className="h-10 rounded-2xl mt-auto editorial" />
         </div>
         <main className="flex-1 flex flex-col">
-          <div className="h-[45vh] bg-sage/20 p-6 sm:p-8 lg:p-12">
+          <div className="h-[45vh] bg-sage/20 p-6 sm:p-8 lg:p-12 editorial">
             <Skeleton className="h-4 w-48 mb-4" />
             <Skeleton className="h-16 w-3/4 mb-4" />
             <Skeleton className="h-8 w-1/2" />
           </div>
           <div className="flex-1 px-4 sm:px-6 lg:px-12 space-y-4 lg:space-y-8">
-            <Skeleton className="h-24 rounded-[32px]" />
-            <Skeleton className="h-48 rounded-[28px] max-w-4xl mx-auto" />
+            <Skeleton className="h-24 rounded-[32px] editorial" />
+            <Skeleton className="h-48 rounded-[28px] max-w-4xl mx-auto editorial" />
             <Skeleton className="h-16 rounded-full max-w-4xl mx-auto" />
           </div>
         </main>
         <div className="w-[20%] shrink-0 p-6 space-y-6">
-          <Skeleton className="h-64 rounded-[32px]" />
-          <Skeleton className="h-32 rounded-2xl" />
-          <Skeleton className="h-32 rounded-2xl" />
+          <Skeleton className="h-64 rounded-[32px] editorial" />
+          <Skeleton className="h-32 rounded-2xl editorial" />
+          <Skeleton className="h-32 rounded-2xl editorial" />
         </div>
       </div>
     );
@@ -101,21 +101,19 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#FBF7F0] text-warm-ink flex overflow-hidden">
 
       <SidebarLeft currentPage="home" />
-
-      {/* Center Workspace */}
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
 
-        {/* Hero Section */}
-        <div className="min-h-[40vh] bg-sage text-white p-6 sm:p-8 lg:p-12 liquid-wave relative flex flex-col justify-end">
+
+        <div className="min-h-[40vh] bg-[#FDFBF7] text-[#2D3436] p-6 sm:p-8 lg:p-12 border-b hairline relative flex flex-col justify-end editorial">
           <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4 flex-wrap">
-            <div className="bg-black text-warm-ink px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
-            <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{subjects.length} Subjects</div>
+            <div className="btn-editorial px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
+            <div className="bg-[#E9EDE3] border border-[#E7E1D6] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#3F5C3A]">{subjects.length} Subjects</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">
+              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-[#3F5C3A]">
               Welcome back, {profile?.full_name?.split(" ")[0] || "Student"}.
             </p>
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4">
+              <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4 serif-display">
               {recentConversation
                 ? `Continue "${recentConversation.title}"?`
                 : documents.length > 0
@@ -130,17 +128,17 @@ export default function DashboardPage() {
                   : "Upload your first document and start building your knowledge base."}
             </p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
+          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-[#3F5C3A]/5 rounded-full -mb-40 -mr-20" />
         </div>
 
-        {/* Content */}
+
         <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-8 overflow-y-auto space-y-4 lg:space-y-8 relative z-10">
 
-          {/* Aether Core Status */}
-          <div className="flex items-center justify-between glass-card-warm rounded-[32px] p-6 mb-8">
+
+          <div className="flex items-center justify-between bg-white rounded-[32px] p-6 mb-8 editorial">
             <div className="flex items-center gap-6">
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-sage">
+                <div className="w-16 h-16 rounded-2xl bg-[#3F5C3A] flex items-center justify-center border-2 border-[#E7E1D6] editorial">
                   <svg className="w-8 h-8 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
@@ -164,7 +162,7 @@ export default function DashboardPage() {
               {isPublicAdminEmail(user.email) && (
                 <button
                   onClick={() => router.push("/admin")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-sage text-white text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full btn-editorial text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-all cursor-pointer"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -173,11 +171,11 @@ export default function DashboardPage() {
                 </button>
               )}
               <div className="flex items-end gap-1.5 h-10">
-                <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.5s' }} />
-                <div className="waveform-bar bg-cyan-400 w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
-                <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.7s' }} />
-                <div className="waveform-bar bg-white/60 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
-                <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.9s' }} />
+                <div className="waveform-bar bg-[#3F5C3A] w-1 rounded-full" style={{ animationDuration: '0.5s' }} />
+                <div className="waveform-bar bg-[#C9772E] w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
+                <div className="waveform-bar bg-[#3F5C3A] w-1 rounded-full" style={{ animationDuration: '0.7s' }} />
+                <div className="waveform-bar bg-[#2D3436]/30 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
+                <div className="waveform-bar bg-[#3F5C3A] w-1 rounded-full" style={{ animationDuration: '0.9s' }} />
               </div>
               <button type="button" className="w-12 h-12 rounded-full border border-hairline-warm flex items-center justify-center hover:bg-warm-ink/[0.05] transition-colors cursor-pointer">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -187,36 +185,36 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Chat Messages */}
+
           <div className="space-y-6 max-w-4xl mx-auto">
             <div className="flex justify-end">
-              <div className="bg-warm-ink/[0.03] border border-hairline-warm rounded-[28px] rounded-tr-lg p-5 max-w-[80%]">
+              <div className="bg-warm-ink/[0.03] border border-hairline-warm rounded-[28px] rounded-tr-lg p-5 max-w-[80%] editorial">
                 <p className="text-sm">Can you help me understand the key concepts I should focus on?</p>
               </div>
             </div>
 
             <div className="flex justify-start">
               <div className="flex gap-4 max-w-[90%]">
-                <div className="w-10 h-10 rounded-xl bg-sage flex-shrink-0 flex items-center justify-center text-white">
+                <div className="w-10 h-10 rounded-xl bg-sage flex-shrink-0 flex items-center justify-center text-white editorial">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
                 </div>
                 <div className="space-y-4">
-                  <div className="glass-card-warm rounded-[28px] rounded-tl-lg p-6">
+                  <div className="bg-white rounded-[28px] rounded-tl-lg p-6 editorial">
                     <p className="text-sm leading-relaxed mb-4">
                       Based on your {subjects.length > 0 ? subjects.map(s => s.subject).join(", ") : "learning profile"}, I recommend starting with the fundamentals. I've analyzed your uploaded materials and identified the key areas where focused practice will help most.<span className="typing-cursor" />
                     </p>
                   </div>
 
-                  <div className="glass-card-warm rounded-[32px] p-6">
+                  <div className="bg-white rounded-[32px] p-6 editorial">
                     <div className="flex items-center gap-2 mb-4">
                       <svg className="w-5 h-5 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                         <path d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                       </svg>
                       <span className="text-xs font-bold uppercase tracking-widest">Study Tip</span>
                     </div>
-                    <p className="text-sm text-warm-ink-soft">Try the &ldquo;Active Recall&rdquo; method — quiz yourself on each topic after studying it. Aether can generate practice questions from any of your documents.</p>
+                    <p className="text-sm text-warm-ink-soft">Try the &ldquo;Active Recall&rdquo; method. Quiz yourself on each topic after studying it. Aether can generate practice questions from any of your documents.</p>
                   </div>
                 </div>
               </div>
@@ -238,9 +236,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Input Composer */}
+
           <div className="sticky bottom-8 max-w-4xl mx-auto px-4 w-full">
-            <div className="glass-card-warm-warm rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
+            <div className="bg-white-warm rounded-full p-2 flex items-center gap-2 pr-4 shadow-2xl">
               <button type="button" className="w-12 h-12 rounded-full hover:bg-warm-ink/[0.05] transition-colors flex items-center justify-center text-warm-ink-muted cursor-pointer">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path d="M12 4.5v15m7.5-7.5h-15" />
@@ -260,7 +258,7 @@ export default function DashboardPage() {
                     <path d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
                   </svg>
                 </button>
-                <button type="button" className="w-12 h-12 rounded-full bg-sage text-white shadow-[0_0_20px_rgba(107,142,97,0.3)] hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer">
+                <button type="button" className="w-12 h-12 rounded-full btn-editorial btn-hard hover:scale-110 active:scale-90 transition-all flex items-center justify-center cursor-pointer">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                   </svg>
@@ -271,9 +269,9 @@ export default function DashboardPage() {
 
         </div>
 
-        {/* Ticker */}
-        <div className="mt-auto p-6 sm:p-8 lg:p-12 border-t border-hairline-warm bg-black">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 opacity-30 grayscale">
+
+        <div className="mt-auto p-6 sm:p-8 lg:p-12 border-t hairline bg-[#F4F0E9] editorial">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 text-[#2D3436]/40">
             <span className="text-[10px] font-bold tracking-widest">TRUSTED BY STUDENTS AT</span>
             <div className="flex flex-wrap gap-4 sm:gap-6 lg:gap-12">
               <span className="font-bold tracking-tighter">OpenAI</span>

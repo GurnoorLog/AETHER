@@ -111,7 +111,6 @@ Return ONLY a JSON array. No markdown, no explanation. Format:
 
     await incrementUsage(user.id, "quiz");
 
-    // Save quiz to DB
     const { data: quiz, error: quizError } = await supabase
       .from("session_quizzes")
       .insert({

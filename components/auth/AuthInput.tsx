@@ -24,11 +24,9 @@ export default function AuthInput({
       </label>
       <input
         id={id}
-        className={`w-full px-5 py-4 bg-white border ${
-          error ? "border-red-500/60" : "border-[#EFEBE5]"
-        } rounded-2xl text-[#2D3436] placeholder:text-[#A0A5A8] text-sm font-medium
-        focus:outline-none focus:border-[#6B8E61]/60 focus:ring-1 focus:ring-[#6B8E61]/20
-        premium-transition ${className}`}
+        className={`editorial-input w-full px-5 py-4 text-sm font-medium ${
+          error ? "border-red-500" : ""
+        } ${className}`}
         {...props}
       />
       {error && (

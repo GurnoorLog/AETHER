@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -32,32 +32,24 @@ export default function QuizzesPage() {
     <div className="h-screen bg-[#FBF7F0] text-warm-ink flex overflow-hidden">
 
       <SidebarLeft currentPage="quizzes" />
-
-      {/* Center Workspace */}
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
-
-        {/* Hero Section */}
-        <div className="min-h-[40vh] bg-sage text-white p-6 sm:p-8 lg:p-12 liquid-wave relative flex flex-col justify-end">
+        <div className="min-h-[40vh] bg-[#FDFBF7] text-[#2D3436] p-6 sm:p-8 lg:p-12 border-b hairline relative flex flex-col justify-end editorial">
           <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4">
-            <div className="bg-black text-warm-ink px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">DAILY GOAL: 2/3</div>
-            <div className="bg-black/10 border border-black/10 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Level 24</div>
+            <div className="btn-editorial px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">DAILY GOAL: 2/3</div>
+            <div className="bg-[#E9EDE3] border border-[#E7E1D6] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#3F5C3A]">Level 24</div>
           </div>
           <div className="max-w-3xl mb-12">
             <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Challenge</p>
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4">Quiz Your Knowledge</h1>
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4 serif-display">Quiz Your Knowledge</h1>
             <p className="text-base sm:text-lg lg:text-xl font-medium opacity-80">Challenge yourself and strengthen your mastery across 14 categories.</p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-black/5 rounded-full -mb-40 -mr-20" />
+          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-[#3F5C3A]/5 rounded-full -mb-40 -mr-20" />
         </div>
-
-        {/* Content Layer */}
         <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 space-y-6 lg:space-y-10 relative z-10 overflow-y-auto">
-
-          {/* Aether Core Header */}
-          <div className="flex items-center justify-between glass-card-warm rounded-[32px] p-4 sm:p-6 mb-8">
+          <div className="flex items-center justify-between bg-white rounded-[32px] p-4 sm:p-6 mb-8 editorial">
             <div className="flex items-center gap-6">
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center border-2 border-sage">
+                <div className="w-16 h-16 rounded-2xl bg-[#3F5C3A] flex items-center justify-center border-2 border-[#E7E1D6] editorial">
                   <svg className="w-8 h-8 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                   </svg>
@@ -79,9 +71,9 @@ export default function QuizzesPage() {
             <div className="flex items-center gap-4">
               <div className="flex items-end gap-1.5 h-10">
                 <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.5s' }} />
-                <div className="waveform-bar bg-cyan-400 w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
+                <div className="waveform-bar bg-[#C9772E] w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
                 <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.7s' }} />
-                <div className="waveform-bar bg-white/60 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
+                <div className="waveform-bar bg-[#2D3436]/30 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
                 <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.9s' }} />
               </div>
               <button type="button" className="w-12 h-12 rounded-full border border-hairline-warm flex items-center justify-center hover:bg-warm-ink/[0.05] transition-colors cursor-pointer">
@@ -91,34 +83,30 @@ export default function QuizzesPage() {
               </button>
             </div>
           </div>
-
-          {/* Stat Summary */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-            <div className="glass-card-warm p-4 sm:p-6 rounded-[32px] flex flex-col justify-center">
+            <div className="bg-white p-4 sm:p-6 rounded-[32px] flex flex-col justify-center editorial">
               <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Total Quizzes</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">142</p>
             </div>
-            <div className="glass-card-warm p-6 rounded-[32px] flex flex-col justify-center">
+            <div className="bg-white p-6 rounded-[32px] flex flex-col justify-center editorial">
               <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Weekly Comp</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">12 <span className="text-sage text-xs font-medium">+2</span></p>
             </div>
-            <div className="glass-card-warm p-6 rounded-[32px] flex flex-col justify-center">
+            <div className="bg-white p-6 rounded-[32px] flex flex-col justify-center editorial">
               <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Avg. Score</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">88%</p>
             </div>
-            <div className="glass-card-warm p-6 rounded-[32px] flex flex-col justify-center">
+            <div className="bg-white p-6 rounded-[32px] flex flex-col justify-center editorial">
               <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Current Streak</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">7 Days</p>
             </div>
           </div>
-
-          {/* Filtering */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
             <div className="flex flex-wrap gap-2 bg-warm-ink/[0.04] p-1.5 rounded-full border border-hairline-warm">
-              <button type="button" className="px-6 py-2 rounded-full bg-sage text-white text-xs font-bold cursor-pointer">All Quizzes</button>
-              <button type="button" className="px-6 py-2 rounded-full hover:bg-warm-ink/[0.05] text-xs font-bold opacity-60 hover:opacity-100 transition-all cursor-pointer">Mathematics</button>
-              <button type="button" className="px-6 py-2 rounded-full hover:bg-warm-ink/[0.05] text-xs font-bold opacity-60 hover:opacity-100 transition-all cursor-pointer">Physics</button>
-              <button type="button" className="px-6 py-2 rounded-full hover:bg-warm-ink/[0.05] text-xs font-bold opacity-60 hover:opacity-100 transition-all cursor-pointer">Recently Created</button>
+              <button type="button" className="px-6 py-2 rounded-full btn-editorial text-xs font-bold cursor-pointer">All Quizzes</button>
+              <button type="button" className="px-6 py-2 btn-editorial-ghost text-xs font-bold cursor-pointer">Mathematics</button>
+              <button type="button" className="px-6 py-2 btn-editorial-ghost text-xs font-bold cursor-pointer">Physics</button>
+              <button type="button" className="px-6 py-2 btn-editorial-ghost text-xs font-bold cursor-pointer">Recently Created</button>
             </div>
             <div className="flex items-center gap-4 text-xs font-bold opacity-40">
               <span>Sort by:</span>
@@ -129,12 +117,8 @@ export default function QuizzesPage() {
               </select>
             </div>
           </div>
-
-          {/* Quiz Recommendation Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8">
-
-            {/* Card 1: Easy */}
-            <div className="glass-card-warm p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="bg-white p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group editorial">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-green-500/10 text-green-400 text-[10px] font-black uppercase rounded-full">Easy</span>
@@ -169,13 +153,11 @@ export default function QuizzesPage() {
                   <span className="text-sm font-bold">Best: 92%</span>
                 </div>
               </div>
-              <button type="button" className="w-full bg-sage text-white font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(107,142,97,0.2)] group-hover:shadow-[0_0_30px_rgba(107,142,97,0.4)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
                 Start Quiz
               </button>
             </div>
-
-            {/* Card 2: Medium (Active) */}
-            <div className="glass-card-warm p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="bg-white p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group editorial">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
@@ -210,13 +192,11 @@ export default function QuizzesPage() {
                   <span className="text-sm">No Attempt Yet</span>
                 </div>
               </div>
-              <button type="button" className="w-full bg-sage text-white font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(107,142,97,0.2)] group-hover:shadow-[0_0_30px_rgba(107,142,97,0.4)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
                 Start Quiz
               </button>
             </div>
-
-            {/* Card 3: Hard */}
-            <div className="glass-card-warm p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="bg-white p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group editorial">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-red-500/10 text-red-400 text-[10px] font-black uppercase rounded-full">Hard</span>
@@ -251,13 +231,11 @@ export default function QuizzesPage() {
                   <span className="text-sm font-bold">Prev Score: 42%</span>
                 </div>
               </div>
-              <button type="button" className="w-full bg-sage text-white font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(107,142,97,0.2)] group-hover:shadow-[0_0_30px_rgba(107,142,97,0.4)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
                 Retry Quiz
               </button>
             </div>
-
-            {/* Card 4: Medium */}
-            <div className="glass-card-warm p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group">
+            <div className="bg-white p-6 lg:p-8 rounded-[40px] quiz-card transition-all duration-300 group editorial">
               <div className="flex justify-between items-start mb-6">
                 <div className="space-y-2">
                   <span className="px-3 py-1 bg-yellow-500/10 text-yellow-400 text-[10px] font-black uppercase rounded-full">Medium</span>
@@ -292,15 +270,13 @@ export default function QuizzesPage() {
                   <span className="text-sm">Not Started</span>
                 </div>
               </div>
-              <button type="button" className="w-full bg-sage text-white font-bold py-4 rounded-full active:scale-95 transition-all shadow-[0_0_20px_rgba(107,142,97,0.2)] group-hover:shadow-[0_0_30px_rgba(107,142,97,0.4)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
                 Start Quiz
               </button>
             </div>
 
           </div>
-
-          {/* Logo Ticker */}
-          <div className="mt-10 lg:mt-20 py-6 sm:py-8 lg:py-12 border-t border-hairline-warm bg-black rounded-t-[100px] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 opacity-30 grayscale">
+          <div className="mt-10 lg:mt-20 py-6 sm:py-8 lg:py-12 border-t hairline bg-[#F4F0E9] rounded-t-[100px] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0 text-[#2D3436]/40 editorial">
             <span className="text-[10px] font-bold tracking-widest px-4 sm:px-6 lg:px-12">CHALLENGE SPONSORS</span>
             <div className="flex flex-wrap gap-4 sm:gap-8 lg:gap-16 px-4 sm:px-6 lg:px-12">
               <div className="flex items-center gap-2">
@@ -339,12 +315,10 @@ export default function QuizzesPage() {
       </main>
 
       <SidebarRight />
-
-      {/* Floating Notification */}
       <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
-        <div className="bg-black/80 backdrop-blur-xl border border-hairline-warm px-6 py-4 rounded-full flex items-center gap-4 animate-scale-in shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-          <div className="w-3 h-3 bg-sage rounded-full shadow-[0_0_10px_#6B8E61]" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">🎯 New Quiz Generated</span>
+        <div className="bg-[#FDFBF7] backdrop-blur-xl border border-[#E7E1D6] px-6 py-4 rounded-full flex items-center gap-4 animate-scale-in shadow-[0_20px_50px_rgba(45,52,54,0.12)]">
+          <div className="w-3 h-3 bg-sage rounded-full shadow-[0_0_10px_#3F5C3A]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">New quiz generated</span>
         </div>
       </div>
 

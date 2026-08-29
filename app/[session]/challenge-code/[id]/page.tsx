@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ interface Challenge {
   testCases?: { input: string; expected: string }[];
 }
 
-function loadChallenge(sid: string, cid: string): Challenge | null {
+function grabChallenge(sid: string, cid: string): Challenge | null {
   if (typeof window === "undefined") return null;
   try {
     const all = JSON.parse(sessionStorage.getItem(`aether_challenges_${sid}`) || "[]") as Challenge[];
@@ -38,17 +38,17 @@ export default function ChallengeCodePage() {
   const [results, setResults] = useState<{ output: string; error?: string }[]>([]);
 
   useEffect(() => {
-    const c = loadChallenge(sid, decodeURIComponent(cid));
+    const c = grabChallenge(sid, decodeURIComponent(cid));
     if (c) {
       setChallenge(c);
-      // Pre-fill first cell with starter code
+
       if (c.starterCode && cells[0] === "") {
         setCells([c.starterCode]);
       }
     }
   }, [sid, cid]);
 
-  const handleRun = useCallback(
+  const pushRun = useCallback(
     (idx: number, code: string, output: string, error?: string) => {
       setResults((prev) => {
         const next = [...prev];
@@ -80,16 +80,12 @@ export default function ChallengeCodePage() {
     );
   }
 
-  const diffColor =
-    challenge.difficulty === "easy"
-      ? "text-green-400 bg-green-400/10"
-      : challenge.difficulty === "medium"
-        ? "text-sage bg-sage/10"
-        : "text-red-400 bg-red-400/10";
+  let diffColor = "text-red-400 bg-red-400/10";
+  if (challenge.difficulty === "easy") diffColor = "text-green-400 bg-green-400/10";
+  else if (challenge.difficulty === "medium") diffColor = "text-sage bg-sage/10";
 
   return (
     <div className="min-h-screen bg-[#FBF7F0] text-warm-ink flex flex-col">
-      {/* Top bar */}
       <header className="flex items-center justify-between px-6 py-3 border-b border-hairline-warm">
         <div className="flex items-center gap-4">
           <button
@@ -114,16 +110,11 @@ export default function ChallengeCodePage() {
           </div>
         </div>
       </header>
-
-      {/* Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto p-6 space-y-6">
-          {/* Description */}
-          <div className="glass-card-warm rounded-3xl p-5">
+          <div className="bg-white rounded-3xl p-5 editorial">
             <p className="text-sm text-warm-ink-soft leading-relaxed">{challenge.description}</p>
           </div>
-
-          {/* Code cells */}
           <div className="space-y-4">
             {cells.map((code, i) => (
               <div key={i}>
@@ -144,27 +135,23 @@ export default function ChallengeCodePage() {
                 <CodeCell
                   language={challenge.language}
                   defaultCode={code}
-                  onRun={(c, o, e) => handleRun(i, c, o, e)}
+                  onRun={(c, o, e) => pushRun(i, c, o, e)}
                 />
               </div>
             ))}
           </div>
-
-          {/* Add cell */}
           <button
             onClick={addCell}
             className="w-full py-3 rounded-2xl border-2 border-dashed border-hairline-warm text-xs font-bold text-warm-ink-faint hover:text-warm-ink-muted hover:border-hairline-warm transition-all cursor-pointer"
           >
             + Add Cell
           </button>
-
-          {/* Test cases */}
           {challenge.testCases && challenge.testCases.length > 0 && (
-            <div className="glass-card-warm rounded-3xl p-5">
+            <div className="bg-white rounded-3xl p-5 editorial">
               <h3 className="text-xs font-bold uppercase tracking-widest text-warm-ink-faint mb-3">Test Cases</h3>
               <div className="space-y-2">
                 {challenge.testCases.map((tc, i) => (
-                  <div key={i} className="text-xs font-mono bg-black/40 rounded-xl px-4 py-2">
+                  <div key={i} className="text-xs font-mono bg-black/40 rounded-xl px-4 py-2 editorial">
                     <span className="text-warm-ink-muted">Input: </span>
                     <span className="text-warm-ink-soft">{tc.input}</span>
                     <br />

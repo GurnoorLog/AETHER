@@ -10,7 +10,7 @@ export interface EmbeddingResult {
  * Returns a 768-dimensional vector.
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const res = await fetch(`${GEMINI_EMBEDDING_URL}?key=${GEMINI_API_KEY}`, {
+  const r = await fetch(`${GEMINI_EMBEDDING_URL}?key=${GEMINI_API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -21,13 +21,13 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     }),
   });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini embedding failed (${res.status}): ${err}`);
+  if (!r.ok) {
+    const msg = await r.text();
+    throw new Error(`Gemini embedding failed (${r.status}): ${msg}`);
   }
 
-  const data = await res.json();
-  return data.embedding.values;
+  const json = await r.json();
+  return json.embedding.values;
 }
 
 /**
@@ -56,7 +56,7 @@ export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
  * Uses RETRIEVAL_QUERY task type for better retrieval.
  */
 export async function generateQueryEmbedding(query: string): Promise<number[]> {
-  const res = await fetch(`${GEMINI_EMBEDDING_URL}?key=${GEMINI_API_KEY}`, {
+  const r = await fetch(`${GEMINI_EMBEDDING_URL}?key=${GEMINI_API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -67,11 +67,11 @@ export async function generateQueryEmbedding(query: string): Promise<number[]> {
     }),
   });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Gemini query embedding failed (${res.status}): ${err}`);
+  if (!r.ok) {
+    const msg = await r.text();
+    throw new Error(`Gemini query embedding failed (${r.status}): ${msg}`);
   }
 
-  const data = await res.json();
-  return data.embedding.values;
+  const json = await r.json();
+  return json.embedding.values;
 }

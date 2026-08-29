@@ -10,7 +10,7 @@ export default function DeleteAccountPage() {
     <div className="min-h-screen w-full" style={{ backgroundColor: "#FDFBF7" }}>
       <div className="mx-auto max-w-3xl px-6 py-16">
         <div className="mb-10">
-          <h1 className="text-[34px] font-bold tracking-tight" style={{ color: "#333", fontFamily: "'Outfit', sans-serif" }}>
+          <h1 className="text-[34px] font-bold tracking-tight" style={{ color: "#2D3436", fontFamily: "'Fraunces', Georgia, serif, sans-serif" }}>
             Account &amp; Data Deletion
           </h1>
           <p className="text-sm mt-2" style={{ color: "#999" }}>
@@ -19,29 +19,28 @@ export default function DeleteAccountPage() {
         </div>
 
         <div
-          className="p-6 rounded-[24px] mb-8 flex flex-col items-center text-center"
+          className="p-6 rounded-[24px] mb-8 flex flex-col items-center text-center editorial"
           style={{ backgroundColor: "#FFFDF9", border: "1px solid #EFEBE5" }}
         >
           <p className="text-[15px] mb-4" style={{ color: "#555" }}>
             To delete your Aether account and all associated data, email us and we will erase it.
           </p>
-          <a
-            href="mailto:gurnoor.tamber.x.01@gmail.com?subject=Delete%20my%20Aether%20account&body=Hi%20Aether%20team%2C%0APlease%20delete%20my%20account%20and%20all%20associated%20data.%0AAccount%20email%3A%20%5Byour%20email%5D"
-            className="px-6 py-3 rounded-full text-white font-bold text-[15px]"
-            style={{ backgroundColor: "#6B8E61" }}
-          >
-            Request account deletion
-          </a>
+            <a
+              href="mailto:gurnoor.tamber.x.01@gmail.com?subject=Delete%20my%20Aether%20account&body=Hi%20Aether%20team%2C%0APlease%20delete%20my%20account%20and%20all%20associated%20data.%0AAccount%20email%3A%20%5Byour%20email%5D"
+              className="btn-editorial px-6 py-3 rounded-full text-[15px] font-bold"
+            >
+              Request account deletion
+            </a>
         </div>
 
         <div className="space-y-9">
           <section>
-            <h2 className="text-[18px] font-bold mb-3" style={{ color: "#6B8E61" }}>
+            <h2 className="text-[18px] font-bold mb-3" style={{ color: "#3F5C3A" }}>
               Steps to request deletion
             </h2>
             <ol className="list-decimal pl-5 space-y-2">
               <li className="text-[15px] leading-relaxed" style={{ color: "#555" }}>
-                Send an email to <a href="mailto:gurnoor.tamber.x.01@gmail.com" className="font-bold" style={{ color: "#6B8E61" }}>gurnoor.tamber.x.01@gmail.com</a> from the email address linked to your Aether account.
+                Send an email to <a href="mailto:gurnoor.tamber.x.01@gmail.com" className="font-bold" style={{ color: "#3F5C3A" }}>gurnoor.tamber.x.01@gmail.com</a> from the email address linked to your Aether account.
               </li>
               <li className="text-[15px] leading-relaxed" style={{ color: "#555" }}>
                 Use the subject &ldquo;Delete my Aether account&rdquo; and include the email associated with your account.
@@ -56,7 +55,7 @@ export default function DeleteAccountPage() {
           </section>
 
           <section>
-            <h2 className="text-[18px] font-bold mb-3" style={{ color: "#6B8E61" }}>
+            <h2 className="text-[18px] font-bold mb-3" style={{ color: "#3F5C3A" }}>
               What is deleted
             </h2>
             <p className="text-[15px] leading-relaxed" style={{ color: "#555" }}>
@@ -65,7 +64,7 @@ export default function DeleteAccountPage() {
           </section>
 
           <section>
-            <h2 className="text-[18px] font-bold mb-3" style={{ color: "#6B8E61" }}>
+            <h2 className="text-[18px] font-bold mb-3" style={{ color: "#3F5C3A" }}>
               What we retain
             </h2>
             <p className="text-[15px] leading-relaxed" style={{ color: "#555" }}>
@@ -75,12 +74,12 @@ export default function DeleteAccountPage() {
         </div>
 
         <div
-          className="mt-14 p-6 rounded-[24px] text-center"
+          className="mt-14 p-6 rounded-[24px] text-center editorial"
           style={{ backgroundColor: "#FFFDF9", border: "1px solid #EFEBE5" }}
         >
           <p className="text-[14px]" style={{ color: "#666" }}>
             Questions about your data? Email{" "}
-            <a href="mailto:gurnoor.tamber.x.01@gmail.com" className="font-bold" style={{ color: "#6B8E61" }}>
+            <a href="mailto:gurnoor.tamber.x.01@gmail.com" className="font-bold" style={{ color: "#3F5C3A" }}>
               gurnoor.tamber.x.01@gmail.com
             </a>
           </p>

@@ -67,3 +67,7 @@ opencode.json
 AGENTS.md
 CLAUDE.md
 skills-lock.json
+
+# mobile app (separate project, not part of the web app)
+/mobile/
+/android/

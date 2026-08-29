@@ -15,50 +15,50 @@ export type PlanTier = keyof typeof PLANS;
 const priceCache = new Map<PlanTier, string>();
 
 export async function getPriceId(tier: PlanTier): Promise<string> {
-  const cached = priceCache.get(tier);
-  if (cached) return cached;
+  const hit = priceCache.get(tier);
+  if (hit) return hit;
 
-  const plan = PLANS[tier];
+  const p = PLANS[tier];
 
-  const products = await stripe.products.list({ limit: 100 });
-  const product = products.data.find((p) => p.name === plan.name);
+  const prods = await stripe.products.list({ limit: 100 });
+  const prod = prods.data.find((x) => x.name === p.name);
 
-  if (product) {
-    const prices = await stripe.prices.list({
-      product: product.id,
+  if (prod) {
+    const prs = await stripe.prices.list({
+      product: prod.id,
       type: "recurring",
       limit: 10,
     });
-    const existing = prices.data.find(
-      (p) => p.unit_amount === plan.price && p.recurring?.interval === plan.interval
+    const match = prs.data.find(
+      (x) => x.unit_amount === p.price && x.recurring?.interval === p.interval
     );
-    if (existing) {
-      priceCache.set(tier, existing.id);
-      return existing.id;
+    if (match) {
+      priceCache.set(tier, match.id);
+      return match.id;
     }
   }
 
-  const newProduct = product ?? (await stripe.products.create({
-    name: plan.name,
+  const newProd = prod ?? (await stripe.products.create({
+    name: p.name,
     metadata: { tier },
   }));
 
-  const price = await stripe.prices.create({
-    product: newProduct.id,
-    unit_amount: plan.price,
+  const priceRec = await stripe.prices.create({
+    product: newProd.id,
+    unit_amount: p.price,
     currency: "usd",
-    recurring: { interval: plan.interval },
+    recurring: { interval: p.interval },
     metadata: { tier },
   });
 
-  priceCache.set(tier, price.id);
-  return price.id;
+  priceCache.set(tier, priceRec.id);
+  return priceRec.id;
 }
 
 export function tierFromPriceId(priceId: string): PlanTier | null {
   for (const [tier] of Object.entries(PLANS)) {
-    const cached = priceCache.get(tier as PlanTier);
-    if (cached === priceId) return tier as PlanTier;
+    const hit = priceCache.get(tier as PlanTier);
+    if (hit === priceId) return tier as PlanTier;
   }
   return null;
 }
@@ -69,14 +69,14 @@ export async function findOrCreateCustomer(
   existingCustomerId?: string | null
 ): Promise<Stripe.Customer> {
   if (existingCustomerId) {
-    const customer = await stripe.customers.retrieve(existingCustomerId);
-    if (!customer.deleted) return customer;
+    const cust = await stripe.customers.retrieve(existingCustomerId);
+    if (!cust.deleted) return cust;
   }
 
-  const customer = await stripe.customers.create({
+  const cust = await stripe.customers.create({
     email,
     metadata: { user_id: userId },
   });
 
-  return customer;
+  return cust;
 }

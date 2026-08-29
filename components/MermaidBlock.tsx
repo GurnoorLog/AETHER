@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -16,13 +16,13 @@ export default function MermaidBlock({ chart }: { chart: string }) {
           mermaid.initialize({ startOnLoad: false, theme: "dark" });
           initialized = true;
         }
-        const { svg: rendered } = await mermaid.render("md-" + Date.now(), chart);
-        setSvg(rendered);
+        const { svg: out } = await mermaid.render("md-" + Date.now(), chart);
+        setSvg(out);
       } catch {}
     })();
   }, [chart]);
 
   if (!svg) return null;
 
-  return <div className="glass-card-warm rounded-[28px] p-4 overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;
+  return <div className="bg-white rounded-[28px] p-4 overflow-x-auto editorial" dangerouslySetInnerHTML={{ __html: svg }} />;
 }

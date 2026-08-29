@@ -24,17 +24,17 @@ export async function searchChunks(
   const embedding = await generateQueryEmbedding(query);
   const supabase = await createServerSupabaseClient();
 
-  const { data, error } = await supabase.rpc("match_document_chunks", {
+  const { data: rows, error: err } = await supabase.rpc("match_document_chunks", {
     query_embedding: embedding,
     match_count: matchCount,
     target_user_id: userId,
     target_session_id: sessionId || null,
   });
 
-  if (error) {
-    console.error("Semantic search failed (proceeding without context):", error.message);
+  if (err) {
+    console.error("Semantic search failed (proceeding without context):", err.message);
     return [];
   }
 
-  return (data as SearchResult[]) || [];
+  return (rows as SearchResult[]) || [];
 }

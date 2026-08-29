@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ type Challenge = CodeChallenge | MathChallenge;
 
 const STORAGE_KEY = (sid: string) => `aether_challenges_${sid}`;
 
-function loadChallenges(sid: string): Challenge[] {
+function getChals(sid: string): Challenge[] {
   if (typeof window === "undefined") return [];
   try {
     return JSON.parse(sessionStorage.getItem(STORAGE_KEY(sid)) || "[]");
@@ -41,12 +41,12 @@ function loadChallenges(sid: string): Challenge[] {
   }
 }
 
-function saveChallenges(sid: string, challenges: Challenge[]) {
+function putChals(sid: string, challenges: Challenge[]) {
   if (typeof window === "undefined") return;
   sessionStorage.setItem(STORAGE_KEY(sid), JSON.stringify(challenges));
 }
 
-const isMath = (s: string) => /math|algebra|calculus|geometry|trig|statistics|arithmetic|equation|derivative|integral/i.test(s);
+const looksMath = (s: string) => /math|algebra|calculus|geometry|trig|statistics|arithmetic|equation|derivative|integral/i.test(s);
 
 export default function ChallengesHub() {
   const { session } = useSession();
@@ -62,7 +62,7 @@ export default function ChallengesHub() {
   const [loaded, setLoaded] = useState(false);
 
   const subject = session?.subject || "";
-  const isMathSession = isMath(subject);
+  const isMathSession = looksMath(subject);
 
   useEffect(() => {
     setChallengeType(isMathSession ? "math" : "code");
@@ -70,9 +70,9 @@ export default function ChallengesHub() {
 
   useEffect(() => {
     if (!sid || loaded || !session?.id) return;
-    const stored = loadChallenges(sid);
-    if (stored.length > 0) {
-      setChallenges(stored);
+    const got = getChals(sid);
+    if (got.length > 0) {
+      setChallenges(got);
     } else {
       supabase
         .from("ai_memories")
@@ -80,29 +80,26 @@ export default function ChallengesHub() {
         .eq("session_id", session.id)
         .eq("context", "challenge")
         .order("created_at", { ascending: false })
-        .then(({ data }) => {
-          if (data && data.length > 0) {
-            const parsed = data
-              .map((d) => {
-                try {
-                  return JSON.parse(d.content) as Challenge;
-                } catch {
-                  return null;
-                }
-              })
-              .filter(Boolean) as Challenge[];
-            setChallenges(parsed);
-            saveChallenges(sid, parsed);
+          .then(({ data: out }) => {
+          if (out && out.length > 0) {
+            const list: Challenge[] = [];
+            for (const d of out) {
+              try {
+                list.push(JSON.parse(d.content) as Challenge);
+              } catch {}
+            }
+            setChallenges(list);
+            putChals(sid, list);
           }
         });
     }
     setLoaded(true);
   }, [sid, loaded, session?.id]);
 
-  const persistChallenge = async (c: Challenge) => {
+  const stash = async (c: Challenge) => {
     const updated = [...challenges, c];
     setChallenges(updated);
-    saveChallenges(sid, updated);
+    putChals(sid, updated);
     try {
       const uid = session?.user_id || (await supabase.auth.getUser()).data.user?.id;
       await supabase.from("ai_memories").insert({
@@ -114,7 +111,7 @@ export default function ChallengesHub() {
     } catch {}
   };
 
-  const generateChallenge = async () => {
+  const makeOne = async () => {
     if (!topic.trim()) return;
     setGenerating(true);
     try {
@@ -129,7 +126,7 @@ export default function ChallengesHub() {
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      await persistChallenge(data);
+      await stash(data);
       setTopic("");
     } catch (err) {
       console.error("Failed to generate challenge:", err);
@@ -138,15 +135,15 @@ export default function ChallengesHub() {
     }
   };
 
-  const startChallenge = (c: Challenge) => {
+  const goTo = (c: Challenge) => {
     const page = c.type === "math" ? "challenge-math" : "challenge-code";
     router.push(`/${sid}/${page}/${encodeURIComponent(c.id)}`);
   };
 
-  const difficultyColor = (d: string) =>
+  const colorFor = (d: string) =>
     d === "easy" ? "text-green-400" : d === "medium" ? "text-sage" : "text-red-400";
 
-  const challengeIcon = (c: Challenge) =>
+  const iconFor = (c: Challenge) =>
     c.type === "math"
       ? <path d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zm2.25 0v3.75m3-3.75v3.75m-3 5.25c0-.621.504-1.125 1.125-1.125h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zm2.25 0v3.75m3-3.75v3.75m3.75-9.75c0-.621.504-1.125 1.125-1.125h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zm2.25 0v3.75m3-3.75v3.75" />
       : <path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />;
@@ -154,32 +151,29 @@ export default function ChallengesHub() {
   return (
     <div className="min-h-screen bg-[#FBF7F0] text-warm-ink p-6">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => router.push(`/${sid}/dashboard`)} className="w-8 h-8 rounded-lg hover:bg-warm-ink/[0.05] flex items-center justify-center cursor-pointer">
             <svg className="w-4 h-4 text-warm-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
           <div>
-            <h1 className="text-lg font-black">Challenges</h1>
-            <p className="text-xs text-warm-ink-muted">Practice with AI-generated {isMathSession ? "math" : "coding"} challenges</p>
+            <h1 className="text-lg font-black serif-display">Challenges</h1>
+            <p className="text-xs text-warm-ink-muted">Practice with adaptive {isMathSession ? "math" : "coding"} challenges</p>
           </div>
         </div>
-
-        {/* Generate form */}
-        <div className="glass-card-warm rounded-3xl p-5 mb-8">
+        <div className="bg-white rounded-3xl p-5 mb-8 editorial">
           <h2 className="text-sm font-bold mb-3">Ask AI to create a challenge</h2>
           <div className="flex items-center gap-3 mb-3">
             <input
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && generateChallenge()}
+              onKeyDown={(e) => e.key === "Enter" && makeOne()}
               placeholder={isMathSession ? 'e.g. "derivatives of trig functions", "integrals"...' : 'e.g. "for loops with lists", "recursive functions"...'}
-              className="flex-1 bg-warm-ink/[0.03] border border-hairline-warm rounded-full px-4 py-2 text-sm text-warm-ink placeholder-warm-ink-faint outline-none focus:border-sage/50"
+              className="editorial-input flex-1 px-4 py-2 text-sm"
             />
             <button
-              onClick={generateChallenge}
+              onClick={makeOne}
               disabled={generating || !topic.trim()}
-              className="shrink-0 bg-sage text-white px-6 py-2 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+              className="shrink-0 btn-editorial px-6 py-2 rounded-full text-xs font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               {generating ? "Generating..." : "Generate"}
             </button>
@@ -198,8 +192,6 @@ export default function ChallengesHub() {
             </div>
           )}
         </div>
-
-        {/* Challenge list */}
         {challenges.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-16 h-16 rounded-full bg-warm-ink/[0.04] flex items-center justify-center mx-auto mb-4">
@@ -214,18 +206,18 @@ export default function ChallengesHub() {
             {challenges.map((c) => (
               <button
                 key={c.id}
-                onClick={() => startChallenge(c)}
-                className="w-full glass-card-warm rounded-2xl p-5 flex items-start gap-4 hover:bg-warm-ink/[0.04] transition-all text-left cursor-pointer"
+                 onClick={() => goTo(c)}
+                className="w-full bg-white rounded-2xl p-5 flex items-start gap-4 hover:bg-warm-ink/[0.04] transition-all text-left cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-sage/10 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-sage/10 flex items-center justify-center shrink-0 editorial">
                   <svg className="w-5 h-5 text-sage/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    {challengeIcon(c)}
+                    {iconFor(c)}
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-sm font-bold truncate">{c.title}</h3>
-                    <span className={`text-[10px] font-bold uppercase ${difficultyColor(c.difficulty)}`}>{c.difficulty}</span>
+                    <span className={`text-[10px] font-bold uppercase ${colorFor(c.difficulty)}`}>{c.difficulty}</span>
                   </div>
                   <p className="text-xs text-warm-ink-muted line-clamp-2">{c.description}</p>
                 </div>

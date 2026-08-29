@@ -12,17 +12,17 @@ export async function signUp(formData: {
   const supabase = await createServerSupabaseClient();
 
   const admin = createAdminClient();
-  const { data: existing } = await admin
+  const { data: found } = await admin
     .from("user_profiles")
     .select("email")
     .eq("email", formData.email.toLowerCase().trim())
     .maybeSingle();
 
-  if (existing) {
+  if (found) {
     return { error: "An account with this email already exists." };
   }
 
-  const { data: authData, error: signUpError } = await supabase.auth.signUp({
+  const { data: auth, error: supErr } = await supabase.auth.signUp({
     email: formData.email,
     password: formData.password,
     options: {
@@ -30,26 +30,26 @@ export async function signUp(formData: {
     },
   });
 
-  if (signUpError) {
-    const msg = signUpError.message.toLowerCase();
+  if (supErr) {
+    const msg = supErr.message.toLowerCase();
     if (msg.includes("already") || msg.includes("exists") || msg.includes("registered")) {
       return { error: "An account with this email already exists." };
     }
-    return { error: signUpError.message };
+    return { error: supErr.message };
   }
 
-  if (!authData.user) {
+  if (!auth.user) {
     return { error: "Failed to create account." };
   }
 
-  const { error: profileError } = await initializeUserData(
-    authData.user.id,
+  const { error: initErr } = await initializeUserData(
+    auth.user.id,
     formData.email,
     formData.fullName
   );
 
-  if (profileError) {
-    return { error: profileError };
+  if (initErr) {
+    return { error: initErr };
   }
 
   return { success: true };
@@ -61,20 +61,20 @@ export async function signIn(formData: {
 }) {
   const supabase = await createServerSupabaseClient();
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data: res, error: err } = await supabase.auth.signInWithPassword({
     email: formData.email,
     password: formData.password,
   });
 
-  if (error) {
-    return { error: error.message };
+  if (err) {
+    return { error: err.message };
   }
 
-  if (data.user) {
+  if (res.user) {
     await supabase
       .from("user_profiles")
       .update({ last_login: new Date().toISOString() })
-      .eq("user_id", data.user.id);
+      .eq("user_id", res.user.id);
   }
 
   return { success: true };
@@ -83,19 +83,19 @@ export async function signIn(formData: {
 export async function signInWithGoogle() {
   const supabase = await createServerSupabaseClient();
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data: res, error: err } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
     },
   });
 
-  if (error) {
-    return { error: error.message };
+  if (err) {
+    return { error: err.message };
   }
 
-  if (data.url) {
-    return { url: data.url };
+  if (res.url) {
+    return { url: res.url };
   }
 
   return { error: "Failed to initiate Google sign in." };
@@ -104,12 +104,12 @@ export async function signInWithGoogle() {
 export async function resetPassword(email: string) {
   const supabase = await createServerSupabaseClient();
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?type=recovery`,
   });
 
-  if (error) {
-    return { error: error.message };
+  if (err) {
+    return { error: err.message };
   }
 
   return { success: true };
@@ -118,10 +118,10 @@ export async function resetPassword(email: string) {
 export async function signOut() {
   const supabase = await createServerSupabaseClient();
 
-  const { error } = await supabase.auth.signOut();
+  const { error: err } = await supabase.auth.signOut();
 
-  if (error) {
-    return { error: error.message };
+  if (err) {
+    return { error: err.message };
   }
 
   return { success: true };

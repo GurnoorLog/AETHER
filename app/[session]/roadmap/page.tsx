@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSession } from "../layout";
 import type { Lesson } from "@/types/database";
 
-const GREEN = "#6B8E61";
+const GREEN = "#3F5C3A";
 
 interface RoadmapModule {
   id: string;
@@ -33,34 +33,38 @@ export default function SessionRoadmapPage() {
     if (!authLoading && !user) router.replace("/");
   }, [user, authLoading, router]);
 
-  const fetchModules = useCallback(async () => {
+  const loadMods = useCallback(async () => {
     if (!user || !session) return;
     const supabase = createClient();
-    const { data } = await supabase
+    const { data: rows } = await supabase
       .from("session_roadmap_modules")
       .select("*")
       .eq("session_id", session.id)
       .eq("user_id", user.id)
       .order("module_index", { ascending: true });
-    if (data) {
-      setModules(data.map((m) => ({
-        ...m,
-        lessons: typeof m.lessons === "string" ? JSON.parse(m.lessons) : (m.lessons || []),
-      })) as RoadmapModule[]);
+    if (rows) {
+      const out: RoadmapModule[] = [];
+      for (const m of rows) {
+        out.push({
+          ...m,
+          lessons: typeof m.lessons === "string" ? JSON.parse(m.lessons) : (m.lessons || []),
+        });
+      }
+      setModules(out);
     }
     setLoading(false);
   }, [user, session]);
 
   useEffect(() => {
-    if (user) fetchModules();
-  }, [user, fetchModules]);
+    if (user) loadMods();
+  }, [user, loadMods]);
 
-  const startModule = useCallback((moduleId: string) => {
+  const openModule = useCallback((moduleId: string) => {
     router.push(`/${session?.slug}/chat?module=${moduleId}`);
   }, [router, session]);
 
-  const completedCount = modules.filter((m) => m.status === "completed").length;
-  const progress = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0;
+  const done = modules.filter((m) => m.status === "completed").length;
+  const pct = modules.length > 0 ? Math.round((done / modules.length) * 100) : 0;
 
   if (authLoading || !user || !session) {
     return (
@@ -73,10 +77,9 @@ export default function SessionRoadmapPage() {
   return (
     <div className="h-screen overflow-y-auto px-4 sm:px-8 lg:px-16 py-10 lg:py-14" style={{ backgroundColor: "#FDFBF7" }}>
       <div className="max-w-4xl mx-auto">
-        {/* Hero */}
         <div
-          className="bg-white rounded-[32px] p-5 lg:p-7 mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4"
-          style={{ border: "1px solid #F3EDE3", boxShadow: "0 8px 24px rgba(0,0,0,0.04)" }}
+          className="bg-white rounded-[32px] p-5 lg:p-7 mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 editorial"
+
         >
           <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#E8F0E5" }}>
             <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke={GREEN} strokeWidth="1.8">
@@ -85,22 +88,22 @@ export default function SessionRoadmapPage() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: GREEN }}>Learning Roadmap</p>
-            <h1 className="text-lg lg:text-xl font-bold truncate" style={{ color: "#333" }}>{session.title}</h1>
+            <h1 className="text-lg lg:text-xl font-bold truncate" style={{ color: "#2D3436" }}>{session.title}</h1>
           </div>
           <div className="flex flex-col items-end gap-1.5 shrink-0">
-            <span className="text-base font-bold" style={{ color: "#333" }}>{progress}%</span>
-            <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
-              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, backgroundColor: GREEN }} />
+              <span className="text-base font-bold" style={{ color: "#2D3436" }}>{pct}%</span>
+              <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "#F3EDE3" }}>
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: GREEN }} />
             </div>
           </div>
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-[24px] p-8 text-center" style={{ border: "1px solid #F3EDE3" }}>
+          <div className="bg-white rounded-[24px] p-8 text-center editorial" >
             <p className="text-sm" style={{ color: "#999" }}>Loading your roadmap...</p>
           </div>
         ) : modules.length === 0 ? (
-          <div className="bg-white rounded-[24px] p-10 text-center" style={{ border: "1px solid #F3EDE3" }}>
+          <div className="bg-white rounded-[24px] p-10 text-center editorial" >
             <p className="text-sm" style={{ color: "#999" }}>No modules yet. Create a session from the Hub.</p>
           </div>
         ) : (
@@ -110,11 +113,14 @@ export default function SessionRoadmapPage() {
               const isCurrent = mod.status === "current";
               const isExpanded = expandedModule === mod.id;
               const lessons = Array.isArray(mod.lessons) ? mod.lessons : [];
-              const keyConcepts = (mod.key_concepts || "").split(",").map((c) => c.trim()).filter(Boolean);
+              const keyConcepts: string[] = [];
+              for (const c of (mod.key_concepts || "").split(",")) {
+                const t = c.trim();
+                if (t) keyConcepts.push(t);
+              }
 
               return (
                 <div key={mod.id} className="flex gap-3 lg:gap-4">
-                  {/* Timeline rail */}
                   <div className="flex flex-col items-center w-9 lg:w-10 shrink-0">
                     <div
                       className="w-9 h-9 lg:w-10 lg:h-10 rounded-full flex items-center justify-center shrink-0"
@@ -140,16 +146,14 @@ export default function SessionRoadmapPage() {
                     </div>
                     <div className="flex-1 w-0.5 my-1" style={{ backgroundColor: "#F3EDE3" }} />
                   </div>
-
-                  {/* Module card */}
                   <div
                     onClick={() => { if (!isCompleted) setExpandedModule(isExpanded ? null : mod.id); }}
-                    className={`bg-white rounded-[20px] p-4 lg:p-5 mb-4 flex-1 min-w-0 space-y-2 ${!isCompleted ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
-                    style={{ border: "1px solid #F3EDE3", opacity: isCompleted || !isCurrent ? 0.65 : 1 }}
+                    className={`bg-white rounded-[20px] p-4 lg:p-5 mb-4 flex-1 min-w-0 space-y-2 editorial ${!isCompleted ? "cursor-pointer transition-all" : ""}`}
+                    style={{ opacity: isCompleted || !isCurrent ? 0.65 : 1 }}
                   >
                     {isCompleted ? (
                       <>
-                        <h4 className="text-[15px] font-bold" style={{ color: "#333" }}>{mod.title}</h4>
+                        <h4 className="text-[15px] font-bold" style={{ color: "#2D3436" }}>{mod.title}</h4>
                         <p className="text-xs" style={{ color: "#999" }}>Successfully mastered</p>
                         {mod.completed_at && (
                           <p className="text-xs mt-0.5" style={{ color: GREEN }}>
@@ -205,9 +209,9 @@ export default function SessionRoadmapPage() {
                                 <p className="text-[10px] font-bold uppercase tracking-wide mb-2" style={{ color: "#BBB" }}>Lessons</p>
                                 <div className="space-y-2">
                                   {lessons.map((lesson, li) => (
-                                    <div key={li} className="rounded-2xl p-3.5 space-y-1" style={{ backgroundColor: "#F9F6F0" }}>
+                                    <div key={li} className="rounded-2xl p-3.5 space-y-1 editorial" style={{ backgroundColor: "#F9F6F0" }}>
                                       <div className="flex items-center justify-between gap-2">
-                                        <h6 className="text-[13px] font-semibold truncate" style={{ color: "#333" }}>{lesson.title}</h6>
+                                        <h6 className="text-[13px] font-semibold truncate" style={{ color: "#2D3436" }}>{lesson.title}</h6>
                                         <span className="text-[10px] shrink-0" style={{ color: "#CCC" }}>{lesson.duration_minutes}m</span>
                                       </div>
                                       {lesson.description && <p className="text-xs" style={{ color: "#999" }}>{lesson.description}</p>}
@@ -217,8 +221,8 @@ export default function SessionRoadmapPage() {
                               </div>
                             )}
                             <button
-                              onClick={(e) => { e.stopPropagation(); startModule(mod.id); }}
-                              className="w-full flex items-center justify-center gap-2 text-white text-xs font-bold rounded-[20px] py-3.5 cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all"
+                              onClick={(e) => { e.stopPropagation(); openModule(mod.id); }}
+                              className="w-full flex items-center justify-center gap-2 text-white text-xs font-bold rounded-[20px] py-3.5 cursor-pointer active:scale-[0.98] editorial"
                               style={{ backgroundColor: GREEN }}
                             >
                               START MODULE

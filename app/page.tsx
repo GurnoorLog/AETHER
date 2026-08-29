@@ -3,8 +3,6 @@ import {
   ArrowRight,
   PlayCircle,
   Check,
-  Star,
-  Sparkles,
   UploadCloud,
   Mic,
   Map,
@@ -16,9 +14,9 @@ import LandingAuthButton from "@/components/landing/LandingAuthButton";
 import BetaSignupForm from "@/components/landing/BetaSignupForm";
 
 export const metadata: Metadata = {
-  title: "Aether AI | Everything You Need to Learn Faster",
+  title: "Aether · A tutor that remembers how you think",
   description:
-    "Your personal AI tutor that adapts to you. Study, practice, and master any subject with confidence.",
+    "Upload your notes, talk to a tutor that remembers, and watch your mastery grow across any subject.",
 };
 
 function GraphDots({ className = "" }: { className?: string }) {
@@ -68,7 +66,7 @@ const features = [
 ];
 
 const steps = [
-  { title: "Upload your material", desc: "Drag in any source — PDFs, slides, code, or YouTube links. Aether structures it into a knowledge base." },
+  { title: "Upload your material", desc: "Drag in any source: PDFs, slides, code, or YouTube links. Aether structures it into a knowledge base." },
   { title: "AI builds your curriculum", desc: "Aether maps concepts, builds a graph, and generates a personalized path with clear prerequisite chains." },
   { title: "Conversational tutoring", desc: "Chat or speak naturally. Get Socratic guidance and instant feedback tailored to how you think." },
   { title: "Mastery assessment", desc: "Adaptive quizzes target weak areas. Spaced repetition cements what you've learned for the long term." },
@@ -116,7 +114,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.1fr_0.9fr] gap-16 items-center">
           <div className="space-y-8">
             <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase text-[#3F5C3A]">
-              <span className="w-6 h-px bg-[#3F5C3A]" /> Issue 01 — Your AI tutor
+              <span className="w-6 h-px bg-[#3F5C3A]" /> Issue 01 · Your AI tutor
             </span>
             <h1 className="serif-display text-5xl md:text-7xl leading-[0.98] text-[#2D3436] font-semibold">
               Learn like it{" "}
@@ -128,7 +126,7 @@ export default function Home() {
               </span>
             </h1>
             <p className="max-w-md text-lg text-[#555E61] leading-relaxed">
-              A personal AI tutor that adapts to how you study. Upload anything, ask anything, and master any subject — with a memory that never lets go.
+              A personal AI tutor that adapts to how you study. Upload anything, ask anything, and master any subject, held in a memory that never lets go.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <LandingAuthButton mode="signup" className="btn-primary btn-hard px-7 py-4 rounded-xl text-base font-semibold flex items-center justify-center gap-2">
@@ -140,16 +138,16 @@ export default function Home() {
                 Watch demo
               </a>
             </div>
-            <p className="text-sm text-[#A0A5A8]">Trusted by 30 early learners · averaging 4.5★ across 3 study sessions</p>
+            <p className="text-sm text-[#A0A5A8]">Loved by 30 early learners · 4.5★ average so far</p>
           </div>
 
           <div className="relative">
             <GraphDots className="absolute -top-10 -left-10 w-28 h-28 opacity-70" />
-            <div className="relative rounded-[28px] overflow-hidden ring-1 ring-[#E7E1D6] shadow-[0_30px_60px_-25px_rgba(47,71,48,0.35)] bg-white">
+              <div className="relative editorial bg-white overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/landing/hero.png" className="w-full h-auto" alt="Aether study illustration" />
             </div>
-            <div className="absolute -right-6 bottom-10 w-56 rounded-2xl bg-white/90 backdrop-blur-xl border hairline shadow-xl p-4 rotate-2">
+              <div className="absolute -right-6 bottom-10 w-56 rounded-2xl bg-white/90 backdrop-blur-xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] p-4 rotate-2">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-[#2D3436]">Kinematics &amp; laws</span>
                 <span className="text-[10px] font-bold uppercase tracking-wide text-[#3F5C3A]">In progress</span>
@@ -164,7 +162,7 @@ export default function Home() {
 
       <section className="px-6 py-10">
         <div className="max-w-6xl mx-auto flex items-center gap-6 border-y hairline py-6 overflow-x-auto">
-          <span className="text-xs font-semibold tracking-[0.18em] uppercase text-[#A0A5A8] shrink-0">As seen in</span>
+          <span className="text-xs font-semibold tracking-[0.18em] uppercase text-[#A0A5A8] shrink-0">What you can study</span>
           {["STEM", "Humanities", "Languages", "Medicine", "Engineering", "Music"].map((t) => (
             <span key={t} className="serif-display text-lg text-[#2D3436]/70 whitespace-nowrap">{t}</span>
           ))}
@@ -178,7 +176,7 @@ export default function Home() {
               <span className="text-xs font-semibold tracking-[0.18em] uppercase text-[#3F5C3A]">The app</span>
               <h2 className="serif-display text-4xl md:text-5xl font-semibold mt-3">A tutor that lives in your pocket</h2>
             </div>
-            <p className="text-[#555E61] max-w-sm">Learn on the go with our fully featured Android app — coming soon to Google Play &amp; Samsung Galaxy Store.</p>
+            <p className="text-[#555E61] max-w-sm">Learn on the go with our fully featured Android app. Coming soon to Google Play &amp; Samsung Galaxy Store.</p>
           </div>
           <div className="flex justify-center items-end gap-6 md:gap-10 flex-wrap lg:flex-nowrap">
             <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform -rotate-6 translate-y-10 hidden lg:block">
@@ -202,7 +200,7 @@ export default function Home() {
           <div className="mb-14 max-w-2xl">
             <span className="text-xs font-semibold tracking-[0.18em] uppercase text-[#3F5C3A]">What's inside</span>
             <h2 className="serif-display text-4xl md:text-5xl font-semibold mt-3 mb-4">Built for the way you actually learn</h2>
-            <p className="text-[#555E61]">No gimmicks — a toolkit grounded in learning science, so every session moves you forward.</p>
+            <p className="text-[#555E61]">No gimmicks. A toolkit grounded in learning science, so every session moves you forward.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
             {features.map((f, i) => (
@@ -261,8 +259,8 @@ export default function Home() {
                 key={p.name}
                 className={
                   p.featured
-                    ? "relative bg-[#2F4730] text-white p-8 rounded-[28px] shadow-[0_30px_60px_-25px_rgba(47,71,48,0.6)] md:-translate-y-4"
-                    : "bg-[#FDFBF7] p-8 rounded-[28px] border hairline"
+                    ? "relative bg-[#2F4730] text-white p-8 rounded-[255px_15px_225px_15px/15px_225px_15px_255px] border-2 border-[#FDFBF7]/50 shadow-[6px_6px_0_0_#2D3436] md:-translate-y-4"
+                    : "editorial bg-[#FDFBF7] p-8"
                 }
               >
                 {p.featured && (
@@ -316,10 +314,10 @@ export default function Home() {
                 key={src}
                 className={
                   i === 2
-                    ? "rounded-2xl border-[5px] border-white shadow-lg overflow-hidden lg:translate-y-12"
+                    ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-12"
                     : i === 1 || i === 3
-                    ? "rounded-2xl border-[5px] border-white shadow-lg overflow-hidden lg:translate-y-6"
-                    : "rounded-2xl border-[5px] border-white shadow-lg overflow-hidden"
+                    ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-6"
+                    : "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden"
                 }
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -331,7 +329,7 @@ export default function Home() {
       </section>
 
       <section className="py-24 px-6" id="beta">
-        <div className="max-w-4xl mx-auto bg-white rounded-[32px] p-10 md:p-16 text-center border hairline shadow-[0_30px_60px_-25px_rgba(47,71,48,0.25)] relative overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-white p-10 md:p-16 text-center editorial relative overflow-hidden">
           <GraphDots className="absolute -bottom-8 -right-8 w-40 h-40 opacity-40" />
           <h2 className="serif-display text-4xl md:text-5xl font-semibold mb-5">Get early access</h2>
           <p className="text-lg text-[#555E61] mb-10">We're onboarding in waves. Drop your email and we'll let you know when your slot opens.</p>
@@ -340,13 +338,12 @@ export default function Home() {
       </section>
 
       <section className="py-24 px-6">
-        <div className="max-w-5xl mx-auto rounded-[32px] bg-[#2F4730] px-8 py-20 text-center shadow-[0_40px_80px_-30px_rgba(47,71,48,0.6)] relative overflow-hidden">
+        <div className="max-w-5xl mx-auto editorial bg-[#2F4730] px-8 py-20 text-center relative overflow-hidden">
           <GraphDots className="absolute -top-8 -left-8 w-44 h-44 opacity-20" />
-          <h2 className="serif-display text-4xl md:text-6xl font-semibold mb-6 text-white">Ready to supercharge your learning?</h2>
-          <p className="text-xl text-white/70 leading-relaxed mb-10 max-w-2xl mx-auto">Join thousands of students who've changed how they learn. One conversation with Aether and you'll never study the same way again.</p>
+          <h2 className="serif-display text-4xl md:text-6xl font-semibold mb-6 text-white">Ready to learn differently?</h2>
+          <p className="text-xl text-white/70 leading-relaxed mb-10 max-w-2xl mx-auto">Join the early learners who've already changed how they study. One conversation with Aether and you'll never go back to passive reading.</p>
           <LandingAuthButton mode="signup" className="bg-white text-[#2F4730] btn-hard px-10 py-5 rounded-xl text-lg font-semibold inline-flex items-center justify-center gap-3">
-            Join the revolution
-            <Sparkles size={20} className="text-[#C9772E]" />
+            Get started
           </LandingAuthButton>
         </div>
       </section>

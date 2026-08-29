@@ -23,22 +23,22 @@ export default function AuthModal() {
   }, [isOpen]);
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
     };
-    if (isOpen) window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    if (isOpen) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, close]);
 
   if (!isOpen) return null;
 
-  const titles: Record<string, { heading: string; sub: string }> = {
+  const copy: Record<string, { heading: string; sub: string }> = {
     login: { heading: "Welcome Back", sub: "Sign in to continue your learning journey" },
     signup: { heading: "Create Account", sub: "Start your personalized learning experience" },
     forgot_password: { heading: "Reset Password", sub: "We'll send you a recovery link" },
   };
 
-  const { heading, sub } = titles[view];
+  const { heading, sub } = copy[view];
 
   return (
     <div
@@ -49,17 +49,16 @@ export default function AuthModal() {
       }}
     >
       <div
-        className="absolute inset-0 bg-[#2D3436]/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#2D3436]/40 backdrop-blur-sm editorial"
         style={{ animation: "fadeIn 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
       />
 
       <div
         ref={panelRef}
-        className="relative w-full max-w-[920px] flex rounded-[40px] overflow-hidden shadow-[0_40px_120px_-30px_rgba(45,52,54,0.35)]"
+        className="relative w-full max-w-[920px] flex rounded-[40px] overflow-hidden shadow-[0_40px_120px_-30px_rgba(45,52,54,0.35)] editorial"
         style={{ animation: "modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.24, 1)" }}
       >
-        {/* Welcome Panel */}
-        <div className="hidden md:flex flex-1 bg-gradient-to-br from-[#6B8E61] via-[#5E7D6B] to-[#7E9A86] p-10 flex-col justify-between relative overflow-hidden">
+        <div className="hidden md:flex flex-1 bg-gradient-to-br from-[#3F5C3A] via-[#4C6B47] to-[#5E7D6B] p-10 flex-col justify-between relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
             <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
@@ -67,7 +66,6 @@ export default function AuthModal() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/landing/logo.png" alt="Aether" className="w-10 h-10 rounded-xl object-cover shadow-lg" />
               <span className="text-lg font-black tracking-tighter text-white">Aether</span>
             </div>
@@ -91,10 +89,8 @@ export default function AuthModal() {
               ))}
             </ul>
           </div>
-
-          {/* AI Avatar */}
-          <div className="relative z-10 flex items-center gap-4 p-5 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-xl">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
+          <div className="relative z-10 flex items-center gap-4 p-5 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-xl editorial">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center editorial">
               <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
               </svg>
@@ -108,14 +104,12 @@ export default function AuthModal() {
             </div>
           </div>
         </div>
-
-        {/* Form Panel */}
-        <div className="w-full md:w-[440px] bg-[#FDFBF7] p-6 sm:p-8 lg:p-12 overflow-y-auto max-h-[90vh]">
+        <div className="w-full md:w-[440px] bg-[#FDFBF7] p-6 sm:p-8 lg:p-12 overflow-y-auto max-h-[90vh] editorial">
           <button
             type="button"
             onClick={close}
             className="absolute top-5 right-5 w-9 h-9 rounded-2xl bg-[#EFEBE5] border border-[#EFEBE5] flex items-center justify-center
-              hover:bg-[#E8F1E6] hover:border-[#6B8E61]/30 premium-transition group cursor-pointer"
+              hover:bg-[#E9EDE3] hover:border-[#3F5C3A]/30 premium-transition group cursor-pointer editorial"
           >
             <svg
               className="w-3.5 h-3.5 text-[#2D3436]/50 group-hover:text-[#2D3436] premium-transition"

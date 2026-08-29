@@ -45,27 +45,27 @@ export default function SessionLayout({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isVoiceTutor = pathname?.includes("/voice-tutor") || pathname?.includes("/challenges") || pathname?.includes("/challenge-code") || pathname?.includes("/challenge-math");
+  const noSidebar = pathname?.includes("/voice-tutor") || pathname?.includes("/challenges") || pathname?.includes("/challenge-code") || pathname?.includes("/challenge-math");
 
-  const currentPage = (() => {
-    const segments = pathname?.split("/").filter(Boolean) ?? [];
-    const page = segments[1] || "dashboard";
+  const pageName = (() => {
+    const segs = pathname?.split("/").filter(Boolean) ?? [];
+    const page = segs[1] || "dashboard";
     if (page === "dashboard") return "home";
     if (page === "chat") return "tutor";
     return page;
   })();
 
-  const fetchSession = useCallback(async () => {
+  const loadSession = useCallback(async () => {
     if (!user) return;
     const supabase = createClient();
-    const { data } = await supabase
+    const { data: row } = await supabase
       .from("sessions")
       .select("*")
       .eq("slug", slug)
       .eq("user_id", user.id)
       .single();
-    if (data) {
-      setSession(data as Session);
+    if (row) {
+      setSession(row as Session);
     } else {
       router.replace("/hub");
     }
@@ -77,21 +77,21 @@ export default function SessionLayout({
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) fetchSession();
-  }, [user, fetchSession]);
+    if (user) loadSession();
+  }, [user, loadSession]);
 
   if (authLoading || loading) {
     return (
       <div className="h-screen bg-[#FDFBF7] text-[#2D3436] flex max-lg:flex-col max-lg:w-full overflow-hidden">
         <div className="w-[15%] shrink-0 p-6 space-y-4 max-lg:hidden">
-          <div className="animate-pulse bg-warm-ink/[0.04] rounded-2xl w-10 h-10" />
+          <div className="animate-pulse bg-warm-ink/[0.04] rounded-2xl w-10 h-10 editorial" />
           <div className="animate-pulse bg-warm-ink/[0.04] rounded-full h-10" />
         </div>
         <main className="flex-1 flex items-center justify-center max-lg:p-3 md:max-lg:p-4">
           <div className="w-6 h-6 border-2 border-sage/40 border-t-sage rounded-full animate-spin" />
         </main>
         <div className="w-[20%] shrink-0 p-6 max-lg:hidden">
-          <div className="animate-pulse bg-white/60 rounded-[32px] h-64" />
+          <div className="animate-pulse bg-warm-ink/[0.04] rounded-[32px] h-64 editorial" />
         </div>
       </div>
     );
@@ -99,7 +99,7 @@ export default function SessionLayout({
 
   if (!session) return null;
 
-  if (isVoiceTutor) {
+  if (noSidebar) {
     return (
       <SessionContext.Provider value={{ session, loading }}>
         {children}
@@ -110,13 +110,13 @@ export default function SessionLayout({
   return (
     <SessionContext.Provider value={{ session, loading }}>
       <div className="h-screen bg-[#FDFBF7] text-[#2D3436] flex max-lg:flex-col max-lg:w-full overflow-hidden">
-        <SidebarLeft currentPage={currentPage} />
+        <SidebarLeft currentPage={pageName} />
         <div className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
           {children}
           <button
             type="button"
             aria-label="Toggle details panel"
-            className="lg:hidden fixed bottom-20 right-4 z-50 w-10 h-10 bg-white border border-hairline-warm rounded-xl flex items-center justify-center text-warm-ink-muted hover:text-warm-ink transition-all shadow-sm cursor-pointer"
+            className="lg:hidden fixed bottom-20 right-4 z-50 w-10 h-10 bg-[#FDFBF7] border border-[#E7E1D6] rounded-xl flex items-center justify-center text-warm-ink-muted hover:text-warm-ink transition-all shadow-sm cursor-pointer"
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-mobile-sidebar"))}
           >
             <PanelRightOpen className="w-4 h-4" />

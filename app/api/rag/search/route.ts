@@ -19,7 +19,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Authenticate via server-side Supabase client
     const supabase = await createServerSupabaseClient();
     const {
       data: { user },

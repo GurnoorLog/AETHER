@@ -10,7 +10,7 @@ interface FeatureCardProps {
 export default function FeatureCard({ icon, title, description, accentColor, gradientFrom, gradientTo }: FeatureCardProps) {
   return (
     <div
-      className="group relative p-10 rounded-3xl border border-white/10 glass-card-darker hover:border-white/20 premium-transition cursor-default overflow-hidden"
+      className="group relative p-10 rounded-3xl border border-white/10 glass-card-darker hover:border-white/20 premium-transition cursor-default overflow-hidden editorial"
     >
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 premium-transition"
@@ -20,7 +20,7 @@ export default function FeatureCard({ icon, title, description, accentColor, gra
       />
       <div className="relative z-10">
         <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 text-3xl"
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 text-3xl editorial"
           style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
         >
           {icon}
@@ -29,7 +29,7 @@ export default function FeatureCard({ icon, title, description, accentColor, gra
         <p className="text-white/50 font-bold text-md leading-relaxed">{description}</p>
 
         <div
-          className="mt-10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 premium-transition"
+          className="mt-10 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 premium-transition editorial"
           style={{ backgroundColor: `${accentColor}20`, color: accentColor }}
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

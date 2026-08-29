@@ -14,16 +14,16 @@ export async function completeOnboarding(formData: {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const { data: tables, error: tablesError } = await supabase
+  const { data: tables, error: te } = await supabase
     .from("user_profiles")
     .select("id")
     .limit(1);
 
-  if (tablesError) {
-    return { error: `Tables check failed: ${tablesError.message} (${tablesError.code})` };
+  if (te) {
+    return { error: `Tables check failed: ${te.message} (${te.code})` };
   }
 
-  const { error: profileError } = await supabase.from("user_profiles").upsert(
+  const { error: pe } = await supabase.from("user_profiles").upsert(
     {
       user_id: formData.userId,
       email: formData.email,
@@ -35,37 +35,40 @@ export async function completeOnboarding(formData: {
     { onConflict: "user_id" }
   );
 
-  if (profileError) {
-    return { error: `Profile upsert failed: ${profileError.message} (${profileError.code})` };
+  if (pe) {
+    return { error: `Profile upsert failed: ${pe.message} (${pe.code})` };
   }
 
-  const { data: existingKb } = await supabase
+  const { data: ekb } = await supabase
     .from("knowledge_bases")
     .select("id")
     .eq("user_id", formData.userId)
     .maybeSingle();
 
-  if (!existingKb) {
-    const { error: kbError } = await supabase
+  if (!ekb) {
+    const { error: ke } = await supabase
       .from("knowledge_bases")
       .insert({ user_id: formData.userId });
 
-    if (kbError) return { error: `KB insert failed: ${kbError.message}` };
+    if (ke) return { error: `KB insert failed: ${ke.message}` };
   }
 
-  const subjectRows = formData.subjects.map((subject) => ({
-    user_id: formData.userId,
-    subject,
-    mastery_level: 0,
-  }));
+  const subjectRows: { user_id: string; subject: string; mastery_level: number }[] = [];
+  for (const subject of formData.subjects) {
+    subjectRows.push({
+      user_id: formData.userId,
+      subject,
+      mastery_level: 0,
+    });
+  }
 
   if (subjectRows.length > 0) {
-    const { error: subjectsError } = await supabase
+    const { error: se } = await supabase
       .from("progress_tracking")
       .upsert(subjectRows, { onConflict: "user_id,subject" });
 
-    if (subjectsError) {
-      return { error: `Subjects upsert failed: ${subjectsError.message}` };
+    if (se) {
+      return { error: `Subjects upsert failed: ${se.message}` };
     }
   }
 

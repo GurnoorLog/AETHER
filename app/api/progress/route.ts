@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
   const messagesData = results[3].status === "fulfilled" ? results[3].value : { data: [], error: results[3].reason };
   const documentsData = results[4].status === "fulfilled" ? results[4].value : { data: [], error: results[4].reason };
 
-  // If session_id provided, fetch conversation IDs for that session to filter messages
   let sessionConversationIds: string[] = [];
   if (sessionId) {
     const { data: convs } = await supabase
@@ -63,7 +62,6 @@ export async function GET(request: NextRequest) {
     sessionConversationIds = (convs ?? []).map((c: { id: string }) => c.id);
   }
 
-  // Filter by session_id where applicable
   const filterBySession = <T extends Record<string, unknown>>(
     items: T[],
     key: string = "session_id"
@@ -77,14 +75,12 @@ export async function GET(request: NextRequest) {
   const sessionModules = filterBySession(modulesData.data ?? []);
   const sessionDocuments = filterBySession(documentsData.data ?? []);
 
-  // Filter messages to only those belonging to this session's conversations
   const sessionMessages = sessionId
     ? (messagesData.data ?? []).filter((m) =>
         sessionConversationIds.includes(m.conversation_id)
       )
     : (messagesData.data ?? []);
 
-  // === Compute metrics ===
 
   const avgMastery =
     sessionProgress.length > 0

@@ -7,39 +7,39 @@ export default function SocialLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleGoogle = async () => {
+  const withGoogle = async () => {
     setLoading(true);
     setError("");
 
-    const result = await signInWithGoogle();
+    const out = await signInWithGoogle();
 
-    if (result.error) {
-      setError(result.error);
+    if (out.error) {
+      setError(out.error);
       setLoading(false);
       return;
     }
 
-    if (result.url) {
-      window.location.href = result.url;
+    if (out.url) {
+      window.location.href = out.url;
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-px bg-[#EFEBE5]" />
+        <div className="flex-1 h-px bg-[#EFEBE5] editorial" />
         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#A0A5A8]">
           or continue with
         </span>
-        <div className="flex-1 h-px bg-[#EFEBE5]" />
+        <div className="flex-1 h-px bg-[#EFEBE5] editorial" />
       </div>
 
       <button
         type="button"
-        onClick={handleGoogle}
+        onClick={withGoogle}
         disabled={loading}
         className="w-full flex items-center justify-center gap-4 px-6 py-4 bg-white border border-[#EFEBE5] rounded-2xl
-          hover:bg-[#F1E9DE] hover:border-[#6B8E61]/30 premium-transition group cursor-pointer disabled:opacity-50"
+          hover:bg-[#F1E9DE] hover:border-[#3F5C3A]/30 premium-transition group cursor-pointer disabled:opacity-50"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
           <path

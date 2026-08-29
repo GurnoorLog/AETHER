@@ -16,7 +16,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
   const [emailError, setEmailError] = useState("");
   const [sent, setSent] = useState(false);
 
-  const validate = () => {
+  const check = () => {
     if (!email) {
       setEmailError("Email is required");
       return false;
@@ -28,19 +28,19 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
     return true;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     setEmailError("");
 
-    if (!validate()) return;
+    if (!check()) return;
 
     setLoading(true);
 
-    const result = await resetPassword(email);
+    const out = await resetPassword(email);
 
-    if (result.error) {
-      setError(result.error);
+    if (out.error) {
+      setError(out.error);
       setLoading(false);
       return;
     }
@@ -52,21 +52,21 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
   if (sent) {
     return (
       <div className="text-center space-y-6 lg:space-y-8 py-6 lg:py-8">
-        <div className="w-20 h-20 rounded-3xl bg-cyber-yellow/20 flex items-center justify-center mx-auto">
+        <div className="w-20 h-20 rounded-3xl bg-cyber-yellow/20 flex items-center justify-center mx-auto editorial">
           <svg className="w-10 h-10 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
           </svg>
         </div>
         <div>
-          <h3 className="text-2xl font-black text-white mb-3">Check Your Email</h3>
-          <p className="text-white/50 text-sm font-medium">
-            We&apos;ve sent a password reset link to <span className="text-white/80">{email}</span>
+          <h3 className="text-2xl font-black text-[#2D3436] mb-3">Check Your Email</h3>
+          <p className="text-[#2D3436]/50 text-sm font-medium">
+            We&apos;ve sent a password reset link to <span className="text-[#2D3436]/80">{email}</span>
           </p>
         </div>
         <button
           type="button"
           onClick={() => onSwitchView("login")}
-          className="text-sm font-bold text-cyber-yellow hover:text-cyber-yellow/80 premium-transition cursor-pointer"
+          className="text-sm font-bold text-[#3F5C3A] hover:text-[#3F5C3A]/80 premium-transition cursor-pointer"
         >
           Back to Sign In
         </button>
@@ -75,8 +75,8 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
-      <p className="text-white/50 text-sm font-medium leading-relaxed">
+    <form onSubmit={submit} className="space-y-4 lg:space-y-6">
+      <p className="text-[#2D3436]/50 text-sm font-medium leading-relaxed">
         Enter the email address associated with your account and we&apos;ll send you a link to reset your password.
       </p>
 
@@ -92,7 +92,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
       />
 
       {error && (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl editorial">
           <p className="text-[11px] font-bold text-red-400 uppercase tracking-wider text-center">
             {error}
           </p>
@@ -102,8 +102,8 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-5 bg-cyber-yellow text-black rounded-2xl font-black text-sm
-          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-cyber-yellow/10
+        className="w-full py-5 btn-editorial rounded-2xl font-black text-sm
+          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#3F5C3A]/10
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
@@ -119,12 +119,12 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
         )}
       </button>
 
-      <p className="text-center text-[11px] font-bold uppercase tracking-wider text-white/30">
+      <p className="text-center text-[11px] font-bold uppercase tracking-wider text-[#2D3436]/30">
         Remember your password?{" "}
         <button
           type="button"
           onClick={() => onSwitchView("login")}
-          className="text-cyber-yellow hover:text-cyber-yellow/80 premium-transition cursor-pointer"
+          className="text-[#3F5C3A] hover:text-[#3F5C3A]/80 premium-transition cursor-pointer"
         >
           Sign in
         </button>

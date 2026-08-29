@@ -18,8 +18,12 @@ async function getUserTier(userId: string): Promise<Tier> {
     .select("subscription_tier")
     .eq("user_id", userId)
     .maybeSingle();
-  const tier = (data as { subscription_tier?: string } | null)?.subscription_tier;
-  return tier === "pro" || tier === "unlimited" ? tier : "free";
+  const t = (data as { subscription_tier?: string } | null)?.subscription_tier;
+  let tier: Tier = "free";
+  if (t === "pro" || t === "unlimited") {
+    tier = t;
+  }
+  return tier;
 }
 
 async function resetIfStaleDay(userId: string, admin: ReturnType<typeof createAdminClient>): Promise<void> {
@@ -43,15 +47,15 @@ export async function checkUsage(userId: string, type: UsageType): Promise<{ all
 
   await resetIfStaleDay(userId, createAdminClient());
 
-  const { data } = await supabase
+  const { data: row } = await supabase
     .from("user_usage")
     .select("chat_count, quiz_count, voice_count, challenge_count")
     .eq("user_id", userId)
     .maybeSingle();
 
-  const count = (data as Record<string, number> | null)?.[`${type}_count`] ?? 0;
-  const limit = LIMITS[tier][type];
-  return { allowed: count < limit, remaining: Math.max(0, limit - count) };
+  const cnt = (row as Record<string, number> | null)?.[`${type}_count`] ?? 0;
+  const cap = LIMITS[tier][type];
+  return { allowed: cnt < cap, remaining: Math.max(0, cap - cnt) };
 }
 
 export async function incrementUsage(userId: string, type: UsageType): Promise<void> {

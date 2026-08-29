@@ -31,7 +31,6 @@ export async function POST(request: Request) {
 
     const supabase = createAdminClient();
 
-    // 1. Fetch document record
     const { data: doc, error: docError } = await supabase
       .from("documents")
       .select("id, filename, file_type, storage_path, status")
@@ -45,18 +44,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Skip if already processed
     if (doc.status === "READY") {
       return NextResponse.json({ message: "Already processed", chunks: 0 });
     }
 
-    // Update status → EXTRACTING
     await supabase
       .from("documents")
       .update({ status: "EXTRACTING" })
       .eq("id", document_id);
 
-    // 2. Download file from Storage
     const { data: fileData, error: downloadError } = await supabase.storage
       .from("user_documents")
       .download(doc.storage_path);
@@ -74,7 +70,6 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await fileData.arrayBuffer());
 
-    // 3. Extract text
     const extraction = await extractText(buffer, doc.file_type);
 
     if (!extraction.fullText.trim()) {
@@ -88,13 +83,11 @@ export async function POST(request: Request) {
       });
     }
 
-    // Update status → CHUNKING
     await supabase
       .from("documents")
       .update({ status: "CHUNKING" })
       .eq("id", document_id);
 
-    // 4. Chunk the text
     const chunks = chunkPages(extraction.pages, doc.filename);
 
     if (chunks.length === 0) {
@@ -105,18 +98,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "No chunks generated", chunks: 0 });
     }
 
-    // Update status → EMBEDDING
     await supabase
       .from("documents")
       .update({ status: "EMBEDDING" })
       .eq("id", document_id);
 
-    // 5. Generate embeddings for all chunks
     const embeddings = await generateEmbeddings(
       chunks.map((c) => c.content)
     );
 
-    // 6. Store chunks in database
     const chunkRecords = chunks.map((chunk, i) => ({
       document_id,
       user_id,
@@ -127,13 +117,11 @@ export async function POST(request: Request) {
       page_number: chunk.page_number,
     }));
 
-    // Delete existing chunks for this document (re-indexing)
     await supabase
       .from("document_chunks")
       .delete()
       .eq("document_id", document_id);
 
-    // Bulk insert — batch in groups of 50 to avoid payload limits
     const BATCH_SIZE = 50;
     for (let i = 0; i < chunkRecords.length; i += BATCH_SIZE) {
       const batch = chunkRecords.slice(i, i + BATCH_SIZE);
@@ -154,7 +142,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Update status → READY
     await supabase
       .from("documents")
       .update({ status: "READY" })

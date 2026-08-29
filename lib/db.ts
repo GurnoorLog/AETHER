@@ -10,7 +10,7 @@ export async function initializeUserData(
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const { error: profileError } = await supabase
+  const { error: pe } = await supabase
     .from("user_profiles")
     .insert({
       user_id: userId,
@@ -24,11 +24,11 @@ export async function initializeUserData(
       last_login: new Date().toISOString(),
     });
 
-  if (profileError) {
-    return { error: profileError.message };
+  if (pe) {
+    return { error: pe.message };
   }
 
-  const inserts = [
+  const writes = [
     supabase.from("knowledge_bases").insert({ user_id: userId }),
     supabase.from("conversations").insert({ user_id: userId, title: "Welcome" }),
     supabase.from("ai_memories").insert({ user_id: userId, content: "User created account", context: "system" }),
@@ -37,10 +37,10 @@ export async function initializeUserData(
     supabase.from("progress_tracking").insert({ user_id: userId, subject: "General", mastery_level: 0 }),
   ];
 
-  const results = await Promise.allSettled(inserts);
-  for (const result of results) {
-    if (result.status === "rejected") {
-      console.error("Failed to initialize user data:", result.reason);
+  const settled = await Promise.allSettled(writes);
+  for (const each of settled) {
+    if (each.status === "rejected") {
+      console.error("Failed to initialize user data:", each.reason);
     }
   }
 
