@@ -272,7 +272,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
 
         <div className="relative w-full max-w-[420px] mx-4 rounded-[32px] overflow-hidden bg-[#FDFBF7] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] z-10 editorial">
           <img
-            src="/design/sakura_leaves.png"
+            src="/design/pixel_sakura.png"
             alt=""
             className="absolute top-0 right-0 w-40 h-40 object-contain opacity-50 pointer-events-none select-none"
           />
@@ -322,7 +322,7 @@ export default function CreateSessionModal({ open, onClose, subjects: existingSu
 
       <div className="relative w-full max-w-[420px] mx-4 max-h-[88vh] rounded-[32px] overflow-hidden bg-[#FDFBF7] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.35)] z-10 editorial">
         <img
-          src="/design/sakura_leaves.png"
+          src="/design/pixel_sakura.png"
           alt=""
           className="absolute top-0 right-0 w-40 h-40 object-contain opacity-50 pointer-events-none select-none"
         />

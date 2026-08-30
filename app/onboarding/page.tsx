@@ -278,7 +278,6 @@ export default function OnboardingPage() {
           />
           <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-[#FBF7F0]/80 backdrop-blur-xl border-b border-hairline-warm editorial">
             <div className="flex items-center gap-3">
-              <img src="/landing/logo.png" alt="Aether" className="w-9 h-9 rounded-xl object-cover shadow-sm ring-1 ring-sage/15" />
               <div>
                 <span className="text-sm font-black tracking-tighter text-warm-ink">AETHER</span>
                 <div className="flex items-center gap-1.5">

@@ -93,8 +93,6 @@ export default function Home() {
       <nav className="fixed top-0 inset-x-0 z-50 bg-[#FDFBF7]/80 backdrop-blur-xl border-b hairline">
         <div className="max-w-6xl mx-auto h-20 px-6 flex items-center justify-between">
           <a href="#" className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/landing/logo.png" alt="Aether" className="w-9 h-9 rounded-xl object-cover shadow-sm ring-1 ring-[#E7E1D6]" />
             <span className="serif-display text-[#2D3436] font-semibold text-xl tracking-tight">Aether</span>
           </a>
           <div className="hidden md:flex items-center gap-9 text-sm font-medium text-[#555E61]">
@@ -111,7 +109,7 @@ export default function Home() {
       </nav>
 
       <section className="relative pt-36 pb-24 px-6">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.1fr_0.9fr] gap-16 items-center">
+        <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
           <div className="space-y-8">
             <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase text-[#3F5C3A]">
               <span className="w-6 h-px bg-[#3F5C3A]" /> Issue 01 · Your AI tutor
@@ -128,7 +126,7 @@ export default function Home() {
             <p className="max-w-md text-lg text-[#555E61] leading-relaxed">
               A personal AI tutor that adapts to how you study. Upload anything, ask anything, and master any subject, held in a memory that never lets go.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
               <LandingAuthButton mode="signup" className="btn-primary btn-hard px-7 py-4 rounded-xl text-base font-semibold flex items-center justify-center gap-2">
                 Start learning
                 <ArrowRight size={18} />
@@ -140,30 +138,13 @@ export default function Home() {
             </div>
             <p className="text-sm text-[#A0A5A8]">Loved by 30 early learners · 4.5★ average so far</p>
           </div>
-
-          <div className="relative">
-            <GraphDots className="absolute -top-10 -left-10 w-28 h-28 opacity-70" />
-              <div className="relative editorial bg-white overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing/hero.png" className="w-full h-auto" alt="Aether study illustration" />
-            </div>
-              <div className="absolute -right-6 bottom-10 w-56 rounded-2xl bg-white/90 backdrop-blur-xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] p-4 rotate-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-[#2D3436]">Kinematics &amp; laws</span>
-                <span className="text-[10px] font-bold uppercase tracking-wide text-[#3F5C3A]">In progress</span>
-              </div>
-              <div className="h-1.5 bg-[#EDE7DA] rounded-full overflow-hidden">
-                <div className="w-1/3 h-full bg-[#3F5C3A]" />
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       <section className="px-6 py-10">
         <div className="max-w-6xl mx-auto flex items-center gap-6 border-y hairline py-6 overflow-x-auto">
           <span className="text-xs font-semibold tracking-[0.18em] uppercase text-[#A0A5A8] shrink-0">What you can study</span>
-          {["STEM", "Humanities", "Languages", "Medicine", "Engineering", "Music"].map((t) => (
+          {["Physics", "Mathematics", "Biology", "Chemistry", "Computer Science", "History", "English Literature"].map((t) => (
             <span key={t} className="serif-display text-lg text-[#2D3436]/70 whitespace-nowrap">{t}</span>
           ))}
         </div>
@@ -352,8 +333,6 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
             <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing/logo.png" alt="Aether" className="w-8 h-8 rounded-lg object-cover shadow-sm ring-1 ring-[#E7E1D6]" />
               <span className="serif-display text-[#2D3436] font-semibold text-lg tracking-tight">Aether</span>
             </div>
             <div className="flex items-center gap-8 text-sm font-medium text-[#555E61]">

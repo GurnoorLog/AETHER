@@ -4,7 +4,6 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid md:grid-cols-5 gap-16">
         <div className="col-span-2">
           <a href="#" className="flex items-center gap-3 mb-8 group w-fit">
-            <img src="/landing/logo.png" alt="Aether" className="w-9 h-9 rounded-xl object-cover shadow-sm ring-1 ring-[#E7E1D6] group-hover:scale-110 premium-transition" />
             <span className="text-xl font-bold tracking-tight text-[#2D3436] serif-display">Aether</span>
           </a>
           <p className="text-[#2D3436]/60 font-bold text-sm max-w-xs leading-relaxed mb-10">

@@ -21,7 +21,6 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
     <>
       <aside className="sidebar-desktop w-[260px] shrink-0 h-screen flex flex-col px-6 py-8" style={{ backgroundColor: "#FDFBF7" }}>
         <div className="flex items-center gap-3 mb-10 px-2">
-          <img src="/landing/logo.png" alt="Aether" className="w-9 h-9 rounded-xl object-cover shrink-0 shadow-sm ring-1 ring-[#E7E1D6]" />
           <span className="text-2xl font-bold tracking-tight text-[#2D3436] serif-display">Aether</span>
         </div>
         <SidebarNav collapsed={false} />

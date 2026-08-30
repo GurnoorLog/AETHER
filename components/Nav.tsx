@@ -13,7 +13,6 @@ export default function Nav() {
     <header className="sticky top-0 z-[100] w-full px-3 sm:px-6 lg:px-12 py-4 sm:py-6 lg:py-10 flex justify-center">
       <nav className="w-full max-w-7xl rounded-full px-4 sm:px-6 lg:px-12 py-4 lg:py-5 flex items-center justify-between bg-[#FDFBF7]/90 backdrop-blur-xl border border-[#E7E1D6]">
         <a href="#" className="flex items-center gap-2 sm:gap-3 group">
-          <img src="/landing/logo.png" alt="Aether" className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl object-cover shadow-sm ring-1 ring-[#E7E1D6]" />
           <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#2D3436] serif-display">Aether</span>
         </a>
 

@@ -66,7 +66,6 @@ export default function AuthModal() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
-              <img src="/landing/logo.png" alt="Aether" className="w-10 h-10 rounded-xl object-cover shadow-lg" />
               <span className="text-lg font-black tracking-tighter text-white">Aether</span>
             </div>
 

@@ -140,7 +140,7 @@ export default function SessionDashboardPage() {
           </p>
         </div>
         <div
-          className="absolute left-8 right-8 bottom-0 translate-y-1/2 rounded-[40px] p-6 lg:p-10 border border-white/80 editorial"
+          className="absolute left-8 right-8 bottom-0 translate-y-[20%] rounded-[40px] p-6 lg:p-10 border border-white/80 editorial"
           style={{ backgroundColor: "rgba(255,255,255,0.98)", backdropFilter: "blur(8px)" }}
         >
           <div className="flex items-center gap-3 mb-5 flex-wrap">
