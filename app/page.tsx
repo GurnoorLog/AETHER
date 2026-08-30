@@ -85,10 +85,6 @@ const plans = [
 export default function Home() {
   return (
     <div className="min-h-screen relative bg-[#FDFBF7] text-[#2D3436] font-sans overflow-x-hidden">
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute -top-40 right-0 w-[640px] h-[640px] rounded-full bg-[radial-gradient(circle,rgba(107,142,97,0.10),transparent_60%)] blur-3xl" />
-        <div className="absolute bottom-0 -left-40 w-[520px] h-[520px] rounded-full bg-[radial-gradient(circle,rgba(201,119,46,0.10),transparent_60%)] blur-3xl" />
-      </div>
 
       <nav className="fixed top-0 inset-x-0 z-50 bg-[#FDFBF7]/80 backdrop-blur-xl border-b hairline">
         <div className="max-w-6xl mx-auto h-20 px-6 flex items-center justify-between">

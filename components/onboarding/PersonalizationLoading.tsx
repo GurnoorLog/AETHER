@@ -58,52 +58,25 @@ export default function PersonalizationLoading({ onComplete }: { onComplete: () 
   }, [idx, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[300] bg-deep-onyx flex flex-col items-center justify-center editorial">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(253,224,71,0.06)_0%,_transparent_60%)] pointer-events-none editorial" />
-      <div className="absolute inset-0 bg-gradient-to-b from-cyber-yellow/[0.02] via-transparent to-transparent pointer-events-none" />
-
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(24)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${1.5 + Math.random() * 2.5}px`,
-              height: `${1.5 + Math.random() * 2.5}px`,
-              background: i % 3 === 0 ? 'rgba(253,224,71,0.25)' : i % 3 === 1 ? 'rgba(255,255,255,0.1)' : 'rgba(6,182,212,0.15)',
-              animation: `particleFloat ${7 + Math.random() * 6}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 5}s`,
-              opacity: 0.2 + Math.random() * 0.3,
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center max-w-md w-full px-8">
-        <div className="w-24 h-24 rounded-[32px] bg-cyber-yellow/10 flex items-center justify-center mb-12 ring-1 ring-cyber-yellow/20 shadow-[0_0_60px_rgba(253,224,71,0.1)] avatar-breathing editorial">
-          <div className="relative">
-            <svg className="w-12 h-12 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-            </svg>
-            <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-success-green animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-          </div>
+    <div className="fixed inset-0 z-[300] bg-[#FBF7F0] flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center max-w-md w-full px-8">
+        <div className="w-24 h-24 rounded-full bg-[#3F5C3A] flex items-center justify-center mb-12 border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436]">
+          <span className="serif-display text-white text-4xl sm:text-5xl font-semibold">A</span>
         </div>
 
-        <p className="text-lg md:text-xl text-white/80 font-medium text-center mb-10 min-h-[2em]">
+        <p className="text-lg md:text-xl text-[#2D3436] font-medium text-center mb-10 min-h-[2em]">
            {txt}
-          <span className="typing-cursor inline-block w-[3px] h-[1em] bg-cyber-yellow ml-0.5 align-middle rounded-full" />
+          <span className="inline-block w-[3px] h-[1em] bg-[#3F5C3A] ml-0.5 align-middle rounded-full animate-pulse" />
         </p>
 
-        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
+        <div className="w-full h-1.5 bg-[#E7E1D6] rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-cyber-yellow via-amber-400 to-cyan-accent rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(253,224,71,0.3)]"
+            className="h-full bg-[#3F5C3A] rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
 
-        <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em] mt-6">
+        <p className="text-[10px] font-bold text-[#A0A5A8] uppercase tracking-[0.2em] mt-6">
           Personalizing your experience
         </p>
       </div>

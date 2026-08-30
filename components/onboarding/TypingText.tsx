@@ -56,7 +56,7 @@ export default function TypingText({ text, speed = 30, className, onComplete, st
   return (
     <span className={className}>
       <span className="typing-char">{displayed}</span>
-      <span className="inline-block w-[3px] h-[1.05em] bg-cyber-yellow ml-0.5 align-middle rounded-full typing-cursor" />
+      <span className="inline-block w-[3px] h-[1.05em] bg-[#3F5C3A] ml-0.5 align-middle rounded-full animate-pulse" />
     </span>
   );
 }

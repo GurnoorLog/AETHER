@@ -200,14 +200,13 @@ export default function OnboardingPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-sage/[0.03] via-transparent to-transparent pointer-events-none" />
+      <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center relative">
         <div className="flex items-center gap-3">
-          <svg className="w-6 h-6 text-sage animate-spin" fill="none" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-[#3F5C3A] animate-spin" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          <span className="text-warm-ink-muted text-sm font-bold uppercase tracking-widest">Loading...</span>
+          <span className="text-[#555E61] text-sm font-semibold uppercase tracking-[0.18em]">Loading...</span>
         </div>
       </div>
     );
@@ -216,44 +215,13 @@ export default function OnboardingPage() {
   return (
     <>
       {phase === "welcome" && (
-        <div className="min-h-screen bg-[#FBF7F0] flex flex-col items-center justify-center px-4 sm:px-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(63,92,58,0.08)_0%,_transparent_60%)] pointer-events-none editorial" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,_rgba(63,92,58,0.04)_0%,_transparent_50%)] pointer-events-none editorial" />
-          <div
-            className="absolute inset-0 opacity-[0.015] pointer-events-none"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px',
-            }}
-          />
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  left: `${5 + (i % 8) * 12}%`,
-                  top: `${10 + Math.floor(i / 8) * 25}%`,
-                  width: `${1.5 + (i % 4) * 2}px`,
-                  height: `${1.5 + (i % 4) * 2}px`,
-                  background: i % 3 === 0 ? 'rgba(63,92,58,0.4)' : i % 3 === 1 ? 'rgba(255,255,255,0.12)' : 'rgba(229,177,112,0.18)',
-                  animation: `particleFloat ${9 + (i % 5) * 2}s ease-in-out infinite`,
-                  animationDelay: `${i * 0.4}s`,
-                  opacity: 0.15 + (i % 4) * 0.15,
-                }}
-              />
-            ))}
-          </div>
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full bg-sage/5 blur-[120px] pointer-events-none" />
-
-          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-[36px] bg-sage/10 flex items-center justify-center mb-10 sm:mb-12 lg:mb-14 ring-1 ring-sage/20 shadow-[0_0_80px_rgba(63,92,58,0.08)] relative z-10 avatar-breathing editorial">
-            <svg className="w-14 h-14 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-              <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-            </svg>
+        <div className="min-h-screen bg-[#FBF7F0] flex flex-col items-center justify-center px-4 sm:px-8 relative">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full bg-[#3F5C3A] flex items-center justify-center mb-10 sm:mb-12 lg:mb-14 border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] relative z-10">
+            <span className="serif-display text-white text-4xl sm:text-5xl font-semibold">A</span>
           </div>
 
           <div className="max-w-lg text-center relative z-10">
-              <div className="text-xl md:text-2xl text-warm-ink font-medium leading-relaxed min-h-[3em]">
+              <div className="text-xl md:text-2xl text-[#2D3436] font-medium leading-relaxed min-h-[3em]">
               <AiMessage
                 text="Hello! I'm Aether, your personal AI tutor. I'll learn how you study, remember your progress, and help you master every subject. Before we begin, I'd like to get to know you."
                 typingSpeed={22}
@@ -267,22 +235,13 @@ export default function OnboardingPage() {
 
       {phase === "conversation" && (
         <div className="min-h-screen bg-[#FBF7F0] flex flex-col relative">
-          <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(63,92,58,0.03)_0%,_transparent_60%)] pointer-events-none editorial" />
-          <div className="fixed inset-0 bg-gradient-to-b from-sage/[0.015] via-transparent to-transparent pointer-events-none" />
-          <div
-            className="fixed inset-0 opacity-[0.012] pointer-events-none"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px',
-            }}
-          />
-          <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-[#FBF7F0]/80 backdrop-blur-xl border-b border-hairline-warm editorial">
+          <div className="sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4 lg:py-6 flex items-center justify-between bg-[#FBF7F0]/90 backdrop-blur border-b border-[#E7E1D6]">
             <div className="flex items-center gap-3">
               <div>
-                <span className="text-sm font-black tracking-tighter text-warm-ink">AETHER</span>
+                <span className="text-sm font-bold tracking-tight text-[#2D3436]">AETHER</span>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-success-green animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-                  <span className="text-[10px] font-bold text-warm-ink-faint uppercase tracking-widest">Online</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#3F5C3A] animate-pulse" />
+                  <span className="text-[10px] font-bold text-[#A0A5A8] uppercase tracking-[0.18em]">Online</span>
                 </div>
               </div>
             </div>
@@ -291,7 +250,7 @@ export default function OnboardingPage() {
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                    i < step - 1 ? "bg-sage shadow-[0_0_6px_rgba(63,92,58,0.4)]" : i === step - 1 ? "bg-sage/60 shadow-[0_0_4px_rgba(63,92,58,0.2)] w-4" : "bg-warm-ink/[0.04]"
+                    i < step - 1 ? "bg-[#3F5C3A]" : i === step - 1 ? "bg-[#3F5C3A]/70 w-4" : "bg-[#E7E1D6]"
                   }`}
                 />
               ))}
@@ -314,8 +273,8 @@ export default function OnboardingPage() {
                     className="flex justify-end"
                     style={{ animation: "fadeIn 0.5s cubic-bezier(0.16, 1, 0.24, 1)" }}
                   >
-                    <div className="bg-warm-ink/[0.04] border border-hairline-warm p-5 rounded-3xl rounded-tr-none max-w-[80%] editorial">
-                      <p className="text-warm-ink font-medium">{entry.content}</p>
+                    <div className="bg-white p-5 rounded-3xl rounded-tr-none max-w-[80%] editorial">
+                      <p className="text-[#2D3436] font-medium">{entry.content}</p>
                     </div>
                   </div>
                 )
@@ -335,18 +294,18 @@ export default function OnboardingPage() {
                           onChange={(e) => setName(e.target.value)}
                           onKeyDown={(e) => e.key === "Enter" && nameDone()}
                           placeholder="Type your name..."
-                          className="flex-1 bg-white px-4 sm:px-6 py-4 sm:py-5             rounded-2xl text-warm-ink text-base sm:text-lg font-medium
-                            placeholder:text-warm-ink-faint border border-hairline-warm focus:border-sage/40
-                            outline-none focus:shadow-[0_0_30px_rgba(63,92,58,0.05)] premium-transition editorial"
+                          className="flex-1 bg-white px-4 sm:px-6 py-4 sm:py-5             rounded-2xl text-[#2D3436] text-base sm:text-lg font-medium
+                            placeholder:text-[#A0A5A8] border-[#E7E1D6] focus:border-[#3F5C3A]
+                            outline-none focus:ring-2 focus:ring-[#3F5C3A]/20 premium-transition editorial"
                         />
                         <button
                           onClick={nameDone}
                           disabled={!name.trim()}
-                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-sage flex items-center justify-center
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl 
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#3F5C3A] flex items-center justify-center
+                            hover:scale-105 active:scale-95 premium-transition
                             disabled:opacity-30 cursor-pointer editorial"
                         >
-                          <svg className="w-6 h-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                           </svg>
                         </button>
@@ -363,7 +322,7 @@ export default function OnboardingPage() {
                             className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
                               subs.includes(s)
                                 ? "btn-editorial "
-                                : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
+                                : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
                             }`}
                           >
                             {s}
@@ -383,8 +342,8 @@ export default function OnboardingPage() {
                       {(subs.length > 0 || custom.trim()) && (
                         <button
                           onClick={subsDone}
-                          className="px-6 sm:px-8 py-3 sm:py-4 btn-editorial rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl  cursor-pointer"
+                          className="px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
+                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
                         >
                           Continue
                         </button>
@@ -400,7 +359,7 @@ export default function OnboardingPage() {
                           className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
                             edu === level
                               ? "btn-editorial "
-                              : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
+                              : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
                           }`}
                         >
                           {level}
@@ -409,8 +368,8 @@ export default function OnboardingPage() {
                       {edu && (
                         <button
                           onClick={eduDone}
-                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl  cursor-pointer"
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
+                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
                         >
                           Continue
                         </button>
@@ -426,7 +385,7 @@ export default function OnboardingPage() {
                           className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
                             styles.includes(style.id)
                               ? "btn-editorial "
-                              : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
+                              : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
                           }`}
                         >
                           {style.label}
@@ -435,8 +394,8 @@ export default function OnboardingPage() {
                       {styles.length > 0 && (
                         <button
                           onClick={stylesDone}
-                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl  cursor-pointer"
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
+                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
                         >
                           Continue
                         </button>
@@ -453,7 +412,7 @@ export default function OnboardingPage() {
                             className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
                               gl.includes(g)
                                 ? "btn-editorial "
-                                : "bg-warm-ink/[0.03] border border-hairline-warm text-warm-ink-soft hover:border-hairline-warm hover:text-warm-ink-soft"
+                                : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
                             }`}
                           >
                             {g}
@@ -463,8 +422,8 @@ export default function OnboardingPage() {
                       {gl.length > 0 && (
                         <button
                           onClick={goalsDone}
-                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial rounded-2xl font-black text-sm
-                            hover:scale-105 active:scale-95 premium-transition shadow-xl  cursor-pointer"
+                          className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
+                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
                         >
                           Continue
                         </button>
@@ -475,29 +434,29 @@ export default function OnboardingPage() {
                     <div className="flex flex-col sm:flex-row gap-4">
                       <button
                         onClick={() => voiceDone(true)}
-                        className="flex-1 bg-white p-4 sm:p-6 rounded-3xl border border-hairline-warm hover:border-sage/40
-                          hover:bg-sage/5 premium-transition group cursor-pointer text-left editorial"
+                        className="flex-1 bg-white p-4 sm:p-6 rounded-3xl border border-[#E7E1D6] hover:border-[#3F5C3A]/50
+                          hover:bg-[#3F5C3A]/5 premium-transition group cursor-pointer text-left editorial"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-sage/20 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition editorial">
-                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3F5C3A]/10 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition editorial">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#3F5C3A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                           </svg>
                         </div>
-                        <p className="text-base sm:text-lg font-black text-warm-ink mb-1">Yes, enable voice</p>
-                        <p className="text-sm text-warm-ink-muted font-medium">Natural voice conversations with real-time AI</p>
+                        <p className="text-base sm:text-lg font-bold text-[#2D3436] mb-1">Yes, enable voice</p>
+                        <p className="text-sm text-[#555E61] font-medium">Natural voice conversations with real-time AI</p>
                       </button>
                       <button
                         onClick={() => voiceDone(false)}
-                        className="flex-1 bg-white p-4 sm:p-6 rounded-3xl border border-hairline-warm hover:border-hairline-warm
+                        className="flex-1 bg-white p-4 sm:p-6 rounded-3xl border border-[#E7E1D6] hover:border-[#3F5C3A]/50 hover:bg-[#3F5C3A]/5
                           premium-transition group cursor-pointer text-left editorial"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-warm-ink/[0.04] flex items-center justify-center mb-4 group-hover:scale-110 premium-transition editorial">
-                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-warm-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#2D3436]/5 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition editorial">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#555E61]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                           </svg>
                         </div>
-                        <p className="text-base sm:text-lg font-black text-warm-ink mb-1">Text only</p>
-                        <p className="text-sm text-warm-ink-muted font-medium">I prefer typing my questions</p>
+                        <p className="text-base sm:text-lg font-bold text-[#2D3436] mb-1">Text only</p>
+                        <p className="text-sm text-[#555E61] font-medium">I prefer typing my questions</p>
                       </button>
                     </div>
                   )}
@@ -508,7 +467,7 @@ export default function OnboardingPage() {
           </div>
           {typed && step === 1 && !name && (
             <div className="px-4 sm:px-6 lg:px-12 pb-6 text-center">
-              <p className="text-xs text-warm-ink-faint font-bold uppercase tracking-widest">Press Enter to send</p>
+              <p className="text-xs text-[#A0A5A8] font-bold uppercase tracking-[0.18em]">Press Enter to send</p>
             </div>
           )}
         </div>
@@ -521,7 +480,7 @@ export default function OnboardingPage() {
       {phase === "done" && (
         <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center">
           <div className="flex items-center gap-3">
-            <svg className="w-6 h-6 text-sage animate-spin" fill="none" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-[#3F5C3A] animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
