@@ -54,14 +54,14 @@ export default function AdminSetupPage() {
   }
 
   if (authLoading || !totp) {
-    return <div className="h-screen bg-deep-onyx text-white flex items-center justify-center">Loading...</div>;
+    return <div className="h-screen bg-ink-black text-white flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white">
+    <div className="min-h-screen bg-ink-black text-white">
       <div className="max-w-md mx-auto px-6 py-16">
         <div className="glass-card rounded-[28px] p-8 editorial">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow mb-2">Aether Admin</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-ochre mb-2">Aether Admin</p>
           <h1 className="text-2xl font-bold tracking-tighter mb-2">Set up Google Authenticator</h1>
           <p className="text-sm text-white/40 mb-6">
             In the Google Authenticator app, tap <b className="text-white/80">+</b> →{" "}
@@ -70,7 +70,7 @@ export default function AdminSetupPage() {
 
           <div className="bg-black/40 border border-white/10 rounded-2xl p-4 mb-6 editorial">
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1">Setup key</p>
-            <code className="text-cyber-yellow font-mono text-sm break-all">{totp.secret}</code>
+            <code className="text-ochre font-mono text-sm break-all">{totp.secret}</code>
           </div>
 
           <p className="text-sm text-white/40 mb-6">
@@ -89,7 +89,7 @@ export default function AdminSetupPage() {
             <button
               type="submit"
               disabled={verifying || code.length !== 6}
-              className="w-full py-3 rounded-full bg-cyber-yellow text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
+              className="w-full py-3 rounded-full bg-ochre text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
             >
               {verifying ? "Verifying..." : "Confirm & Unlock"}
             </button>

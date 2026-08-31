@@ -210,8 +210,6 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
 
   return (
     <div className="min-h-screen bg-[#FBF7F0] flex flex-col relative overflow-hidden font-sans">
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#3F5C3A]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-[#3F5C3A]/5 rounded-full blur-[100px] pointer-events-none" />
       <header className="p-12 max-lg:px-4 max-lg:py-6 flex justify-between items-center relative z-10">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-[#3F5C3A] rounded-2xl flex items-center justify-center editorial">
@@ -265,7 +263,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
             <div className="absolute inset-0 w-[300px] h-[300px] max-lg:w-[180px] max-lg:h-[180px] border border-[#3F5C3A]/5 rounded-full animate-ping" style={{ animationDuration: "3s" }} />
             <div className="relative z-20 floating">
               <div className={`w-40 h-40 max-lg:w-28 max-lg:h-28 rounded-full border-4 flex items-center justify-center overflow-hidden transition-all duration-500 ${
-                state === "connected" ? "bg-[#3F5C3A] border-[#2D3436] glow-pulse" : "bg-[#FDFBF7] border-[#2D3436]"
+                state === "connected" ? "bg-[#3F5C3A] border-[#2D3436]" : "bg-[#FDFBF7] border-[#2D3436]"
               }`}>
                 <svg className={`w-16 h-16 transition-colors duration-500 ${state === "connected" ? "text-[#FDFBF7]" : "text-[#3F5C3A]"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -308,7 +306,7 @@ export default function VoiceTutorPage({ params }: { params: Promise<{ session: 
                 <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#3F5C3A]">Session Ended</p>
                 <button
                   onClick={() => { if (activeConversation) start(activeConversation); }}
-                  className="btn-editorial font-black px-8 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(63,92,58,0.3)] cursor-pointer"
+                  className="btn-editorial font-bold px-8 py-3 rounded-full hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
                 >
                   Reconnect
                 </button>

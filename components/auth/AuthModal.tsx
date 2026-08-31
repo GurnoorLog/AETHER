@@ -49,7 +49,7 @@ export default function AuthModal() {
       }}
     >
       <div
-        className="absolute inset-0 bg-[#2D3436]/40 backdrop-blur-sm editorial"
+        className="absolute inset-0 bg-[#2D3436]/40 backdrop-blur-sm"
         style={{ animation: "fadeIn 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
       />
 
@@ -59,11 +59,6 @@ export default function AuthModal() {
         style={{ animation: "modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.24, 1)" }}
       >
         <div className="hidden md:flex flex-1 bg-gradient-to-br from-[#3F5C3A] via-[#4C6B47] to-[#5E7D6B] p-10 flex-col justify-between relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
-          </div>
-
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
               <span className="text-lg font-black tracking-tighter text-white">Aether</span>
@@ -108,10 +103,10 @@ export default function AuthModal() {
             type="button"
             onClick={close}
             className="absolute top-5 right-5 w-9 h-9 rounded-2xl bg-[#EFEBE5] border border-[#EFEBE5] flex items-center justify-center
-              hover:bg-[#E9EDE3] hover:border-[#3F5C3A]/30 premium-transition group cursor-pointer editorial"
+              hover:bg-[#E9EDE3] hover:border-[#3F5C3A]/30 ease-smooth group cursor-pointer editorial"
           >
             <svg
-              className="w-3.5 h-3.5 text-[#2D3436]/50 group-hover:text-[#2D3436] premium-transition"
+              className="w-3.5 h-3.5 text-[#2D3436]/50 group-hover:text-[#2D3436] ease-smooth"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

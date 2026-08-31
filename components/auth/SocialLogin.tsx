@@ -27,11 +27,11 @@ export default function SocialLogin() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-px bg-[#EFEBE5] editorial" />
+        <div className="flex-1 h-px bg-[#EFEBE5]" />
         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#A0A5A8]">
           or continue with
         </span>
-        <div className="flex-1 h-px bg-[#EFEBE5] editorial" />
+        <div className="flex-1 h-px bg-[#EFEBE5]" />
       </div>
 
       <button
@@ -39,7 +39,7 @@ export default function SocialLogin() {
         onClick={withGoogle}
         disabled={loading}
         className="w-full flex items-center justify-center gap-4 px-6 py-4 bg-white border border-[#EFEBE5] rounded-2xl
-          hover:bg-[#F1E9DE] hover:border-[#3F5C3A]/30 premium-transition group cursor-pointer disabled:opacity-50"
+          hover:bg-[#F1E9DE] hover:border-[#3F5C3A]/30 ease-smooth group cursor-pointer disabled:opacity-50"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
           <path
@@ -59,7 +59,7 @@ export default function SocialLogin() {
             fill="#EA4335"
           />
         </svg>
-        <span className="text-sm font-bold text-[#2D3436] group-hover:text-[#2D3436] premium-transition">
+        <span className="text-sm font-bold text-[#2D3436] group-hover:text-[#2D3436] ease-smooth">
           {loading ? "Redirecting..." : "Google"}
         </span>
       </button>

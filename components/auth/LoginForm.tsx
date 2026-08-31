@@ -94,7 +94,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
           <button
             type="button"
             onClick={() => onSwitchView("forgot_password")}
-            className="text-[11px] font-bold text-[#3F5C3A]/70 hover:text-[#3F5C3A] premium-transition cursor-pointer"
+            className="text-[11px] font-bold text-[#3F5C3A]/70 hover:text-[#3F5C3A] ease-smooth cursor-pointer"
           >
             Forgot Password?
           </button>
@@ -103,7 +103,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
 
       <label className="flex items-center gap-3 cursor-pointer group">
         <div
-          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center premium-transition ${
+          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ease-smooth ${
             remember
               ? "bg-[#3F5C3A] border-[#3F5C3A]"
               : "border-[#E7E1D6] group-hover:border-[#3F5C3A]/40"
@@ -116,7 +116,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
             </svg>
           )}
         </div>
-        <span className="text-[11px] font-bold uppercase tracking-wider text-[#555E61] group-hover:text-[#2D3436] premium-transition">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-[#555E61] group-hover:text-[#2D3436] ease-smooth">
           Remember me
         </span>
       </label>
@@ -133,7 +133,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
         type="submit"
         disabled={loading}
         className="w-full py-5 btn-editorial rounded-2xl font-black text-sm
-          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#3F5C3A]/20
+          hover:scale-[1.02] active:scale-[0.98] ease-smooth shadow-xl shadow-[#3F5C3A]/20
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
@@ -156,7 +156,7 @@ export default function LoginForm({ onSwitchView, onSuccess }: LoginFormProps) {
         <button
           type="button"
           onClick={() => onSwitchView("signup")}
-          className="text-[#3F5C3A] hover:text-[#3F5C3A]/80 premium-transition cursor-pointer"
+          className="text-[#3F5C3A] hover:text-[#3F5C3A]/80 ease-smooth cursor-pointer"
         >
           Create one
         </button>

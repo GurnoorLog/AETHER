@@ -3,8 +3,8 @@
 
 @theme inline {
   /* ── Legacy dark tokens (landing page depends on these staying put) ── */
-  --color-cyber-yellow: #C9772E;
-  --color-deep-onyx: #0A0A0A;
+  --color-ochre: #C9772E;
+  --color-ink-black: #0A0A0A;
   --color-charcoal: #171717;
   --color-cyan-accent: #06B6D4;
   --color-success-green: #10B981;
@@ -307,6 +307,57 @@
   transform: translate(-1px, -1px);
 }
 
+/* ── Hand-made editorial stamps & hints ── */
+.stamp {
+  display: inline-block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #3F5C3A;
+  border: 1.5px solid #3F5C3A;
+  background-color: #FDFBF7;
+  border-radius: 6px 3px 7px 2px / 3px 7px 2px 6px;
+  padding: 3px 10px;
+  transform: rotate(-1.5deg);
+  box-shadow: 2px 2px 0 0 rgba(63, 92, 58, 0.18);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.stamp-ink {
+  display: inline-block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #FDFBF7;
+  border: 1.5px solid #2D3436;
+  background-color: #3F5C3A;
+  border-radius: 6px 3px 7px 2px / 3px 7px 2px 6px;
+  padding: 3px 10px;
+  transform: rotate(-1.5deg);
+  box-shadow: 2px 2px 0 0 #2D3436;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.stamp-rot {
+  transform: rotate(1.8deg);
+}
+.hint-label {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #555E61;
+}
+.rule-rough {
+  display: inline-block;
+  width: 40px;
+  height: 2px;
+  background: #3F5C3A;
+  border-radius: 2px;
+  transform: rotate(-1deg);
+  opacity: 0.7;
+}
+
 .btn-ghost {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -370,7 +421,7 @@
 }
 
 /* ── Animations ── */
-.premium-transition {
+.ease-smooth {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -552,18 +603,6 @@
   box-shadow: 3px 3px 0 0 #2D3436;
 }
 
-/* ── Tooltip ── */
-.tooltip-premium {
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
 /* ── No scrollbar ── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -670,11 +709,6 @@
 @keyframes wave-animation {
   0%, 100% { height: 15%; opacity: 0.4; }
   50% { height: 100%; opacity: 1; }
-}
-
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 40px rgba(253, 224, 71, 0.4); }
-  50% { box-shadow: 0 0 70px rgba(253, 224, 71, 0.6); }
 }
 
 .text-stream-fade {

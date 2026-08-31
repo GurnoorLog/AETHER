@@ -52,8 +52,8 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
   if (sent) {
     return (
       <div className="text-center space-y-6 lg:space-y-8 py-6 lg:py-8">
-        <div className="w-20 h-20 rounded-3xl bg-cyber-yellow/20 flex items-center justify-center mx-auto editorial">
-          <svg className="w-10 h-10 text-cyber-yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <div className="w-20 h-20 rounded-3xl bg-ochre/20 flex items-center justify-center mx-auto editorial">
+          <svg className="w-10 h-10 text-ochre" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
           </svg>
         </div>
@@ -66,7 +66,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
         <button
           type="button"
           onClick={() => onSwitchView("login")}
-          className="text-sm font-bold text-[#3F5C3A] hover:text-[#3F5C3A]/80 premium-transition cursor-pointer"
+          className="text-sm font-bold text-[#3F5C3A] hover:text-[#3F5C3A]/80 ease-smooth cursor-pointer"
         >
           Back to Sign In
         </button>
@@ -103,7 +103,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
         type="submit"
         disabled={loading}
         className="w-full py-5 btn-editorial rounded-2xl font-black text-sm
-          hover:scale-[1.02] active:scale-[0.98] premium-transition shadow-xl shadow-[#3F5C3A]/10
+          hover:scale-[1.02] active:scale-[0.98] ease-smooth shadow-xl shadow-[#3F5C3A]/10
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
@@ -124,7 +124,7 @@ export default function ForgotPasswordForm({ onSwitchView }: ForgotPasswordFormP
         <button
           type="button"
           onClick={() => onSwitchView("login")}
-          className="text-[#3F5C3A] hover:text-[#3F5C3A]/80 premium-transition cursor-pointer"
+          className="text-[#3F5C3A] hover:text-[#3F5C3A]/80 ease-smooth cursor-pointer"
         >
           Sign in
         </button>

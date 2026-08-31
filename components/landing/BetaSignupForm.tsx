@@ -104,7 +104,6 @@ export default function BetaSignupForm() {
         {/* Envelope animation */}
         <div className="shrink-0">
           <div className="relative w-[240px] h-[180px] sm:w-[300px] sm:h-[210px] flex items-center justify-center">
-            <div className="absolute inset-0 bg-[#E5B170]/15 rounded-full blur-3xl scale-150" />
             <svg
               ref={envelopeRef}
               className="envelope relative"

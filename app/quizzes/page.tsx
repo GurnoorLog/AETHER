@@ -35,15 +35,14 @@ export default function QuizzesPage() {
       <main className="flex-1 flex flex-col relative z-0 min-w-0 h-screen overflow-hidden">
         <div className="min-h-[40vh] bg-[#FDFBF7] text-[#2D3436] p-6 sm:p-8 lg:p-12 border-b hairline relative flex flex-col justify-end editorial">
           <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4">
-            <div className="btn-editorial px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">DAILY GOAL: 2/3</div>
-            <div className="bg-[#E9EDE3] border border-[#E7E1D6] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#3F5C3A]">Level 24</div>
+            <div className="stamp-ink px-4 py-1 text-[10px]">DAILY GOAL: 2/3</div>
+            <div className="stamp px-4 py-1 text-[10px] text-[#3F5C3A] border-[#3F5C3A]">Level 24</div>
           </div>
           <div className="max-w-3xl mb-12">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 opacity-70">Mastery Challenge</p>
+            <p className="hint-label text-sm tracking-[0.3em] uppercase mb-4 opacity-80 flex items-center gap-3"><span className="rule-rough" />Mastery Challenge</p>
             <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4 serif-display">Quiz Your Knowledge</h1>
             <p className="text-base sm:text-lg lg:text-xl font-medium opacity-80">Challenge yourself and strengthen your mastery across 14 categories.</p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-[#3F5C3A]/5 rounded-full -mb-40 -mr-20" />
         </div>
         <div className="flex-1 px-4 sm:px-6 lg:px-12 pb-20 space-y-6 lg:space-y-10 relative z-10 overflow-y-auto">
           <div className="flex items-center justify-between bg-white rounded-[32px] p-4 sm:p-6 mb-8 editorial">
@@ -60,7 +59,7 @@ export default function QuizzesPage() {
                 <h3 className="text-xl font-bold">Aether Core</h3>
                 <div className="flex items-center gap-3 text-xs text-warm-ink-muted">
                   <span className="flex items-center gap-1 text-green-400">
-                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                    <span className="inline-block w-1.5 h-1.5 bg-green-400 rounded-none -rotate-12" />
                     Listening
                   </span>
                   <span>•</span>
@@ -69,13 +68,6 @@ export default function QuizzesPage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-end gap-1.5 h-10">
-                <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.5s' }} />
-                <div className="waveform-bar bg-[#C9772E] w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
-                <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.7s' }} />
-                <div className="waveform-bar bg-[#2D3436]/30 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
-                <div className="waveform-bar bg-sage w-1 rounded-full" style={{ animationDuration: '0.9s' }} />
-              </div>
               <button type="button" className="w-12 h-12 rounded-full border border-hairline-warm flex items-center justify-center hover:bg-warm-ink/[0.05] transition-colors cursor-pointer">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
@@ -85,19 +77,19 @@ export default function QuizzesPage() {
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
             <div className="bg-white p-4 sm:p-6 rounded-[32px] flex flex-col justify-center editorial">
-              <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Total Quizzes</p>
+              <p className="hint-label text-[10px] mb-1">Total Quizzes</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">142</p>
             </div>
             <div className="bg-white p-6 rounded-[32px] flex flex-col justify-center editorial">
-              <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Weekly Comp</p>
+              <p className="hint-label text-[10px] mb-1">Weekly Comp</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">12 <span className="text-sage text-xs font-medium">+2</span></p>
             </div>
             <div className="bg-white p-6 rounded-[32px] flex flex-col justify-center editorial">
-              <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Avg. Score</p>
+              <p className="hint-label text-[10px] mb-1">Avg. Score</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">88%</p>
             </div>
             <div className="bg-white p-6 rounded-[32px] flex flex-col justify-center editorial">
-              <p className="text-[10px] font-bold text-warm-ink-muted uppercase tracking-widest mb-1">Current Streak</p>
+              <p className="hint-label text-[10px] mb-1">Current Streak</p>
               <p className="text-xl sm:text-2xl lg:text-3xl font-bold">7 Days</p>
             </div>
           </div>
@@ -125,8 +117,8 @@ export default function QuizzesPage() {
                   <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Derivatives Fundamentals</h3>
                 </div>
                 <div className="text-right">
-                  <p className="text-sage text-xl font-black">+120 XP</p>
-                  <p className="text-[10px] text-warm-ink-muted font-bold uppercase">Potential Gain</p>
+                  <p className="stamp text-sm">+120 XP</p>
+                  <p className="text-[10px] text-warm-ink-muted font-bold uppercase mt-1">Potential Gain</p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-3 lg:gap-6 mb-8">
@@ -153,7 +145,7 @@ export default function QuizzesPage() {
                   <span className="text-sm font-bold">Best: 92%</span>
                 </div>
               </div>
-              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard cursor-pointer">
                 Start Quiz
               </button>
             </div>
@@ -164,7 +156,7 @@ export default function QuizzesPage() {
                   <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Integration Techniques</h3>
                 </div>
                 <div className="text-right">
-                  <p className="text-sage text-xl font-black">+250 XP</p>
+                  <p className="stamp text-sm">+250 XP</p>
                   <p className="text-[10px] text-warm-ink-muted font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
@@ -192,7 +184,7 @@ export default function QuizzesPage() {
                   <span className="text-sm">No Attempt Yet</span>
                 </div>
               </div>
-              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard cursor-pointer">
                 Start Quiz
               </button>
             </div>
@@ -203,7 +195,7 @@ export default function QuizzesPage() {
                   <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Vector Calculus Master</h3>
                 </div>
                 <div className="text-right">
-                  <p className="text-sage text-xl font-black">+500 XP</p>
+                  <p className="stamp text-sm">+500 XP</p>
                   <p className="text-[10px] text-warm-ink-muted font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
@@ -231,7 +223,7 @@ export default function QuizzesPage() {
                   <span className="text-sm font-bold">Prev Score: 42%</span>
                 </div>
               </div>
-              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard cursor-pointer">
                 Retry Quiz
               </button>
             </div>
@@ -242,7 +234,7 @@ export default function QuizzesPage() {
                   <h3 className="text-xl lg:text-2xl font-bold tracking-tight">Linear Algebra Basis</h3>
                 </div>
                 <div className="text-right">
-                  <p className="text-sage text-xl font-black">+180 XP</p>
+                  <p className="stamp text-sm">+180 XP</p>
                   <p className="text-[10px] text-warm-ink-muted font-bold uppercase">Potential Gain</p>
                 </div>
               </div>
@@ -270,7 +262,7 @@ export default function QuizzesPage() {
                   <span className="text-sm">Not Started</span>
                 </div>
               </div>
-              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard group-hover:shadow-[0_0_30px_rgba(63,92,58,0.25)] cursor-pointer">
+              <button type="button" className="w-full btn-editorial font-bold py-4 rounded-full active:scale-95 transition-all btn-hard cursor-pointer">
                 Start Quiz
               </button>
             </div>
@@ -317,7 +309,7 @@ export default function QuizzesPage() {
       <SidebarRight />
       <div className="fixed bottom-4 left-4 lg:bottom-10 lg:left-10 space-y-3 z-50">
         <div className="bg-[#FDFBF7] backdrop-blur-xl border border-[#E7E1D6] px-6 py-4 rounded-full flex items-center gap-4 animate-scale-in shadow-[0_20px_50px_rgba(45,52,54,0.12)]">
-          <div className="w-3 h-3 bg-sage rounded-full shadow-[0_0_10px_#3F5C3A]" />
+          <div className="w-3 h-3 bg-sage rounded-full" />
           <span className="text-[10px] font-black uppercase tracking-[0.2em]">New quiz generated</span>
         </div>
       </div>

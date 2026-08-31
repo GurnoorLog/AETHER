@@ -37,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${outfit.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-deep-onyx text-foreground overflow-x-hidden min-h-screen antialiased font-sans" suppressHydrationWarning>
+      <body className="bg-ink-black text-foreground overflow-x-hidden min-h-screen antialiased font-sans" suppressHydrationWarning>
         <script
           dangerouslySetInnerHTML={{
             __html: `if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(function(){}); }`,

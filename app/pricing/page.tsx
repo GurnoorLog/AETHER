@@ -34,15 +34,12 @@ export default function PricingPage() {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <div className="fixed top-[-15%] right-[-10%] w-[800px] h-[800px] bg-sage/10 rounded-full blur-[160px] pointer-events-none z-0" />
-      <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-[#3F5C3A]/5 rounded-full blur-[140px] pointer-events-none z-0" />
-
       <Nav />
       <section className="py-28 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <span className="text-sage text-xs font-black tracking-[0.25em] uppercase">Pricing</span>
-            <h1 className="text-4xl md:text-6xl font-black text-warm-ink mt-4 mb-4 tracking-tight">
+            <span className="hint-label text-xs tracking-[0.25em] uppercase">Pricing</span>
+            <h1 className="serif-display text-4xl md:text-6xl font-bold text-warm-ink mt-4 mb-4 tracking-tight">
               Simple Plans for <span className="text-sage">Serious Learning</span>
             </h1>
             <p className="text-warm-ink-muted text-sm font-bold max-w-xl mx-auto">
@@ -58,18 +55,18 @@ export default function PricingPage() {
 
           <div className="grid md:grid-cols-3 gap-5">
             {plans.map((p) => {
-              let cardCls = "bg-warm-ink/[0.04] border border-hairline-warm";
+              let cardCls = "editorial bg-[#FFFDF9]";
               if (p.popular) {
-                cardCls = "bg-warm-ink/[0.04] border-2 border-sage/40 shadow-[0_0_40px_rgba(63,92,58,0.08)]";
+                cardCls = "editorial bg-[#FFFDF9] border-2 border-sage";
               }
 
               let btnCls =
-                "block w-full text-center text-sm font-black py-3.5 rounded-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+                "block w-full text-center text-sm font-bold py-3.5 rounded-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
               if (p.popular) {
-                btnCls += " btn-editorial hover:bg-sage/90 hover:shadow-[0_0_30px_rgba(63,92,58,0.25)]";
+                btnCls += " btn-editorial hover:bg-sage/90";
               } else {
                 btnCls +=
-                  " bg-warm-ink/[0.04] text-warm-ink-soft border border-hairline-warm hover:bg-warm-ink/[0.05] hover:text-warm-ink";
+                  " btn-editorial-ghost hover:bg-warm-ink/[0.05] hover:text-warm-ink";
               }
 
               let label = p.cta;
@@ -78,15 +75,15 @@ export default function PricingPage() {
               return (
                 <div key={p.name} className={`relative rounded-2xl p-6 flex flex-col ${cardCls}`}>
                   {p.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 btn-editorial text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 stamp-ink text-[10px] px-4 py-1 tracking-tight">
                       Most Popular
                     </span>
                   )}
                   <div className="mb-6">
-                    <h2 className="text-warm-ink text-lg font-black mb-1">{p.name}</h2>
+                    <h2 className="serif-display text-warm-ink text-lg font-bold mb-1">{p.name}</h2>
                     <p className="text-warm-ink-faint text-xs font-bold mb-4">{p.desc}</p>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-warm-ink text-4xl font-black">{p.price}</span>
+                      <span className="serif-display text-warm-ink text-4xl font-bold">{p.price}</span>
                       <span className="text-warm-ink-faint text-sm font-bold">{p.period}</span>
                     </div>
                   </div>

@@ -220,36 +220,26 @@ export default function SessionProgressPage() {
               <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-warm-ink-muted mb-6">Experience Points</h4>
               <div className="flex items-end gap-3 mb-6">
                 <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-sage">+{fmtXP(totalXP)}</span>
-                <span className="text-xl font-bold opacity-40 mb-1">XP</span>
+                <span className="stamp mb-2">XP</span>
               </div>
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-end text-xs font-bold">
-                  <span className="text-warm-ink-soft uppercase tracking-widest">Level {level}</span>
+                  <span className="hint-label text-[10px]">Level {level}</span>
                   <span className="text-sage">{levelProgress}% to next level</span>
-                  <span className="text-warm-ink-soft uppercase tracking-widest">Level {level + 1}</span>
+                  <span className="hint-label text-[10px]">Level {level + 1}</span>
                 </div>
                 <div className="h-3 w-full bg-warm-ink/[0.04] rounded-full overflow-hidden">
-                  <div className="h-full bg-sage rounded-full shadow-[0_0_15px_rgba(63,92,58,0.3)]" style={{ width: `${levelProgress}%` }} />
+                  <div className="h-full bg-sage rounded-full" style={{ width: `${levelProgress}%` }} />
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <div className="bg-white px-4 py-2 rounded-full border border-hairline-warm flex items-center gap-2">
-                  <span className="text-sm">QUIZZES</span>
-                  <span className="text-[10px] font-bold">+{fmtXP(xpBreakdown.quizzes)}</span>
-                </div>
-                <div className="bg-white px-4 py-2 rounded-full border border-hairline-warm flex items-center gap-2">
-                  <span className="text-sm">REVIEWS</span>
-                  <span className="text-[10px] font-bold">+{fmtXP(xpBreakdown.reviews)}</span>
-                </div>
-                <div className="bg-white px-4 py-2 rounded-full border border-hairline-warm flex items-center gap-2">
-                  <span className="text-sm">ANALYSIS</span>
-                  <span className="text-[10px] font-bold">+{fmtXP(xpBreakdown.analysis)}</span>
-                </div>
+                <div className="stamp">QUIZZES +{fmtXP(xpBreakdown.quizzes)}</div>
+                <div className="stamp stamp-rot">REVIEWS +{fmtXP(xpBreakdown.reviews)}</div>
+                <div className="stamp">ANALYSIS +{fmtXP(xpBreakdown.analysis)}</div>
               </div>
             </div>
             <div className="bg-white rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col editorial">
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-warm-ink-muted mb-6">Mastery Trend</h4>
-              <div className="flex-1 relative mt-4">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-warm-ink-muted mb-6">Mastery Trend</h4>              <div className="flex-1 relative mt-4">
                 <svg viewBox="0 0 400 150" className="w-full h-full">
                   <defs>
                     <linearGradient id="fillGrad" x1="0" x2="0" y1="0" y2="1">
@@ -274,7 +264,7 @@ export default function SessionProgressPage() {
             </div>
           </div>
           <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-warm-ink-muted pl-4">Learning Milestones</h4>
+            <h4 className="hint-label text-[10px] tracking-[0.2em] pl-4">Learning Milestones</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {milestones.length > 0 ? (
                 milestones.map((m, i) => (
@@ -326,8 +316,7 @@ export default function SessionProgressPage() {
               </div>
             </div>
             <div className="bg-white rounded-[32px] p-4 sm:p-6 lg:p-8 editorial">
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400 mb-6">Your Strengths</h4>
-              <div className="space-y-6">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-400 mb-6">Your Strengths</h4>              <div className="space-y-6">
                 {strengths.length > 0 ? (
                   strengths.map((s, i) => (
                     <div key={i} className="space-y-2">
@@ -343,7 +332,7 @@ export default function SessionProgressPage() {
                 ) : (
                   <p className="text-xs text-warm-ink-muted">No strengths yet. Keep studying!</p>
                 )}
-                <button className="w-full py-3 rounded-full bg-sage/10 text-sage text-[10px] font-bold uppercase tracking-widest hover:bg-sage/20 transition-all mt-4 cursor-pointer">Teach A Peer (+200 XP)</button>
+                <button className="w-full py-3 rounded-full bg-sage/10 text-sage text-[10px] font-bold uppercase tracking-widest hover:bg-sage/20 transition-all mt-4 cursor-pointer"><span className="stamp-ink mr-2 text-[9px]">+200 XP</span> Teach A Peer</button>
               </div>
             </div>
           </div>

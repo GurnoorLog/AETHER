@@ -103,7 +103,7 @@ export default function SidebarLeft({ currentPage }: { currentPage: string }) {
       </button>
       {mOpen && (
         <div
-          className="sidebar-mobile fixed inset-0 z-40 bg-[#2D3436]/30 backdrop-blur-sm lg:hidden editorial"
+          className="sidebar-mobile fixed inset-0 z-40 bg-[#2D3436]/30 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}

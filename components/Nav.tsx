@@ -17,10 +17,10 @@ export default function Nav() {
         </a>
 
         <div className="hidden md:flex gap-12">
-          <a href="#" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] premium-transition">Platform</a>
-          <a href="#methodology" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] premium-transition">Methodology</a>
-          <a href="/pricing" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] premium-transition">Pricing</a>
-          <a href="#" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] premium-transition">Research</a>
+          <a href="#" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] ease-smooth">Platform</a>
+          <a href="#methodology" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] ease-smooth">Methodology</a>
+          <a href="/pricing" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] ease-smooth">Pricing</a>
+          <a href="#" className="text-sm font-bold text-[#2D3436]/60 hover:text-[#3F5C3A] ease-smooth">Research</a>
         </div>
 
         <div className="hidden md:flex items-center gap-5">
@@ -35,7 +35,7 @@ export default function Nav() {
             <>
               <button
                 onClick={() => open("login")}
-                className="text-sm font-bold text-[#2D3436]/60 border border-[#E7E1D6] px-6 lg:px-8 py-2.5 lg:py-3 rounded-full hover:border-[#3F5C3A]/40 hover:text-[#3F5C3A] premium-transition cursor-pointer"
+                className="text-sm font-bold text-[#2D3436]/60 border border-[#E7E1D6] px-6 lg:px-8 py-2.5 lg:py-3 rounded-full hover:border-[#3F5C3A]/40 hover:text-[#3F5C3A] ease-smooth cursor-pointer"
               >
                 Login
               </button>
@@ -84,7 +84,7 @@ export default function Nav() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => { open("login"); setMobileOpen(false); }}
-                  className="text-sm font-bold text-[#2D3436]/60 border border-[#E7E1D6] py-4 rounded-full hover:border-[#3F5C3A]/40 hover:text-[#3F5C3A] premium-transition cursor-pointer"
+                  className="text-sm font-bold text-[#2D3436]/60 border border-[#E7E1D6] py-4 rounded-full hover:border-[#3F5C3A]/40 hover:text-[#3F5C3A] ease-smooth cursor-pointer"
                 >
                   Login
                 </button>

@@ -36,10 +36,10 @@ export default function CodeCell({ language = "python", defaultCode = "", readOn
             <button
               onClick={run}
               disabled={running}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyber-yellow/10 text-cyber-yellow text-[10px] font-bold hover:bg-cyber-yellow/20 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-ochre/10 text-ochre text-[10px] font-bold hover:bg-ochre/20 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
             >
               {running ? (
-                <div className="w-3 h-3 border-2 border-cyber-yellow border-t-transparent rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-ochre border-t-transparent rounded-full animate-spin" />
               ) : (
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
               )}

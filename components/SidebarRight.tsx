@@ -131,24 +131,24 @@ export default function SidebarRight() {
               </svg>
               <div className="absolute flex flex-col items-center">
                 <span className="text-[56px] font-bold leading-none text-[#2D3436]">{masteryTotal}%</span>
-                <span className="text-[#A0A5A8] text-[11px] font-bold tracking-[0.1em] mt-1">MASTERY</span>
+                <span className="hint-label text-[11px] tracking-[0.1em] mt-1">MASTERY</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-8 mt-12 text-center">
               <div>
-                <p className="text-[#A0A5A8] text-[10px] font-bold uppercase tracking-widest mb-1">Study</p>
+                <p className="hint-label text-[10px] mb-1">Study</p>
                 <p className="text-[24px] font-bold text-[#2D3436]">{studyHours}h</p>
               </div>
               <div>
-                <p className="text-[#A0A5A8] text-[10px] font-bold uppercase tracking-widest mb-1">XP</p>
-                <p className="text-[24px] font-bold" style={{ color: SAGE }}>+{estimatedXP}</p>
+                <p className="hint-label text-[10px] mb-1">XP</p>
+                <p className="stamp text-[16px] px-2 py-0.5" style={{ color: SAGE, borderColor: SAGE, boxShadow: `2px 2px 0 0 rgba(0,0,0,0.1)` }}>+{estimatedXP}</p>
               </div>
             </div>
           </div>
           {memories.length > 0 && (
             <div>
-              <p className="text-xs font-bold tracking-widest uppercase mb-4 text-[#A0A5A8]">Memory Log</p>
+              <p className="hint-label text-xs tracking-widest uppercase mb-4">Memory Log</p>
               <div className="space-y-3">
                 {memories.map((m, i) => (
                   <div key={i} className="bg-white rounded-[32px] p-5 border border-[#E7E1D6] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] flex items-center gap-4 editorial">
@@ -269,7 +269,7 @@ export default function SidebarRight() {
       </aside>
       {mOpen && (
         <div
-          className="fixed inset-0 bg-[#2D3436]/30 z-40 lg:hidden editorial"
+          className="fixed inset-0 bg-[#2D3436]/30 z-40 lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}

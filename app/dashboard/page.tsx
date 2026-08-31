@@ -106,11 +106,12 @@ export default function DashboardPage() {
 
         <div className="min-h-[40vh] bg-[#FDFBF7] text-[#2D3436] p-6 sm:p-8 lg:p-12 border-b hairline relative flex flex-col justify-end editorial">
           <div className="absolute top-4 right-4 lg:top-10 lg:right-10 flex gap-2 sm:gap-4 flex-wrap">
-            <div className="btn-editorial px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">STUDENT BRAIN</div>
-            <div className="bg-[#E9EDE3] border border-[#E7E1D6] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-[#3F5C3A]">{subjects.length} Subjects</div>
+            <div className="stamp-ink px-4 py-1 text-[10px]">STUDENT BRAIN</div>
+            <div className="stamp px-4 py-1 text-[10px] text-[#3F5C3A] border-[#3F5C3A]">{subjects.length} Subjects</div>
           </div>
           <div className="max-w-3xl mb-12">
-              <p className="text-sm font-bold uppercase tracking-[0.3em] mb-4 text-[#3F5C3A]">
+              <p className="hint-label text-sm tracking-[0.3em] uppercase mb-4 text-[#3F5C3A] flex items-center gap-3">
+              <span className="rule-rough" />
               Welcome back, {profile?.full_name?.split(" ")[0] || "Student"}.
             </p>
               <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tighter leading-tight mb-4 serif-display">
@@ -128,7 +129,6 @@ export default function DashboardPage() {
                   : "Upload your first document and start building your knowledge base."}
             </p>
           </div>
-          <div className="absolute bottom-0 right-0 w-[200px] h-[200px] lg:w-[400px] lg:h-[400px] bg-[#3F5C3A]/5 rounded-full -mb-40 -mr-20" />
         </div>
 
 
@@ -149,7 +149,7 @@ export default function DashboardPage() {
                 <h3 className="text-xl font-bold">Aether Core</h3>
                 <div className="flex items-center gap-3 text-xs text-warm-ink-muted">
                   <span className="flex items-center gap-1 text-green-400">
-                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                    <span className="inline-block w-1.5 h-1.5 bg-green-400 rounded-none -rotate-12" />
                     Listening
                   </span>
                   <span>•</span>
@@ -170,13 +170,6 @@ export default function DashboardPage() {
                   Admin Portal
                 </button>
               )}
-              <div className="flex items-end gap-1.5 h-10">
-                <div className="waveform-bar bg-[#3F5C3A] w-1 rounded-full" style={{ animationDuration: '0.5s' }} />
-                <div className="waveform-bar bg-[#C9772E] w-1 rounded-full" style={{ animationDuration: '1.0s' }} />
-                <div className="waveform-bar bg-[#3F5C3A] w-1 rounded-full" style={{ animationDuration: '0.7s' }} />
-                <div className="waveform-bar bg-[#2D3436]/30 w-1 rounded-full" style={{ animationDuration: '1.3s' }} />
-                <div className="waveform-bar bg-[#3F5C3A] w-1 rounded-full" style={{ animationDuration: '0.9s' }} />
-              </div>
               <button type="button" className="w-12 h-12 rounded-full border border-hairline-warm flex items-center justify-center hover:bg-warm-ink/[0.05] transition-colors cursor-pointer">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />

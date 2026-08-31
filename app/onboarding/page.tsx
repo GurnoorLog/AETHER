@@ -296,13 +296,13 @@ export default function OnboardingPage() {
                           placeholder="Type your name..."
                           className="flex-1 bg-white px-4 sm:px-6 py-4 sm:py-5             rounded-2xl text-[#2D3436] text-base sm:text-lg font-medium
                             placeholder:text-[#A0A5A8] border-[#E7E1D6] focus:border-[#3F5C3A]
-                            outline-none focus:ring-2 focus:ring-[#3F5C3A]/20 premium-transition editorial"
+                            outline-none focus:ring-2 focus:ring-[#3F5C3A]/20 ease-smooth editorial"
                         />
                         <button
                           onClick={nameDone}
                           disabled={!name.trim()}
                           className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#3F5C3A] flex items-center justify-center
-                            hover:scale-105 active:scale-95 premium-transition
+                            hover:scale-105 active:scale-95 ease-smooth
                             disabled:opacity-30 cursor-pointer editorial"
                         >
                           <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -319,7 +319,7 @@ export default function OnboardingPage() {
                           <button
                             key={s}
                             onClick={() => flipSubj(s)}
-                            className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
+                            className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold ease-smooth cursor-pointer ${
                               subs.includes(s)
                                 ? "btn-editorial "
                                 : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
@@ -343,7 +343,7 @@ export default function OnboardingPage() {
                         <button
                           onClick={subsDone}
                           className="px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
-                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
+                            hover:scale-[1.02] active:scale-95 ease-smooth cursor-pointer"
                         >
                           Continue
                         </button>
@@ -356,7 +356,7 @@ export default function OnboardingPage() {
                         <button
                           key={level}
                           onClick={() => setEdu(level)}
-                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
+                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold ease-smooth cursor-pointer ${
                             edu === level
                               ? "btn-editorial "
                               : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
@@ -369,7 +369,7 @@ export default function OnboardingPage() {
                         <button
                           onClick={eduDone}
                           className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
-                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
+                            hover:scale-[1.02] active:scale-95 ease-smooth cursor-pointer"
                         >
                           Continue
                         </button>
@@ -382,7 +382,7 @@ export default function OnboardingPage() {
                         <button
                           key={style.id}
                           onClick={() => flipStyle(style.id)}
-                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold premium-transition cursor-pointer ${
+                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-4 rounded-2xl text-sm sm:text-base font-bold ease-smooth cursor-pointer ${
                             styles.includes(style.id)
                               ? "btn-editorial "
                               : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
@@ -395,7 +395,7 @@ export default function OnboardingPage() {
                         <button
                           onClick={stylesDone}
                           className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
-                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
+                            hover:scale-[1.02] active:scale-95 ease-smooth cursor-pointer"
                         >
                           Continue
                         </button>
@@ -409,7 +409,7 @@ export default function OnboardingPage() {
                           <button
                             key={g}
                             onClick={() => flipGoal(g)}
-                            className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold premium-transition cursor-pointer ${
+                            className={`px-4 sm:px-5 py-3 rounded-2xl text-sm font-bold ease-smooth cursor-pointer ${
                               gl.includes(g)
                                 ? "btn-editorial "
                                 : "bg-white border border-[#E7E1D6] text-[#2D3436]/80 hover:border-[#3F5C3A]/50 hover:text-[#2D3436]"
@@ -423,7 +423,7 @@ export default function OnboardingPage() {
                         <button
                           onClick={goalsDone}
                           className="mt-3 px-6 sm:px-8 py-3 sm:py-4 btn-editorial text-sm font-bold
-                            hover:scale-[1.02] active:scale-95 premium-transition cursor-pointer"
+                            hover:scale-[1.02] active:scale-95 ease-smooth cursor-pointer"
                         >
                           Continue
                         </button>
@@ -435,9 +435,9 @@ export default function OnboardingPage() {
                       <button
                         onClick={() => voiceDone(true)}
                         className="flex-1 bg-white p-4 sm:p-6 rounded-3xl border border-[#E7E1D6] hover:border-[#3F5C3A]/50
-                          hover:bg-[#3F5C3A]/5 premium-transition group cursor-pointer text-left editorial"
+                          hover:bg-[#3F5C3A]/5 ease-smooth group cursor-pointer text-left editorial"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3F5C3A]/10 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition editorial">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#3F5C3A]/10 flex items-center justify-center mb-4 group-hover:scale-110 ease-smooth editorial">
                           <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#3F5C3A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                           </svg>
@@ -448,9 +448,9 @@ export default function OnboardingPage() {
                       <button
                         onClick={() => voiceDone(false)}
                         className="flex-1 bg-white p-4 sm:p-6 rounded-3xl border border-[#E7E1D6] hover:border-[#3F5C3A]/50 hover:bg-[#3F5C3A]/5
-                          premium-transition group cursor-pointer text-left editorial"
+                          ease-smooth group cursor-pointer text-left editorial"
                       >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#2D3436]/5 flex items-center justify-center mb-4 group-hover:scale-110 premium-transition editorial">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#2D3436]/5 flex items-center justify-center mb-4 group-hover:scale-110 ease-smooth editorial">
                           <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#555E61]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                             <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                           </svg>

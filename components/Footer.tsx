@@ -10,9 +10,9 @@ export default function Footer() {
             The AI tutor that truly understands you. Upload anything, learn everything.
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-[#2D3436]/40 text-sm font-bold hover:text-[#3F5C3A] premium-transition">Twitter</a>
-            <a href="https://github.com/GurnoorLog/AETHER" className="text-[#2D3436]/40 text-sm font-bold hover:text-[#3F5C3A] premium-transition">GitHub</a>
-            <a href="https://discord.gg/j493qpnD" target="_blank" rel="noopener noreferrer" className="text-[#2D3436]/40 text-sm font-bold hover:text-[#3F5C3A] premium-transition">Discord</a>
+            <a href="#" className="text-[#2D3436]/40 text-sm font-bold hover:text-[#3F5C3A] ease-smooth">Twitter</a>
+            <a href="https://github.com/GurnoorLog/AETHER" className="text-[#2D3436]/40 text-sm font-bold hover:text-[#3F5C3A] ease-smooth">GitHub</a>
+            <a href="https://discord.gg/j493qpnD" target="_blank" rel="noopener noreferrer" className="text-[#2D3436]/40 text-sm font-bold hover:text-[#3F5C3A] ease-smooth">Discord</a>
           </div>
         </div>
         {[
@@ -51,7 +51,7 @@ export default function Footer() {
             <ul className="space-y-5">
               {col.links.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="text-[#2D3436]/50 text-sm font-bold hover:text-[#3F5C3A] premium-transition">
+                  <a href={item.href} className="text-[#2D3436]/50 text-sm font-bold hover:text-[#3F5C3A] ease-smooth">
                     {item.label}
                   </a>
                 </li>
@@ -62,7 +62,6 @@ export default function Footer() {
       </div>
       <div className="max-w-7xl mx-auto mt-24">
         <div className="rounded-[48px] border border-[#E7E1D6] bg-[#F4F0E9] p-12 md:p-16 text-center relative overflow-hidden editorial">
-          <div className="absolute top-[-50%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#3F5C3A]/5 rounded-full blur-[120px] pointer-events-none" />
           <span className="text-[#3F5C3A] text-xs font-black tracking-[0.25em] uppercase">Made by the Founder</span>
           <h3 className="text-4xl md:text-6xl font-black text-[#2D3436] mt-6 mb-6 tracking-tighter serif-display">
             Gurnoor <span className="text-[#3F5C3A]">Tamber</span>

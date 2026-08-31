@@ -145,15 +145,15 @@ export default function AdminPage() {
   }
 
   if (authLoading) {
-    return <div className="h-screen bg-deep-onyx text-white flex items-center justify-center">Loading...</div>;
+    return <div className="h-screen bg-ink-black text-white flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-deep-onyx text-white">
+    <div className="min-h-screen bg-ink-black text-white">
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-cyber-yellow mb-2">Aether Admin</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-ochre mb-2">Aether Admin</p>
             <h1 className="text-3xl font-bold tracking-tighter">Admin Portal</h1>
             <p className="text-sm text-white/40 mt-1">{user?.email}</p>
           </div>
@@ -181,14 +181,14 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={verifying || !code}
-                className="w-full py-3 rounded-full bg-cyber-yellow text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
+                className="w-full py-3 rounded-full bg-ochre text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-all cursor-pointer"
               >
                 {verifying ? "Verifying..." : loadingData ? "Loading..." : "Unlock"}
               </button>
             </form>
             <p className="text-xs text-white/40 text-center mt-4">
               First time?{" "}
-              <button onClick={() => router.push("/admin/setup")} className="underline text-cyber-yellow cursor-pointer">
+              <button onClick={() => router.push("/admin/setup")} className="underline text-ochre cursor-pointer">
                 Set up Google Authenticator
               </button>
             </p>
@@ -197,7 +197,7 @@ export default function AdminPage() {
           <div className="space-y-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <StatCard label="Total Users" value={String(data.stats.total_users)} />
-              <StatCard label="Tokens Used" value={data.stats.total_tokens.toLocaleString()} accent="text-cyber-yellow" />
+              <StatCard label="Tokens Used" value={data.stats.total_tokens.toLocaleString()} accent="text-ochre" />
               <StatCard label="Messages Sent" value={String(data.stats.total_chats)} />
               <StatCard label="Beta Approved" value={`${data.stats.total_approved} / ${data.stats.total_users}`} />
             </div>
@@ -233,7 +233,7 @@ export default function AdminPage() {
                         <td className="px-6 py-3 text-center">{u.usage.quiz_count}</td>
                         <td className="px-6 py-3 text-center">{u.usage.voice_count}</td>
                         <td className="px-6 py-3 text-center">{u.usage.challenge_count}</td>
-                        <td className="px-6 py-3 text-right font-semibold text-cyber-yellow">
+                        <td className="px-6 py-3 text-right font-semibold text-ochre">
                           {u.usage.tokens_used.toLocaleString()}
                         </td>
                         <td className="px-6 py-3 text-center">
@@ -270,7 +270,7 @@ export default function AdminPage() {
                     {data.audit.map((a, i) => (
                       <tr key={i} className="border-b border-hairline-warm">
                         <td className="px-6 py-3">
-                          <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${a.action === "verify_failed" || a.action === "token_rejected" ? "bg-red-500/10 text-red-400" : "bg-cyber-yellow/10 text-cyber-yellow"}`}>
+                          <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${a.action === "verify_failed" || a.action === "token_rejected" ? "bg-red-500/10 text-red-400" : "bg-ochre/10 text-ochre"}`}>
                             {ACTION_LABELS[a.action] || a.action}
                           </span>
                         </td>
