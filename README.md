@@ -37,24 +37,3 @@ Please check it out. It was my first video ever made lol, and if you vibe with i
 | Voice | Deepgram (speech-to-text + text-to-speech) |
 | In-browser code | Pyodide (Python), Web Worker (JS), Rust Playground API |
 | Rendering | KaTeX (LaTeX), Mermaid.js (diagrams), Tailwind CSS |
-
-## Gallery
-
-<div align="center">
-  <img src="gallery/gallery.jpg" width="45%" />
-  <img src="gallery/gallery-1.jpg" width="45%" />
-</div>
-
-<div align="center">
-  <img src="gallery/gallery-2.jpg" width="45%" />
-  <img src="gallery/gallery-3.jpg" width="45%" />
-</div>
-
-<div align="center">
-  <img src="gallery/gallery-4.jpg" width="45%" />
-  <img src="gallery/gallery-5.jpg" width="45%" />
-</div>
-
-<div align="center">
-  <img src="gallery/gallery-6.jpg" width="45%" />
-</div>
