@@ -40,12 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
-
-# project extras
-aether-video/
-aether-backup/
-aether/
+# agent/tool local config
 .claude/
 .codex/
 .cursor/
@@ -53,20 +48,5 @@ aether/
 .agents/
 .qoder/
 .windsurf/
-22/
-HeartMuLa-Studio/
-sesison_25/
-session27/
-sessionlatest
-sessionlatest_damn
-IMPLEMENTATION_PLAN.md
-session-1.md
-local-admin/
-SHIPATON_PLAN.md
 opencode.json
-AGENTS.md
-CLAUDE.md
 skills-lock.json
-
-# mobile app (Expo / React Native) - tracked so no work is lost
-/android/

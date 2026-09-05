@@ -10,6 +10,18 @@ Check out the demo video to see it in action: https://youtu.be/Adcq0bVabeU?si=0l
 
 Please check it out. It was my first video ever made lol, and if you vibe with it, go drop a like. It really helps a small dev out. I also have a Discord server where I share updates: https://discord.gg/c9tZsYGH
 
+## Repository layout
+
+This repo contains both halves of Aether:
+
+| Path | What it is |
+|---|---|
+| `/` (root) | The website — Next.js app (App Router), deployed to Vercel. Landing page, dashboard, and API routes live here. |
+| `mobile/` | The Android app — an Expo / React Native app (TypeScript), with its native android project under `mobile/android/`. |
+| `supabase/` | Supabase config and schema. |
+
+The signing keystores for the Android app are kept out of git on purpose — never commit `mobile/android/app/*.keystore`.
+
 ## What it does
 
 **Chat with your own stuff.** This chat is powered by Gemini 2.5 Flash, but it's not a chatbot, it's something else. It reads your documents and answers from them, and it cites which document and page it got the info from. It also remembers what you have learned, and adapts its tone and difficulty level to you.
