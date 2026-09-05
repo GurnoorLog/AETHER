@@ -50,3 +50,7 @@ next-env.d.ts
 .windsurf/
 opencode.json
 skills-lock.json
+
+# markdown docs (except READMEs)
+*.md
+!**/README.md

@@ -23,20 +23,20 @@ interface RoadmapModule {
 }
 
 const SUBJECT_IMAGES: Record<string, string> = {
-  physics: "/design/physics.jpg",
-  maths: "/design/maths.jpg",
-  math: "/design/maths.jpg",
-  mathematics: "/design/maths.jpg",
-  biology: "/design/biology.jpg",
-  chemistry: "/design/chemistry.jpg",
-  "computer science": "/design/cs.jpg",
-  cs: "/design/cs.jpg",
-  history: "/design/history.jpg",
-  literature: "/design/literature.jpg",
-  english: "/design/literature.jpg",
+  physics: "/mobile-assets/physics.jpg",
+  maths: "/mobile-assets/maths.jpg",
+  math: "/mobile-assets/maths.jpg",
+  mathematics: "/mobile-assets/maths.jpg",
+  biology: "/mobile-assets/biology.jpg",
+  chemistry: "/mobile-assets/chemistry.jpg",
+  "computer science": "/mobile-assets/cs.jpg",
+  cs: "/mobile-assets/cs.jpg",
+  history: "/mobile-assets/history.jpg",
+  literature: "/mobile-assets/literature.jpg",
+  english: "/mobile-assets/literature.jpg",
 };
 
-const DEFAULT_IMAGE = "/design/physics.jpg";
+const DEFAULT_IMAGE = "/mobile-assets/physics.jpg";
 
 function imgFor(subject?: string | null): string {
   if (!subject) return DEFAULT_IMAGE;
