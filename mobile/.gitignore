@@ -50,3 +50,4 @@ yarn-error.*
 /android/build/
 /android/app/build/
 /android/.idea/
+metro.log
