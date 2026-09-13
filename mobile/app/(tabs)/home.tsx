@@ -24,16 +24,16 @@ const GREEN = '#3F5C3A';
 
 const SUBJECT_IMAGES: Record<string, ImageSourcePropType> = {
   physics: require('../../assets/design/pysics.png'),
-  maths: require('../../assets/design/maths.jpg'),
-  math: require('../../assets/design/maths.jpg'),
-  mathematics: require('../../assets/design/maths.jpg'),
+  maths: require('../../assets/design/math.png'),
+  math: require('../../assets/design/math.png'),
+  mathematics: require('../../assets/design/math.png'),
   biology: require('../../assets/design/biology.jpg'),
   chemistry: require('../../assets/design/chemistry.jpg'),
-  'computer science': require('../../assets/design/cs.jpg'),
-  cs: require('../../assets/design/cs.jpg'),
+  'computer science': require('../../assets/design/cs.png'),
+  cs: require('../../assets/design/cs.png'),
   history: require('../../assets/design/history.jpg'),
-  literature: require('../../assets/design/literature.jpg'),
-  english: require('../../assets/design/literature.jpg'),
+  literature: require('../../assets/design/lictrutur.png'),
+  english: require('../../assets/design/lictrutur.png'),
 };
 
 const DEFAULT_IMAGE = require('../../assets/design/pysics.png');

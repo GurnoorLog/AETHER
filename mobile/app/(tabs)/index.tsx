@@ -36,7 +36,7 @@ import {
 import { BottomNav } from '@/components/BottomNav';
 import { Stamp, SERIF, EditorialPressable } from '@/components/editorial';
 
-const BG_IMAGE = require('../../assets/design/hub_scene.jpeg');
+const BG_IMAGE = require('../../assets/design/home.png');
 const HUB_ICON = require('../../assets/design/hub_icon.png');
 
 const SUBJECT_ICON: Record<string, IconComponent> = {
