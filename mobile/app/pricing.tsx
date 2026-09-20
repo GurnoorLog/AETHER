@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
@@ -88,11 +88,22 @@ export default function PricingScreen() {
   const styles = useMemo(() => makeStyles(theme), [theme]);
   const { offerings, customerInfo, purchasing, error, purchasePackage } = useRevenueCat();
   const currentTier = getTierFromCustomerInfo(customerInfo);
+  const plansUnavailable = offerings.length === 0;
+  const [localError, setLocalError] = useState('');
+  const displayError = error || localError;
+
+  useEffect(() => {
+    if (offerings.length > 0) setLocalError('');
+  }, [offerings]);
 
   const subscribe = async (plan: typeof PLANS[number]) => {
     if (!plan.tier) return;
+    setLocalError('');
     const pkg = offerings.find(o => o.identifier === plan.rcIdentifier);
-    if (!pkg) return;
+    if (!pkg) {
+      setLocalError('Subscription products are loading. Please try again in a moment.');
+      return;
+    }
     const ok = await purchasePackage(pkg);
     if (ok) router.back();
   };
@@ -113,9 +124,14 @@ export default function PricingScreen() {
         <Text style={styles.heroSub}>Start free, upgrade when you outgrow it. No hidden fees.</Text>
       </View>
 
-      {error ? (
+      {displayError ? (
         <EditorialCard style={styles.errorCard}>
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={styles.errorText}>{displayError}</Text>
+        </EditorialCard>
+      ) : null}
+      {plansUnavailable && !error ? (
+        <EditorialCard style={styles.errorCard}>
+          <Text style={styles.errorText}>Subscription plans are currently unavailable. Please try again in a moment.</Text>
         </EditorialCard>
       ) : null}
 

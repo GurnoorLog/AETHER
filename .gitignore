@@ -54,3 +54,11 @@ skills-lock.json
 # markdown docs (except READMEs)
 *.md
 !**/README.md
+
+# large / regeneration-only images
+mobile/assets/design/onboarding_bg.jpg
+public/mobile-assets/onboarding_bg.jpg
+mobile/assets/design/history.jpg
+public/mobile-assets/history.jpg
+mobile/assets/design/sakura_leaves.png
+public/mobile-assets/sakura_leaves.png

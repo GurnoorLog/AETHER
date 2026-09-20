@@ -31,7 +31,7 @@ const SUBJECT_IMAGES: Record<string, ImageSourcePropType> = {
   chemistry: require('../../assets/design/chemistry.png'),
   'computer science': require('../../assets/design/cs.png'),
   cs: require('../../assets/design/cs.png'),
-  history: require('../../assets/design/history.jpg'),
+  history: require('../../assets/design/lictrutur.png'),
   literature: require('../../assets/design/lictrutur.png'),
   english: require('../../assets/design/lictrutur.png'),
 };
@@ -79,7 +79,9 @@ export default function HomeTab() {
   if (!session) {
     return (
       <View style={styles.root}>
-        <Image source={DEFAULT_IMAGE} style={styles.heroImage} />
+        <View style={styles.heroClip}>
+          <Image source={DEFAULT_IMAGE} style={styles.heroImage} />
+        </View>
         <View style={styles.heroOverlay} />
         <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           <View style={{ height: 120 }} />
@@ -91,7 +93,9 @@ export default function HomeTab() {
 
   return (
     <View style={styles.root}>
-      <Image source={getSubjectImage(session.subject)} style={styles.heroImage} />
+      <View style={styles.heroClip}>
+        <Image source={getSubjectImage(session.subject)} style={styles.heroImage} />
+      </View>
       <View style={styles.heroOverlay} />
       <View style={styles.imageContent} pointerEvents="none">
         <View style={styles.topRow}>
@@ -220,7 +224,8 @@ export default function HomeTab() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#FDFBF7' },
-  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, width: '100%', resizeMode: 'cover' },
+  heroClip: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, overflow: 'hidden' },
+  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, width: '100%', resizeMode: 'cover', transform: [{ scale: 1.6 }] },
   heroOverlay: { position: 'absolute', top: 0, left: 0, right: 0, height: 420 },
   imageContent: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, paddingTop: 56, paddingHorizontal: 24, zIndex: 3 },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },

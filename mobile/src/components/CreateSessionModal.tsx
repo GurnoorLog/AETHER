@@ -39,6 +39,7 @@ const PRESETS = [
 ];
 
 export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [step, setStep] = useState(0);
   const [subject, setSubject] = useState('');
   const [objectives, setObjectives] = useState('');
   const [creating, setCreating] = useState(false);
@@ -51,7 +52,14 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
     setError('');
     setSubject('');
     setObjectives('');
+    setStep(0);
     onClose();
+  };
+
+  const next = () => {
+    if (!subject.trim()) return;
+    setError('');
+    setStep(1);
   };
 
   const startLearning = () => {
@@ -62,7 +70,7 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
   };
 
   const handleCreate = async () => {
-    if (!subject.trim() || creating) return;
+    if (!subject.trim() || !objectives.trim() || creating) return;
     setCreating(true);
     setError('');
     try {
@@ -120,67 +128,96 @@ export function CreateSessionModal({ open, onClose }: { open: boolean; onClose: 
             </ScrollView>
           ) : (
             <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-              <Kicker>SUBJECT</Kicker>
-              <RuleRough />
-              <View style={styles.presetGrid}>
-                {PRESETS.map((p) => {
-                  const active = subject === p.label;
-                  return (
-                    <Pressable
-                      key={p.label}
-                      onPress={() => setSubject(p.label)}
-                      style={[
-                        styles.preset,
-                        active && styles.presetActive,
-                      ]}
-                    >
-                      <Icon icon={p.icon} size={20} color={active ? EDITORIAL.cream : EDITORIAL.inkMuted} />
-                      <Text style={[styles.presetLabel, active && styles.presetLabelActive]} numberOfLines={1}>
-                        {p.label}
+              {step === 0 ? (
+                <>
+                  <Kicker>STEP 1 OF 2</Kicker>
+                  <RuleRough />
+                  <View style={styles.presetGrid}>
+                    {PRESETS.map((p) => {
+                      const active = subject === p.label;
+                      return (
+                        <Pressable
+                          key={p.label}
+                          onPress={() => setSubject(p.label)}
+                          style={[
+                            styles.preset,
+                            active && styles.presetActive,
+                          ]}
+                        >
+                          <Icon icon={p.icon} size={20} color={active ? EDITORIAL.cream : EDITORIAL.inkMuted} />
+                          <Text style={[styles.presetLabel, active && styles.presetLabelActive]} numberOfLines={1}>
+                            {p.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  <EditorialInput
+                    value={subject}
+                    onChangeText={setSubject}
+                    placeholder="Or type any subject you want to learn..."
+                    style={styles.inputCustom}
+                  />
+
+                  {error ? (
+                    <View style={styles.errorCard}>
+                      <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                  ) : null}
+
+                  <EditorialButton
+                    tone={!subject.trim() ? 'disabled' : 'forest'}
+                    onPress={next}
+                    style={!subject.trim() ? { opacity: 0.5 } : undefined}
+                  >
+                    <View style={styles.createBtnInner}>
+                      <Icon icon={BookOpen} size={18} color={EDITORIAL.cream} />
+                      <Text style={styles.createBtnText}>Select Subject</Text>
+                    </View>
+                  </EditorialButton>
+                </>
+              ) : (
+                <>
+                  <Pressable onPress={() => { setError(''); setStep(0); }} style={styles.backRow} hitSlop={8}>
+                    <Icon icon={X} size={16} color={EDITORIAL.inkMuted} />
+                    <Text style={styles.backText}>Change subject</Text>
+                  </Pressable>
+                  <Kicker>SUBJECT: {subject.toUpperCase()}</Kicker>
+                  <RuleRough />
+                  <Kicker>STEP 2 OF 2</Kicker>
+                  <RuleRough />
+                  <EditorialInput
+                    value={objectives}
+                    onChangeText={setObjectives}
+                    placeholder="What do you want to learn? e.g. I want to understand derivatives and integrals for my exam next week..."
+                    style={[styles.inputCustom, styles.objectives]}
+                  />
+
+                  {error ? (
+                    <View style={styles.errorCard}>
+                      <Text style={styles.errorText}>{error}</Text>
+                    </View>
+                  ) : null}
+
+                  <EditorialButton
+                    tone={!subject.trim() || !objectives.trim() || creating ? 'disabled' : 'forest'}
+                    onPress={handleCreate}
+                    style={(!subject.trim() || !objectives.trim() || creating) ? { opacity: 0.5 } : undefined}
+                  >
+                    <View style={styles.createBtnInner}>
+                      {creating ? (
+                        <ActivityIndicator color={EDITORIAL.cream} size="small" />
+                      ) : (
+                        <Icon icon={GraduationCap} size={18} color={EDITORIAL.cream} />
+                      )}
+                      <Text style={styles.createBtnText}>
+                        {creating ? 'Generating your roadmap...' : 'Create my roadmap'}
                       </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-
-              <EditorialInput
-                value={subject}
-                onChangeText={setSubject}
-                placeholder="Or type any topic you want to learn..."
-                style={styles.inputCustom}
-              />
-
-              <Kicker>WHAT DO YOU WANT TO LEARN? (OPTIONAL)</Kicker>
-              <RuleRough />
-              <EditorialInput
-                value={objectives}
-                onChangeText={setObjectives}
-                placeholder="e.g. I want to understand derivatives and integrals for my exam next week..."
-                style={[styles.inputCustom, styles.objectives]}
-              />
-
-              {error ? (
-                <View style={styles.errorCard}>
-                  <Text style={styles.errorText}>{error}</Text>
-                </View>
-              ) : null}
-
-              <EditorialButton
-                tone={!subject.trim() || creating ? 'disabled' : 'forest'}
-                onPress={handleCreate}
-                style={(!subject.trim() || creating) ? { opacity: 0.5 } : undefined}
-              >
-                <View style={styles.createBtnInner}>
-                  {creating ? (
-                    <ActivityIndicator color={EDITORIAL.cream} size="small" />
-                  ) : (
-                    <Icon icon={GraduationCap} size={18} color={EDITORIAL.cream} />
-                  )}
-                  <Text style={styles.createBtnText}>
-                    {creating ? 'Generating your roadmap...' : 'Create Session'}
-                  </Text>
-                </View>
-              </EditorialButton>
+                    </View>
+                  </EditorialButton>
+                </>
+              )}
             </ScrollView>
           )}
         </View>
@@ -231,6 +268,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   title: { fontFamily: SERIF, fontSize: 22, fontWeight: '700', color: EDITORIAL.ink },
+  backRow: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', gap: 6, marginBottom: 4 },
+  backText: { fontFamily: SERIF, fontSize: 13, fontWeight: '600', color: EDITORIAL.inkMuted, textDecorationLine: 'underline' },
   content: { paddingHorizontal: 24, gap: 12 },
   presetGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   preset: {

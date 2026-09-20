@@ -12,7 +12,7 @@ let configured = false;
 export async function configureRevenueCat() {
   if (configured || !REVENUECAT_API_KEY) return;
   try {
-    Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    Purchases.setLogLevel(LOG_LEVEL.WARN);
     await Purchases.configure({ apiKey: REVENUECAT_API_KEY });
     configured = true;
   } catch (e) {

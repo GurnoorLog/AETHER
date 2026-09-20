@@ -52,6 +52,7 @@ export function PricingModal({ open, onClose }: { open: boolean; onClose: () => 
   }, [open, refresh]);
 
   const displayError = localError || error;
+  const plansUnavailable = offerings.length === 0;
 
   const subscribe = async (plan: typeof PLANS[number]) => {
     if (!plan.tier) { onClose(); return; }
@@ -97,6 +98,11 @@ export function PricingModal({ open, onClose }: { open: boolean; onClose: () => 
             {displayError ? (
               <View style={styles.errorBox}>
                 <Text style={styles.errorText}>{displayError}</Text>
+              </View>
+            ) : null}
+            {plansUnavailable && !displayError ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>Subscription plans are currently unavailable. Please try again in a moment.</Text>
               </View>
             ) : null}
 
