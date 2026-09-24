@@ -23,20 +23,20 @@ import { Stamp, SERIF, EditorialPressable } from '@/components/editorial';
 const GREEN = '#3F5C3A';
 
 const SUBJECT_IMAGES: Record<string, ImageSourcePropType> = {
-  physics: require('../../assets/design/pysics.png'),
-  maths: require('../../assets/design/math.png'),
-  math: require('../../assets/design/math.png'),
-  mathematics: require('../../assets/design/math.png'),
-  biology: require('../../assets/design/biology.png'),
-  chemistry: require('../../assets/design/chemistry.png'),
-  'computer science': require('../../assets/design/cs.png'),
-  cs: require('../../assets/design/cs.png'),
-  history: require('../../assets/design/lictrutur.png'),
-  literature: require('../../assets/design/lictrutur.png'),
-  english: require('../../assets/design/lictrutur.png'),
+  physics: require('../../assets/design/pysics.jpg'),
+  maths: require('../../assets/design/math.jpg'),
+  math: require('../../assets/design/math.jpg'),
+  mathematics: require('../../assets/design/math.jpg'),
+  biology: require('../../assets/design/biology.jpg'),
+  chemistry: require('../../assets/design/chemistry.jpg'),
+  'computer science': require('../../assets/design/cs.jpg'),
+  cs: require('../../assets/design/cs.jpg'),
+  history: require('../../assets/design/history.jpg'),
+  literature: require('../../assets/design/lictrutur.jpg'),
+  english: require('../../assets/design/lictrutur.jpg'),
 };
 
-const DEFAULT_IMAGE = require('../../assets/design/pysics.png');
+const DEFAULT_IMAGE = require('../../assets/design/pysics.jpg');
 
 function getSubjectImage(subject?: string | null): ImageSourcePropType {
   if (!subject) return DEFAULT_IMAGE;
@@ -225,7 +225,7 @@ export default function HomeTab() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#FDFBF7' },
   heroClip: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, overflow: 'hidden' },
-  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, width: '100%', resizeMode: 'cover', transform: [{ scale: 1.6 }] },
+  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, width: '100%', resizeMode: 'cover', transform: [{ scale: 1.18 }] },
   heroOverlay: { position: 'absolute', top: 0, left: 0, right: 0, height: 420 },
   imageContent: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, paddingTop: 56, paddingHorizontal: 24, zIndex: 3 },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },

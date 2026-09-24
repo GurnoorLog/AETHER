@@ -106,7 +106,12 @@ export default function MusicTab() {
         }
       }
 
-      const { audio_url } = await generateTrack({ prompt: promptText, lyrics: lyricsText, duration: 30 });
+      let audio_url: string;
+      try {
+        ({ audio_url } = await generateTrack({ prompt: promptText, lyrics: lyricsText, duration: 30, provider: 'lyria' }));
+      } catch {
+        ({ audio_url } = await generateTrack({ prompt: promptText, lyrics: lyricsText, duration: 30, provider: 'musicgen' }));
+      }
 
       const title = searchInput.trim()
         ? `${searchInput.trim().slice(0, 40)}${searchInput.trim().length > 40 ? '...' : ''}`

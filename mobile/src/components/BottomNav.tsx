@@ -22,6 +22,7 @@ const SESSION_TABS = [
   { key: 'roadmap', label: 'Roadmap', icon: Map, route: '/(tabs)/roadmap' },
   { key: 'tutor', label: 'Chat', icon: MessageSquareText, route: '/(tabs)/tutor' },
   { key: 'quizzes', label: 'Quizzes', icon: Trophy, route: '/(tabs)/quizzes' },
+  { key: 'music', label: 'Music', icon: Music, route: '/(tabs)/music' },
   { key: 'more', label: 'More', icon: MoreHorizontal, route: '/(tabs)/more' },
 ];
 

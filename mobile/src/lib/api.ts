@@ -213,8 +213,24 @@ export async function generateTrack(input: {
   prompt: string;
   lyrics?: string;
   duration?: number;
-  provider?: 'heartmula' | 'musicgen';
+  model?: 'lyria-3-clip-preview' | 'lyria-3.5';
+  provider?: 'lyria' | 'heartmula' | 'musicgen';
 }): Promise<{ audio_url: string }> {
+  if (input.provider === 'lyria') {
+    const res = await apiFetch('/api/music/generate-lyria', {
+      method: 'POST',
+      body: JSON.stringify({
+        prompt: input.prompt,
+        lyrics: input.lyrics ?? '',
+        model: input.model ?? 'lyria-3-clip-preview',
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      throw new Error(body?.error ?? `Lyria generation failed: ${res.status}`);
+    }
+    return res.json();
+  }
   const endpoint = input.provider === 'musicgen' ? '/generate-musicgen' : '/generate';
   const res = await fetch(`${COLAB_API}${endpoint}`, {
     method: 'POST',
