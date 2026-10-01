@@ -44,7 +44,7 @@ export default function RoadmapScreen() {
 
   const startModule = async (mod: RoadmapModule) => {
     if (!authSession || !session) return;
-    const title = `Module ${mod.module_index + 1} â€” ${mod.title}`;
+    const title = `Module ${mod.module_index + 1} — ${mod.title}`;
     const { data: existing } = await supabase
       .from('conversations')
       .select('id')

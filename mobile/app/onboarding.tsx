@@ -56,7 +56,7 @@ import { completeOnboarding, SUBJECTS, EDUCATION_LEVELS, LEARNING_STYLES, GOALS 
 import { PricingModal } from '@/components/PricingModal';
 import { SERIF, EDITORIAL } from '@/components/editorial';
 
-const BG = require('../assets/design/onboarding_bg.jpg');
+const BG = require('../assets/design/onboarding_final.jpg');
 const LOGO = require('../assets/design/icon_logo.png');
 
 const GREEN = EDITORIAL.forest;

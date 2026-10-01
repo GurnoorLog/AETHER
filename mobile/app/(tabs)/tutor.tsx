@@ -94,7 +94,7 @@ export default function TutorTab() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
-  const [speaking, setSpeaking] = useState(true);
+  const [speaking, setSpeaking] = useState(false);
   const [attaching, setAttaching] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -234,21 +234,21 @@ export default function TutorTab() {
     if (sending || recording) return;
     const perm = await requestRecordingPermissionsAsync();
     if (!perm.granted) { Alert.alert('Microphone access needed', 'Enable mic permission to use the voice tutor.'); return; }
-    try { await recorder.prepareToRecordAsync(); recorder.record(); setRecording(true); setStatus('Listeningâ€¦'); }
+    try { await recorder.prepareToRecordAsync(); recorder.record(); setRecording(true); setStatus('Listening…'); }
     catch { Alert.alert('Recording failed', 'Could not start the microphone.'); }
   };
 
   const stopListening = async () => {
     if (!recording) return;
     setRecording(false);
-    setStatus('Transcribingâ€¦');
+    setStatus('Transcribing…');
     try {
       await recorder.stop();
       const uri = recorder.uri;
       if (!uri) { setStatus('Nothing recorded'); return; }
       const transcript = await transcribeAudio(uri);
       if (transcript.trim()) { setStatus(null); sendText(transcript); }
-      else setStatus('No speech heard â€" try again');
+      else setStatus('No speech heard — try again');
     } catch (err) { setStatus(err instanceof Error ? err.message : 'Transcription failed'); }
   };
 

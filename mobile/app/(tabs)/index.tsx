@@ -36,7 +36,7 @@ import {
 import { BottomNav } from '@/components/BottomNav';
 import { Stamp, SERIF, EditorialPressable } from '@/components/editorial';
 
-const BG_IMAGE = require('../../assets/design/home.png');
+const BG_IMAGE = require('../../assets/design/home_final.jpg');
 const HUB_ICON = require('../../assets/design/hub_icon.png');
 
 const SUBJECT_ICON: Record<string, IconComponent> = {
@@ -215,9 +215,6 @@ export default function HubTab() {
         <View style={styles.greetingArea}>
           <Text style={styles.greeting}>{getGreeting()},{'\n'}<Text style={styles.greetingName}>{displayName}</Text></Text>
           <Text style={styles.greetingSub}>Ready to learn something amazing today?</Text>
-          <View style={styles.avatar}>
-            <Image source={BG_IMAGE} style={styles.avatarImg} resizeMode="cover" />
-          </View>
         </View>
 
         {/* Floating New button */}
@@ -359,8 +356,6 @@ const makeStyles = (_theme: GlassTheme) => StyleSheet.create({
   greeting: { fontSize: 29, fontWeight: '700', color: '#2D3436', lineHeight: 35, fontFamily: SERIF, letterSpacing: 0.2 },
   greetingName: { color: GREEN },
   greetingSub: { fontSize: 15, color: '#666', marginTop: 4, opacity: 0.8 },
-  avatar: { position: 'absolute', top: 52, right: 24, width: 48, height: 48, borderRadius: 24, borderWidth: 2, borderColor: '#FFF', overflow: 'hidden', backgroundColor: '#F9F6F0', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
-  avatarImg: { width: '100%', height: '100%' },
 
   floatingArea: { height: 120, paddingHorizontal: 24, position: 'relative', alignItems: 'flex-end' },
   newButton: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: GREEN, paddingHorizontal: 16, height: 40, borderWidth: 2, borderColor: '#2D3436', borderRadius: 255, borderTopLeftRadius: 255, borderTopRightRadius: 15, borderBottomLeftRadius: 225, borderBottomRightRadius: 15, boxShadow: '3px 3px 0 0 #2D3436' },

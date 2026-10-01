@@ -1,6 +1,7 @@
 ﻿import type { Session } from '@supabase/supabase-js';
 import { File, Paths } from 'expo-file-system';
 import { SITE_URL } from '@/lib/auth';
+import { toSpeechText } from '@/lib/speech-text';
 import { supabase } from '@/lib/supabase';
 import type { GeneratedRoadmap, QuizQuestion } from '@/lib/types';
 
@@ -250,12 +251,48 @@ export async function generateTrack(input: {
 }
 
 export async function downloadAudio(audioUrl: string): Promise<string> {
-  const res = await apiFetch(audioUrl);
-  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-  const blob = await res.blob();
-  const bytes = new Uint8Array(await blob.arrayBuffer());
-  const file = new File(Paths.cache, `track-${Date.now()}.mp3`);
+  const isAbsolute = audioUrl.startsWith('http://') || audioUrl.startsWith('https://');
+
+  if (isAbsolute) {
+    try {
+      const direct = await fetch(audioUrl);
+      if (direct.ok) {
+        return writeAudioFile(direct);
+      }
+      console.error(`[downloadAudio] direct fetch not ok: ${direct.status} for ${audioUrl}`);
+    } catch (e) {
+      console.error(`[downloadAudio] direct fetch threw: ${String(e)} for ${audioUrl}`);
+    }
+  }
+
+  let res: Response;
+  try {
+    res = isAbsolute
+      ? await apiFetch(`/api/proxy-audio?url=${encodeURIComponent(audioUrl)}`)
+      : await apiFetch(audioUrl);
+  } catch (e) {
+    console.error(`[downloadAudio] apiFetch threw: ${String(e)}`);
+    throw new Error(`Audio download failed: ${e instanceof Error ? e.message : String(e)}`);
+  }
+  if (!res.ok) {
+    console.error(`[downloadAudio] apiFetch not ok: ${res.status}`);
+    throw new Error(`Download failed: ${res.status}`);
+  }
+
+  return await writeAudioFile(res);
+}
+
+async function writeAudioFile(res: Response): Promise<string> {
+  const bytes = new Uint8Array(await res.arrayBuffer());
+
+  const isWav =
+    bytes.length >= 12 &&
+    bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
+    bytes[8] === 0x57 && bytes[9] === 0x41 && bytes[10] === 0x56 && bytes[11] === 0x45;
+
+  const file = new File(Paths.cache, `track-${Date.now()}${isWav ? '.wav' : '.mp3'}`);
   file.write(bytes);
+
   return file.uri;
 }
 
@@ -281,7 +318,7 @@ export async function generateChallenge(input: {
 
 
 export async function tts(text: string, voice?: string): Promise<string> {
-  const res = await apiFetch('/api/tts', { method: 'POST', body: JSON.stringify({ text, voice }) });
+  const res = await apiFetch('/api/tts', { method: 'POST', body: JSON.stringify({ text: toSpeechText(text), voice }) });
   if (!res.ok) throw new Error(`TTS failed: ${res.status}`);
   const blob = await res.blob();
   return new Promise((resolve, reject) => {
@@ -293,10 +330,9 @@ export async function tts(text: string, voice?: string): Promise<string> {
 }
 
 export async function ttsToFile(text: string, voice?: string): Promise<string> {
-  const res = await apiFetch('/api/tts', { method: 'POST', body: JSON.stringify({ text, voice }) });
+  const res = await apiFetch('/api/tts', { method: 'POST', body: JSON.stringify({ text: toSpeechText(text), voice }) });
   if (!res.ok) throw new Error(`TTS failed: ${res.status}`);
-  const blob = await res.blob();
-  const bytes = new Uint8Array(await blob.arrayBuffer());
+  const bytes = new Uint8Array(await res.arrayBuffer());
   const file = new File(Paths.cache, `voice-${Date.now()}.mp3`);
   file.write(bytes);
   return file.uri;

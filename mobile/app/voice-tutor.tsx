@@ -105,19 +105,19 @@ export default function VoiceTutorPage() {
   const stopListening = async () => {
     if (phase !== 'listening') return;
     setPhase('thinking');
-    setStatus('Listening for a replyâ€¦');
+    setStatus('Listening for a reply…');
     try {
       await recorder.stop();
       const uri = recorder.uri;
       if (!uri) {
         setPhase('idle');
-        setStatus('Nothing recorded â€” hold the orb to talk.');
+        setStatus('Nothing recorded — hold the orb to talk.');
         return;
       }
       const transcript = (await transcribeAudio(uri)).trim();
       if (!transcript) {
         setPhase('idle');
-        setStatus('No speech heard â€” try again.');
+        setStatus('No speech heard — try again.');
         return;
       }
       setUserText(transcript);
@@ -156,13 +156,18 @@ export default function VoiceTutorPage() {
     }
   };
 
+  const closeVoiceTutor = () => {
+    if (router.canGoBack()) router.back();
+    else router.navigate('/(tabs)/tutor');
+  };
+
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
         <Text style={styles.title}>Voice Tutor</Text>
         <Pressable
           style={({ pressed }) => [styles.closeButton, pressed && styles.closeButtonPressed]}
-          onPress={() => router.back()}
+          onPress={closeVoiceTutor}
           accessibilityRole="button"
           accessibilityLabel="Close voice tutor"
         >
@@ -210,9 +215,9 @@ export default function VoiceTutorPage() {
           ) : (
             <Text style={styles.hintText}>
               {phase === 'idle' && 'Hold the orb, speak, then release.'}
-              {phase === 'listening' && 'Listeningâ€¦ release to send.'}
-              {phase === 'thinking' && (status ?? 'Thinkingâ€¦')}
-              {phase === 'speaking' && 'Aether is explainingâ€¦'}
+              {phase === 'listening' && 'Listening… release to send.'}
+              {phase === 'thinking' && (status ?? 'Thinking…')}
+              {phase === 'speaking' && 'Aether is explaining…'}
             </Text>
           )}
         </View>
@@ -245,7 +250,7 @@ export default function VoiceTutorPage() {
           </View>
         ) : (
           <View style={styles.placeholder}>
-            <Text style={styles.placeholderText}>Aether answers out loud, hands-free â€” just like the voice session on the website.</Text>
+            <Text style={styles.placeholderText}>Aether answers out loud, hands-free — just like the voice session on the website.</Text>
           </View>
         )}
       </ScrollView>

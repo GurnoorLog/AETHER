@@ -2,6 +2,7 @@
 import { StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
 
 import { glassRadius, spacing, useTheme, type GlassTheme } from '@/theme';
+import { texToText } from '@/lib/latex';
 import { MermaidFlow } from './MermaidFlow';
 import { MathBlock } from './MathBlock';
 
@@ -26,14 +27,14 @@ function inlineNodes(text: string, keyBase: string, styles: ReturnType<typeof ma
       const body = part.slice(isDisplay ? 2 : 1, isDisplay ? -2 : -1);
       return (
         <Text key={`${keyBase}-m${i}`} style={[styles.mathInline, isDisplay && styles.mathInlineDisplay]}>
-          {body}
+          {texToText(body)}
         </Text>
       );
     }
     if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
       return (
         <Text key={`${keyBase}-b${i}`} style={styles.bold}>
-          {part.slice(2, -2)}
+          {texToText(part.slice(2, -2))}
         </Text>
       );
     }
@@ -47,11 +48,11 @@ function inlineNodes(text: string, keyBase: string, styles: ReturnType<typeof ma
     if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return (
         <Text key={`${keyBase}-i${i}`} style={styles.italic}>
-          {part.slice(1, -1)}
+          {texToText(part.slice(1, -1))}
         </Text>
       );
     }
-    return <Text key={`${keyBase}-t${i}`}>{part}</Text>;
+    return <Text key={`${keyBase}-t${i}`}>{/[\\{}|]/.test(part) ? texToText(part) : part}</Text>;
   });
   return nodes;
 }

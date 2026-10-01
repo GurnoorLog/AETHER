@@ -225,7 +225,7 @@ export default function HomeTab() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#FDFBF7' },
   heroClip: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, overflow: 'hidden' },
-  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, width: '100%', resizeMode: 'cover', transform: [{ scale: 1.18 }] },
+  heroImage: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, width: '100%', resizeMode: 'cover', transform: [{ scale: 1.05 }] },
   heroOverlay: { position: 'absolute', top: 0, left: 0, right: 0, height: 420 },
   imageContent: { position: 'absolute', top: 0, left: 0, right: 0, height: 420, paddingTop: 56, paddingHorizontal: 24, zIndex: 3 },
   topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },

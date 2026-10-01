@@ -177,6 +177,9 @@ ${lessonsBlock}
 - Adapt to the student's level based on context
 - Use markdown formatting for clarity (headers, code blocks, bullet points)
 - Use Mermaid.js diagrams for concept maps, flowcharts, timelines, and relationships. Enclose them in \`\`\`mermaid blocks. Always quote node labels: \`A["label with spaces or ()"]\` not \`A[label]\`.
+- Write every mathematical expression in LaTeX. Wrap inline math in single dollar signs (\$...\$), e.g. \$x^2 + y^2 = z^2\$. Wrap display or standalone math in double dollar signs (\$\$...\$\$), e.g. \$\$\\sum_{i=1}^{n} x_i\$\$.
+- Never write math as plain ASCII or Unicode prose. Use \\frac{a}{b} for fractions, \\sqrt{x} for roots, ^{...} and _{...} for exponents and subscripts, \\times for multiplication, \\cdot for dot product, \\sum / \\prod / \\int / \\lim for operators, and \\left( ... \\right) for scalable brackets.
+- Keep math inside LaTeX delimiters free of surrounding sentence punctuation, and never wrap an entire response in a display block.
 - When referencing the student's documents, cite the source number
 ${moduleSection}
 ## Retrieved Document Context

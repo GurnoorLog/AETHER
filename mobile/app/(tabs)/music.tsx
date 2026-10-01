@@ -48,8 +48,12 @@ export default function MusicTab() {
   const [error, setError] = useState('');
 
   const [activeTrack, setActiveTrack] = useState<GeneratedTrack | null>(null);
-  const player = useAudioPlayer(activeTrack?.localUri ?? null);
+  const player = useAudioPlayer();
   const status = useAudioPlayerStatus(player);
+
+  useEffect(() => {
+    if (activeTrack?.localUri) player.replace(activeTrack.localUri);
+  }, [activeTrack?.localUri, player]);
 
   const fetchTracks = useCallback(async () => {
     if (!authSession) {
@@ -83,8 +87,9 @@ export default function MusicTab() {
         setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, localUri } : t)));
       }
       setActiveTrack({ ...track });
-    } catch {
-      Alert.alert('Playback unavailable', 'Could not load this track.');
+    } catch (e) {
+      const detail = e instanceof Error ? e.message : String(e);
+      Alert.alert('Playback unavailable', `Could not load this track (${detail}).`);
     }
   };
 
@@ -253,11 +258,11 @@ export default function MusicTab() {
                 <Text style={styles.nowPlayingTitle} numberOfLines={1}>{activeTrack.title}</Text>
                 <Text style={styles.nowPlayingMeta}>
                   {activeTrack.mood && activeTrack.instrument
-                    ? `${activeTrack.mood} â€¢ ${activeTrack.instrument} â€¢ Generated ${timeAgo(activeTrack.created_at)}`
+                    ? `${activeTrack.mood} • ${activeTrack.instrument} • Generated ${timeAgo(activeTrack.created_at)}`
                     : 'Aether Original'}
                 </Text>
                 <Text style={styles.nowPlayingMeta}>
-                  {status.isLoaded && status.duration ? `${Math.floor(status.currentTime)}s / ${Math.floor(status.duration)}s` : 'Loading audioâ€¦'}
+                  {status.isLoaded && status.duration ? `${Math.floor(status.currentTime)}s / ${Math.floor(status.duration)}s` : 'Loading audio…'}
                 </Text>
               </View>
             </View>
@@ -310,7 +315,7 @@ export default function MusicTab() {
             <Icon icon={Music} size={30} color="#8A8478" />
             <Text style={styles.emptyTitle}>No tracks yet</Text>
             <Text style={styles.emptyDesc}>
-              Generate your first AI track above â€” describe a scene, pick a mood, and hit Generate.
+              Generate your first AI track above — describe a scene, pick a mood, and hit Generate.
             </Text>
           </View>
         ) : (
@@ -329,7 +334,7 @@ export default function MusicTab() {
                   <View style={styles.trackInfo}>
                     <Text style={[styles.trackTitle, isActive && { color: GREEN }]} numberOfLines={1}>{t.title}</Text>
                     <Text style={styles.trackMeta}>
-                      {t.mood && t.instrument ? `${t.mood} â€¢ ${t.instrument}` : 'Aether Original'} â€¢ {timeAgo(t.created_at)}
+                      {t.mood && t.instrument ? `${t.mood} • ${t.instrument}` : 'Aether Original'} • {timeAgo(t.created_at)}
                     </Text>
                   </View>
                   <Pressable onPress={() => deleteTrack(t.id)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Delete track">
