@@ -32,6 +32,70 @@ function GraphDots({ className = "" }: { className?: string }) {
   );
 }
 
+// stand-in screens, real screenshots are gitignored
+function FakeScreen({ kind }: { kind: "ring" | "chat" | "cards" }) {
+  return (
+    <div className="w-full h-full bg-[#FDFBF7] p-5 flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <span className="serif-display text-[11px] font-semibold text-[#2D3436]">Aether</span>
+        <span className="w-5 h-5 rounded-full bg-[#3F5C3A]" />
+      </div>
+      {kind === "ring" ? (
+        <>
+          <div className="mx-auto my-2">
+            <div className="w-20 h-20 rounded-full border-[3px] border-[#F1E9DE] flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full border-[3px] border-[#3F5C3A] border-r-transparent -rotate-45" />
+            </div>
+          </div>
+          <div className="h-2 bg-[#F1E9DE] rounded-full mb-2" />
+          <div className="h-2 bg-[#F1E9DE] rounded-full w-3/4 mb-2" />
+        </>
+      ) : kind === "chat" ? (
+        <>
+          <div className="self-end w-2/3 h-9 bg-[#F1E9DE] rounded-2xl rounded-br-md mb-2" />
+          <div className="self-start w-3/4 h-14 bg-white border border-[#E7E1D6] rounded-2xl rounded-bl-md mb-2" />
+          <div className="self-end w-1/2 h-9 bg-[#F1E9DE] rounded-2xl rounded-br-md" />
+        </>
+      ) : (
+        <>
+          <div className="h-12 bg-white border border-[#E7E1D6] rounded-2xl mb-2" />
+          <div className="h-12 w-[85%] bg-white border border-[#E7E1D6] rounded-2xl mb-2" />
+          <div className="h-12 bg-white border border-[#E7E1D6] rounded-2xl" />
+        </>
+      )}
+      <div className="mt-auto h-9 rounded-full bg-[#3F5C3A]" />
+    </div>
+  );
+}
+
+function RevealOverlay({ label, note }: { label: string; note: string }) {
+  return (
+    <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none px-6">
+      <div className="pointer-events-auto relative bg-[#FDFBF7]/95 backdrop-blur-sm editorial px-10 py-8 max-w-sm text-center">
+        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rotate-[-2deg] inline-block serif-display text-[10px] font-bold uppercase tracking-[0.25em] text-white bg-[#C9772E] border-2 border-[#2D3436] px-3 py-1 shadow-[2px_2px_0_0_#2D3436] rounded-[6px_3px_7px_2px/3px_7px_2px_6px] whitespace-nowrap">
+          {label}
+        </span>
+        <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-[#E8F1E6] border-2 border-[#3F5C3A]/30 flex items-center justify-center animate-[float_4s_ease-in-out_infinite]">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#3F5C3A" strokeWidth="1.8" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 12v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <h3 className="relative serif-display text-2xl md:text-3xl font-semibold text-[#2D3436]">
+          They&apos;ll be revealed soon
+          <svg className="absolute -bottom-2 left-0 w-full" height="10" viewBox="0 0 300 12" fill="none" preserveAspectRatio="none" aria-hidden>
+            <path d="M2 8 C 60 2, 120 11, 180 6 S 280 3, 298 7" stroke="#C9772E" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+        </h3>
+        <p className="text-sm text-[#555E61] mt-4 mb-6 leading-relaxed">{note}</p>
+        <a href="#beta" className="btn-primary btn-hard inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold">
+          Get early access
+          <ArrowRight size={16} />
+        </a>
+      </div>
+    </div>
+  );
+}
+
 const features = [
   {
     icon: UploadCloud,
@@ -158,27 +222,19 @@ export default function Home() {
           <div className="relative">
             <div className="flex justify-center items-end gap-6 md:gap-10 flex-wrap lg:flex-nowrap" aria-hidden>
               <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform -rotate-6 translate-y-10 hidden lg:block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/landing/screen-4.jpeg" className="w-full h-full object-cover blur-2xl scale-110 opacity-70" alt="" />
+                <FakeScreen kind="cards" />
               </div>
               <div className="app-screen-mockup w-[270px] h-[540px] shrink-0 overflow-hidden z-20">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/landing/screen-3.jpeg" className="w-full h-full object-cover blur-2xl scale-110 opacity-70" alt="" />
+                <FakeScreen kind="ring" />
               </div>
               <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform rotate-6 translate-y-10 hidden lg:block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/landing/screen-1.jpeg" className="w-full h-full object-cover blur-2xl scale-110 opacity-70" alt="" />
+                <FakeScreen kind="chat" />
               </div>
             </div>
-            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
-              <span className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-[#3F5C3A] bg-[#FDFBF7]/80 backdrop-blur-sm border hairline px-4 py-2 rounded-full mb-4">
-                <span className="w-1.5 h-1.5 bg-[#C9772E] rounded-full animate-pulse" /> Under wraps
-              </span>
-              <p className="serif-display text-2xl md:text-4xl font-semibold text-[#2D3436]">
-                They&apos;ll be revealed soon
-              </p>
-              <p className="text-sm text-[#555E61] mt-2 max-w-xs">We&apos;re putting the finishing touches on the app. Join the early access list to be first in line.</p>
-            </div>
+            <RevealOverlay
+              label="Under wraps"
+              note="We're putting the finishing touches on the app. Join the early access list to be first in line."
+            />
           </div>
         </div>
       </section>
@@ -297,32 +353,27 @@ export default function Home() {
             </p>
           </div>
           <div className="relative">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" aria-hidden>
-              {["screen-1.jpeg", "screen-2.jpeg", "screen-3.jpeg", "screen-4.jpeg", "screen-5.jpeg"].map((src, i) => (
-                <div
-                  key={src}
-                  className={
-                    i === 2
-                      ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-12"
-                      : i === 1 || i === 3
-                      ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-6"
-                      : "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden"
-                  }
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/landing/${src}`} className="w-full blur-2xl scale-110 opacity-70" alt="" />
-                </div>
-              ))}
+            <div className="flex justify-center items-end gap-4 md:gap-6 flex-wrap lg:flex-nowrap" aria-hidden>
+              <div className="app-screen-mockup w-[200px] h-[400px] shrink-0 overflow-hidden hidden lg:block transform -rotate-6">
+                <FakeScreen kind="chat" />
+              </div>
+              <div className="app-screen-mockup w-[220px] h-[440px] shrink-0 overflow-hidden hidden md:block transform -rotate-3 lg:translate-y-6">
+                <FakeScreen kind="cards" />
+              </div>
+              <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden z-20">
+                <FakeScreen kind="ring" />
+              </div>
+              <div className="app-screen-mockup w-[220px] h-[440px] shrink-0 overflow-hidden hidden md:block transform rotate-3 lg:translate-y-6">
+                <FakeScreen kind="chat" />
+              </div>
+              <div className="app-screen-mockup w-[200px] h-[400px] shrink-0 overflow-hidden hidden lg:block transform rotate-6">
+                <FakeScreen kind="cards" />
+              </div>
             </div>
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
-              <span className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-[#3F5C3A] bg-[#FDFBF7]/80 backdrop-blur-sm border hairline px-4 py-2 rounded-full mb-4">
-                <span className="w-1.5 h-1.5 bg-[#C9772E] rounded-full animate-pulse" /> Coming soon
-              </span>
-              <p className="serif-display text-2xl md:text-4xl font-semibold text-[#2D3436]">
-                They&apos;ll be revealed soon
-              </p>
-              <p className="text-sm text-[#555E61] mt-2 max-w-xs">A sneak peek is coming. Sign up to see it the moment it drops.</p>
-            </div>
+            <RevealOverlay
+              label="Coming soon"
+              note="A sneak peek is on its way. Join the early access list to see it the moment it drops."
+            />
           </div>
         </div>
       </section>
