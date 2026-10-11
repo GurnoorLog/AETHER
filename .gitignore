@@ -56,6 +56,8 @@ skills-lock.json
 !**/README.md
 
 # large / regeneration-only images
+public/landing/
+public/mobile-assets/
 mobile/assets/design/onboarding_bg.jpg
 public/mobile-assets/onboarding_bg.jpg
 mobile/assets/design/history.jpg
