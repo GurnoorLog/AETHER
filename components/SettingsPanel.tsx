@@ -175,15 +175,17 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                   <div className="editorial bg-warm-ink/[0.04] p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-bold text-warm-ink capitalize">{plan?.tier ?? "Free"} plan</p>
+                        <p className="text-sm font-bold text-warm-ink capitalize">
+                          {plan?.tier === "pro" ? "Pro" : plan?.tier === "unlimited" ? "Unlimited" : "Free"}
+                        </p>
                         <p className="text-[10px] text-warm-ink-muted mt-0.5">
                           {isPaid
                             ? plan?.currentPeriodEnd
                               ? `Renews ${new Date(plan.currentPeriodEnd).toLocaleDateString()}`
-                              : "Active"
+                              : "Active subscription"
                             : plan?.status === "past_due"
                               ? "Payment issue: update your billing details."
-                              : "You're on the free plan."}
+                              : "Upgrade for more sessions, chat, and features."}
                         </p>
                       </div>
                       <span
@@ -208,7 +210,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                           onClick={() => setShowUpgrade(true)}
                           className="block w-full py-2.5 rounded-lg btn-editorial text-xs font-black text-center hover:opacity-90 transition-all cursor-pointer"
                         >
-                          Upgrade Plan
+                          View Plans &amp; Upgrade
                         </button>
                       )}
                     </div>

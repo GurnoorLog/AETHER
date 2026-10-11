@@ -3,12 +3,15 @@
     "name": "Aether",
     "slug": "aether",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "aether",
     "android": {
       "package": "trillion_game.start",
+      "versionCode": 8,
+      "enableMinifyInReleaseBuilds": true,
+      "enableShrinkResourcesInReleaseBuilds": true,
       "adaptiveIcon": {
         "backgroundColor": "#FDFBF7",
         "foregroundImage": "./assets/android-icon-foreground.png"

@@ -22,28 +22,6 @@ interface RoadmapModule {
   completed_at: string | null;
 }
 
-const SUBJECT_IMAGES: Record<string, string> = {
-  physics: "/mobile-assets/pysics.png",
-  maths: "/mobile-assets/math.png",
-  math: "/mobile-assets/math.png",
-  mathematics: "/mobile-assets/math.png",
-  biology: "/mobile-assets/biology.png",
-  chemistry: "/mobile-assets/chemistry.png",
-  "computer science": "/mobile-assets/cs.png",
-  cs: "/mobile-assets/cs.png",
-  history: "/mobile-assets/history.jpg",
-  literature: "/mobile-assets/lictrutur.png",
-  english: "/mobile-assets/lictrutur.png",
-};
-
-const DEFAULT_IMAGE = "/mobile-assets/pysics.png";
-
-function imgFor(subject?: string | null): string {
-  if (!subject) return DEFAULT_IMAGE;
-  const key = subject.toLowerCase().trim();
-  return SUBJECT_IMAGES[key] || DEFAULT_IMAGE;
-}
-
 function hello(): string {
   const h = new Date().getHours();
   if (h < 12) return "Good morning,";
@@ -114,9 +92,7 @@ export default function SessionDashboardPage() {
       <div
         className="relative h-[420px] lg:h-[520px] w-full"
         style={{
-              backgroundImage: `linear-gradient(rgba(253, 251, 247, 0.02), rgba(253, 251, 247, 0.02)), url('${imgFor(session.subject)}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center 30%",
+          backgroundImage: "linear-gradient(135deg, #F1E9DE 0%, #E8F1E6 55%, #F1E9DE 100%)",
           borderRadius: 40,
         }}
       >

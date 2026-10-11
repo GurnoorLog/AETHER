@@ -155,18 +155,29 @@ export default function Home() {
             </div>
             <p className="text-[#555E61] max-w-sm">Learn on the go with our fully featured Android app. Coming soon to Google Play &amp; Samsung Galaxy Store.</p>
           </div>
-          <div className="flex justify-center items-end gap-6 md:gap-10 flex-wrap lg:flex-nowrap">
-            <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform -rotate-6 translate-y-10 hidden lg:block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing/screen-4.jpeg" className="w-full h-full object-cover" alt="Aether welcome screen" />
+          <div className="relative">
+            <div className="flex justify-center items-end gap-6 md:gap-10 flex-wrap lg:flex-nowrap" aria-hidden>
+              <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform -rotate-6 translate-y-10 hidden lg:block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/landing/screen-4.jpeg" className="w-full h-full object-cover blur-2xl scale-110 opacity-70" alt="" />
+              </div>
+              <div className="app-screen-mockup w-[270px] h-[540px] shrink-0 overflow-hidden z-20">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/landing/screen-3.jpeg" className="w-full h-full object-cover blur-2xl scale-110 opacity-70" alt="" />
+              </div>
+              <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform rotate-6 translate-y-10 hidden lg:block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/landing/screen-1.jpeg" className="w-full h-full object-cover blur-2xl scale-110 opacity-70" alt="" />
+              </div>
             </div>
-            <div className="app-screen-mockup w-[270px] h-[540px] shrink-0 overflow-hidden z-20">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing/screen-3.jpeg" className="w-full h-full object-cover" alt="Aether dashboard" />
-            </div>
-            <div className="app-screen-mockup w-[250px] h-[500px] shrink-0 overflow-hidden transform rotate-6 translate-y-10 hidden lg:block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing/screen-1.jpeg" className="w-full h-full object-cover" alt="Aether progress screen" />
+            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
+              <span className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-[#3F5C3A] bg-[#FDFBF7]/80 backdrop-blur-sm border hairline px-4 py-2 rounded-full mb-4">
+                <span className="w-1.5 h-1.5 bg-[#C9772E] rounded-full animate-pulse" /> Under wraps
+              </span>
+              <p className="serif-display text-2xl md:text-4xl font-semibold text-[#2D3436]">
+                They&apos;ll be revealed soon
+              </p>
+              <p className="text-sm text-[#555E61] mt-2 max-w-xs">We&apos;re putting the finishing touches on the app. Join the early access list to be first in line.</p>
             </div>
           </div>
         </div>
@@ -285,22 +296,33 @@ export default function Home() {
               <span className="font-semibold text-[#3F5C3A]"> Coming soon to Google Play &amp; Samsung Galaxy Store.</span>
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {["screen-1.jpeg", "screen-2.jpeg", "screen-3.jpeg", "screen-4.jpeg", "screen-5.jpeg"].map((src, i) => (
-              <div
-                key={src}
-                className={
-                  i === 2
-                    ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-12"
-                    : i === 1 || i === 3
-                    ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-6"
-                    : "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden"
-                }
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/landing/${src}`} className="w-full" alt="Aether screen" />
-              </div>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6" aria-hidden>
+              {["screen-1.jpeg", "screen-2.jpeg", "screen-3.jpeg", "screen-4.jpeg", "screen-5.jpeg"].map((src, i) => (
+                <div
+                  key={src}
+                  className={
+                    i === 2
+                      ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-12"
+                      : i === 1 || i === 3
+                      ? "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden lg:translate-y-6"
+                      : "rounded-2xl border-2 border-[#2D3436] shadow-[4px_4px_0_0_#2D3436] overflow-hidden"
+                  }
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/landing/${src}`} className="w-full blur-2xl scale-110 opacity-70" alt="" />
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
+              <span className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-[#3F5C3A] bg-[#FDFBF7]/80 backdrop-blur-sm border hairline px-4 py-2 rounded-full mb-4">
+                <span className="w-1.5 h-1.5 bg-[#C9772E] rounded-full animate-pulse" /> Coming soon
+              </span>
+              <p className="serif-display text-2xl md:text-4xl font-semibold text-[#2D3436]">
+                They&apos;ll be revealed soon
+              </p>
+              <p className="text-sm text-[#555E61] mt-2 max-w-xs">A sneak peek is coming. Sign up to see it the moment it drops.</p>
+            </div>
           </div>
         </div>
       </section>
